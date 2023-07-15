@@ -14,24 +14,24 @@
 
 // READ: https://google.github.io/cpp-proto-builder
 
-#include "proto_builder/oss/testing/proto_test_util.h"
+#include "mbo/testing/proto/proto_test_util.h"
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 
-#include "google/protobuf/io/tokenizer.h"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/substitute.h"
+#include "gmock/gmock.h"
+#include "google/protobuf/io/tokenizer.h"
+#include "gtest/gtest.h"
 #include "re2/re2.h"
 
-namespace testing {
-namespace oss {
-
+namespace mbo::testing::proto {
 namespace internal {
 
-using absl::string_view;
-using RegExpStringPiece = ::re2::StringPiece;
+using RegExpStringPiece = std::string_view;
 
 // Utilities.
 
@@ -71,10 +71,10 @@ bool ProtoComparable(const ::google::protobuf::Message& p, const ::google::proto
 }
 
 template <typename Container>
-std::string JoinStringPieces(const Container& strings, string_view separator) {
+std::string JoinStringPieces(const Container& strings, std::string_view separator) {
   std::stringstream stream;
-  absl::string_view sep = "";
-  for (const absl::string_view str : strings) {
+  std::string_view sep = "";
+  for (const std::string_view str : strings) {
     stream << sep << str;
     sep = separator;
   }
@@ -86,7 +86,7 @@ std::vector<const ::google::protobuf::FieldDescriptor*> GetFieldDescriptors(
     const ::google::protobuf::Descriptor* proto_descriptor,
     const std::vector<std::string>& ignore_fields) {
   std::vector<const ::google::protobuf::FieldDescriptor*> ignore_descriptors;
-  std::vector<absl::string_view> remaining_descriptors;
+  std::vector<std::string_view> remaining_descriptors;
 
   const ::google::protobuf::DescriptorPool* pool = proto_descriptor->file()->pool();
   for (const std::string& name : ignore_fields) {
@@ -97,7 +97,7 @@ std::vector<const ::google::protobuf::FieldDescriptor*> GetFieldDescriptors(
     }
   }
 
-  QCHECK(remaining_descriptors.empty())
+  ABSL_QCHECK(remaining_descriptors.empty())
       << "Could not find fields for proto " << proto_descriptor->full_name()
       << " with fully qualified names: "
       << JoinStringPieces(remaining_descriptors, ",");
@@ -197,7 +197,7 @@ ParseFieldPathOrDie(const std::string& relative_field_path,
   while (!input.empty()) {
     // Consume a dot, except on the first iteration.
     if (input.size() < relative_field_path.size() && !Consume(&input, ".")) {
-      LOG(FATAL) << "Cannot parse field path '" << relative_field_path
+      ABSL_LOG(FATAL) << "Cannot parse field path '" << relative_field_path
                  << "' at offset " << relative_field_path.size() - input.size()
                  << ": expected '.'";
     }
@@ -208,41 +208,41 @@ ParseFieldPathOrDie(const std::string& relative_field_path,
         RE2::Consume(&input, field_regex, &name)) {
       if (field_path.empty()) {
         field.field = root_descriptor.FindFieldByName(std::string(name));
-        CHECK(field.field) << "No such field '" << name << "' in message '"
+        ABSL_CHECK(field.field) << "No such field '" << name << "' in message '"
                            << root_descriptor.full_name() << "'";
       } else {
         const ::google::protobuf::util::MessageDifferencer::SpecificField& parent =
             field_path.back();
         field.field = parent.field->message_type()->FindFieldByName(std::string(name));
-        CHECK(field.field) << "No such field '" << name << "' in '"
+        ABSL_CHECK(field.field) << "No such field '" << name << "' in '"
                            << parent.field->full_name() << "'";
       }
     } else if (RE2::Consume(&input, extension_regex, &name)) {
       field.field =
           ::google::protobuf::DescriptorPool::generated_pool()->FindExtensionByName(name);
-      CHECK(field.field) << "No such extension '" << name << "'";
+      ABSL_CHECK(field.field) << "No such extension '" << name << "'";
       if (field_path.empty()) {
-        CHECK(root_descriptor.IsExtensionNumber(field.field->number()))
+        ABSL_CHECK(root_descriptor.IsExtensionNumber(field.field->number()))
             << "Extension '" << name << "' does not extend message '"
             << root_descriptor.full_name() << "'";
       } else {
         const ::google::protobuf::util::MessageDifferencer::SpecificField& parent =
             field_path.back();
-        CHECK(parent.field->message_type()->IsExtensionNumber(
+        ABSL_CHECK(parent.field->message_type()->IsExtensionNumber(
             field.field->number()))
             << "Extension '" << name << "' does not extend '"
             << parent.field->full_name() << "'";
       }
     } else {
-      LOG(FATAL) << "Cannot parse field path '" << relative_field_path
+      ABSL_LOG(FATAL) << "Cannot parse field path '" << relative_field_path
                  << "' at offset " << relative_field_path.size() - input.size()
                  << ": expected field or extension";
     }
     field_path.push_back(field);
   }
 
-  CHECK(!field_path.empty());
-  CHECK(field_path.back().index == -1)
+  ABSL_CHECK(!field_path.empty());
+  ABSL_CHECK(field_path.back().index == -1)
       << "Terminally ignoring fields by index is currently not supported ('"
       << relative_field_path << "')";
   return field_path;
@@ -382,5 +382,4 @@ bool ProtoMatcherBase::MatchAndExplain(
 }
 
 }  // namespace internal
-}  // namespace oss
-}  // namespace testing
+}  // namespace mbo::testing::proto

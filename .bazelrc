@@ -1,0 +1,18 @@
+# To debug bazel options, uncomment next line.
+# build --announce_rc
+
+# Define the Apple OS
+build --apple_platform_type=macos
+
+# Allow platform specific control and add the missing 'CoreFoundation' lib.
+build --enable_platform_specific_config
+build:macos --features=-supports_dynamic_linker --linkopt=-framework --linkopt=CoreFoundation --host_linkopt=-framework --host_linkopt=CoreFoundation --linkopt=-Wl,-undefined,error
+
+# Define absl=1 to tell googletest to use absl for backtrace.
+build --define absl=1
+
+build --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 --cxxopt=-Werror
+test --test_output=errors
+
+# Disable: error: unused function 'CodepointSkipBackwards' [-Werror,-Wunused-function]
+build --per_file_copt=external/utf8_range/utf8_validity.cc@-Wno-unused-function

@@ -14,21 +14,17 @@
 
 // READ: https://google.github.io/cpp-proto-builder
 
-#ifndef PROTO_BUILDER_OSS_TESTING_PROTO_TEST_UTIL_H_
-#define PROTO_BUILDER_OSS_TESTING_PROTO_TEST_UTIL_H_
+#ifndef MBO_TESTING_PROTO_PROTO_TEST_UTIL_H_
+#define MBO_TESTING_PROTO_PROTO_TEST_UTIL_H_
 
+#include "absl/log/absl_check.h"
+#include "gmock/gmock.h"
 #include "google/protobuf/message.h"
 #include "google/protobuf/text_format.h"
 #include "google/protobuf/util/message_differencer.h"
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-// Last include to override Macros
-#include "proto_builder/oss/logging.h"
-
-namespace testing {
-namespace oss {
-
+namespace mbo::testing::proto {
 namespace internal {
 
 // Utilities.
@@ -205,7 +201,7 @@ class ProtoMatcherBase {
 
   // Sets the margin of error for approximate floating point comparison.
   void SetMargin(double margin) {
-    CHECK_GE(margin, 0.0) << "Using a negative margin for Approximately";
+    ABSL_CHECK_GE(margin, 0.0) << "Using a negative margin for Approximately";
     comp_->has_custom_margin = true;
     comp_->float_margin = margin;
   }
@@ -213,7 +209,7 @@ class ProtoMatcherBase {
   // Sets the relative fraction of error for approximate floating point
   // comparison.
   void SetFraction(double fraction) {
-    CHECK(0.0 <= fraction && fraction < 1.0)
+    ABSL_CHECK(0.0 <= fraction && fraction < 1.0)
         << "Fraction for Approximately must be >= 0.0 and < 1.0";
     comp_->has_custom_fraction = true;
     comp_->float_fraction = fraction;
@@ -317,7 +313,7 @@ class ProtoMatcher : public ProtoMatcherBase {
       : ProtoMatcherBase(must_be_initialized, comp),
         expected_(CloneProto2(expected)) {
     if (must_be_initialized) {
-      CHECK(expected.IsInitialized())
+      ABSL_CHECK(expected.IsInitialized())
           << "The protocol buffer given to *InitializedProto() "
           << "must itself be initialized, but the following required fields "
           << "are missing: " << expected.InitializationErrorString() << ".";
@@ -586,7 +582,7 @@ class TupleProtoMatcher {
 
   // Sets the margin of error for approximate floating point comparison.
   void SetMargin(double margin) {
-    CHECK_GE(margin, 0.0) << "Using a negative margin for Approximately";
+    ABSL_CHECK_GE(margin, 0.0) << "Using a negative margin for Approximately";
     comp_->has_custom_margin = true;
     comp_->float_margin = margin;
   }
@@ -594,7 +590,7 @@ class TupleProtoMatcher {
   // Sets the relative fraction of error for approximate floating point
   // comparison.
   void SetFraction(double fraction) {
-    CHECK(0.0 <= fraction && fraction <= 1.0)
+    ABSL_CHECK(0.0 <= fraction && fraction <= 1.0)
         << "Fraction for Relatively must be >= 0.0 and < 1.0";
     comp_->has_custom_fraction = true;
     comp_->float_fraction = fraction;
@@ -820,7 +816,6 @@ WhenDeserializedAs(const InnerMatcher& inner_matcher) {
           ::testing::SafeMatcherCast<const Proto&>(inner_matcher)));
 }
 
-}  // namespace oss
-}  // namespace testing
+}  // namespace mbo::testing::proto
 
-#endif  // PROTO_BUILDER_OSS_TESTING_PROTO_TEST_UTIL_H_
+#endif  // MBO_TESTING_PROTO_PROTO_TEST_UTIL_H_
