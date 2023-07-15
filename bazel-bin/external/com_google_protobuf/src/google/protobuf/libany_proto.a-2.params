@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/libany_proto.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/_objs/any_proto/any.pb.pic.o

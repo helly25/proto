@@ -1,6 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/libhashtablez_sampler.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/_objs/hashtablez_sampler/hashtablez_sampler.pic.o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/_objs/hashtablez_sampler/hashtablez_sampler_force_weak_definition.pic.o

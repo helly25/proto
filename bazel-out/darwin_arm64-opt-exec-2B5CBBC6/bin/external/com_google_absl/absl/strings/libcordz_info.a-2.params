@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/libcordz_info.a
-bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/_objs/cordz_info/cordz_info.o

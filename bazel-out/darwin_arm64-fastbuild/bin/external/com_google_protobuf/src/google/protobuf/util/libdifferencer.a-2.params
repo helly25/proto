@@ -1,6 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/libdifferencer.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/_objs/differencer/field_comparator.pic.o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/_objs/differencer/message_differencer.pic.o

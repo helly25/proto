@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/libwrappers_proto.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/_objs/wrappers_proto/wrappers.pb.pic.o

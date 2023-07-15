@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/utf8_range/libutf8_validity.a
-bazel-out/darwin_arm64-fastbuild/bin/external/utf8_range/_objs/utf8_validity/utf8_validity.pic.o

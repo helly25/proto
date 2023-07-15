@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/libstruct_proto.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/_objs/struct_proto/struct.pb.pic.o

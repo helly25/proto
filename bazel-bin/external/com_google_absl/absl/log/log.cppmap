@@ -1,8 +1,0 @@
-module "@com_google_absl//absl/log:log" {
-  export *
-  textual header "../../../../../../../external/com_google_absl/absl/log/log.h"
-  use "@com_google_absl//absl/log/internal:log_impl"
-  use "crosstool"
-}
-extern module "@com_google_absl//absl/log/internal:log_impl" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/internal/log_impl.cppmap"
-extern module "crosstool" "../../../../../../../external/local_config_cc/module.modulemap"

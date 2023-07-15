@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/flags/libusage_internal.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/flags/_objs/usage_internal/usage.pic.o

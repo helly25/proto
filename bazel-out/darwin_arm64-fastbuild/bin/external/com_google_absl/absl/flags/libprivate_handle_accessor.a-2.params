@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/flags/libprivate_handle_accessor.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/flags/_objs/private_handle_accessor/private_handle_accessor.pic.o

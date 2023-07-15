@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/internal/libglobals.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/internal/_objs/globals/globals.pic.o
