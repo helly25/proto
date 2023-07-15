@@ -1,0 +1,7 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/libinternal.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/internal/escaping.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/internal/ostringstream.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/internal/utf8.pic.o

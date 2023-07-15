@@ -1,0 +1,14 @@
+module "@com_google_absl//absl/profiling:sample_recorder" {
+  export *
+  textual header "../../../../../../../external/com_google_absl/absl/profiling/internal/sample_recorder.h"
+  use "@com_google_absl//absl/base:config"
+  use "@com_google_absl//absl/base:core_headers"
+  use "@com_google_absl//absl/synchronization:synchronization"
+  use "@com_google_absl//absl/time:time"
+  use "crosstool"
+}
+extern module "@com_google_absl//absl/base:config" "../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/base/config.cppmap"
+extern module "@com_google_absl//absl/base:core_headers" "../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/base/core_headers.cppmap"
+extern module "@com_google_absl//absl/synchronization:synchronization" "../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/synchronization/synchronization.cppmap"
+extern module "@com_google_absl//absl/time:time" "../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/time/time.cppmap"
+extern module "crosstool" "../../../../../../../external/local_config_cc/module.modulemap"

@@ -1,0 +1,13 @@
+module "@com_google_protobuf//src/google/protobuf/compiler/ruby:ruby" {
+  export *
+  textual header "../../../../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/ruby/_virtual_includes/ruby/google/protobuf/compiler/ruby/ruby_generator.h"
+  textual header "../../../../../../../../../../external/com_google_protobuf/src/google/protobuf/compiler/ruby/ruby_generator.h"
+  use "@com_google_protobuf//src/google/protobuf:descriptor_legacy"
+  use "@com_google_protobuf//src/google/protobuf:protobuf_nowkt"
+  use "@com_google_protobuf//src/google/protobuf/compiler:code_generator"
+  use "crosstool"
+}
+extern module "@com_google_protobuf//src/google/protobuf:descriptor_legacy" "../../../../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/descriptor_legacy.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf:protobuf_nowkt" "../../../../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/protobuf_nowkt.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf/compiler:code_generator" "../../../../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/code_generator.cppmap"
+extern module "crosstool" "../../../../../../../../../../external/local_config_cc/module.modulemap"

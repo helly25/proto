@@ -1,0 +1,38 @@
+exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+Executing tests from //mbo/testing/proto:proto_matchers_test
+-----------------------------------------------------------------------------
+Running main() from gmock_main.cc
+[==========] Running 13 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 13 tests from Matchers
+[ RUN      ] Matchers.EqualsProto
+[       OK ] Matchers.EqualsProto (0 ms)
+[ RUN      ] Matchers.EquivToProto
+[       OK ] Matchers.EquivToProto (0 ms)
+[ RUN      ] Matchers.Approximately
+[       OK ] Matchers.Approximately (0 ms)
+[ RUN      ] Matchers.TreatingNaNsAsEqual
+[       OK ] Matchers.TreatingNaNsAsEqual (0 ms)
+[ RUN      ] Matchers.IgnoringFields
+[       OK ] Matchers.IgnoringFields (0 ms)
+[ RUN      ] Matchers.IgnoringFieldPaths
+[       OK ] Matchers.IgnoringFieldPaths (0 ms)
+[ RUN      ] Matchers.IgnoringFieldPathsNested
+[       OK ] Matchers.IgnoringFieldPathsNested (2 ms)
+[ RUN      ] Matchers.IgnoringFieldPathsRepeatedIndex
+[       OK ] Matchers.IgnoringFieldPathsRepeatedIndex (0 ms)
+[ RUN      ] Matchers.IgnoringFieldPathsRepeatedNested
+[       OK ] Matchers.IgnoringFieldPathsRepeatedNested (0 ms)
+[ RUN      ] Matchers.IgnoringFieldPathsTerminalIndex
+[       OK ] Matchers.IgnoringFieldPathsTerminalIndex (32 ms)
+[ RUN      ] Matchers.IgnoringRepeatedFieldOrdering
+[       OK ] Matchers.IgnoringRepeatedFieldOrdering (0 ms)
+[ RUN      ] Matchers.IgnoringRepeatedFieldOrderingNested
+[       OK ] Matchers.IgnoringRepeatedFieldOrderingNested (0 ms)
+[ RUN      ] Matchers.Partially
+[       OK ] Matchers.Partially (0 ms)
+[----------] 13 tests from Matchers (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 13 tests from 1 test suite ran. (38 ms total)
+[  PASSED  ] 13 tests.

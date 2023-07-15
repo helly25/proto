@@ -1,0 +1,7 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/libcommand_line_interface.a
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/_objs/command_line_interface/command_line_interface.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/_objs/command_line_interface/subprocess.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/_objs/command_line_interface/zip_writer.o

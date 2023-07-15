@@ -1,0 +1,11 @@
+module "@com_google_absl//absl/base:cycleclock_internal" {
+  export *
+  textual header "../../../../../../../external/com_google_absl/absl/base/internal/cycleclock_config.h"
+  textual header "../../../../../../../external/com_google_absl/absl/base/internal/unscaledcycleclock_config.h"
+  use "@com_google_absl//absl/base:base_internal"
+  use "@com_google_absl//absl/base:config"
+  use "crosstool"
+}
+extern module "@com_google_absl//absl/base:base_internal" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/base/base_internal.cppmap"
+extern module "@com_google_absl//absl/base:config" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/base/config.cppmap"
+extern module "crosstool" "../../../../../../../external/local_config_cc/module.modulemap"

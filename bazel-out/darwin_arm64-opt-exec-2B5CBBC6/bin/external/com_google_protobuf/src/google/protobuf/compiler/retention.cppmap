@@ -1,0 +1,13 @@
+module "@com_google_protobuf//src/google/protobuf/compiler:retention" {
+  export *
+  textual header "../../../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/_virtual_includes/retention/google/protobuf/compiler/retention.h"
+  textual header "../../../../../../../../../external/com_google_protobuf/src/google/protobuf/compiler/retention.h"
+  use "@com_google_protobuf//src/google/protobuf:protobuf_nowkt"
+  use "@com_google_absl//absl/types:span"
+  use "@com_google_absl//absl/container:flat_hash_set"
+  use "crosstool"
+}
+extern module "@com_google_protobuf//src/google/protobuf:protobuf_nowkt" "../../../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/protobuf_nowkt.cppmap"
+extern module "@com_google_absl//absl/types:span" "../../../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/types/span.cppmap"
+extern module "@com_google_absl//absl/container:flat_hash_set" "../../../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/container/flat_hash_set.cppmap"
+extern module "crosstool" "../../../../../../../../../external/local_config_cc/module.modulemap"

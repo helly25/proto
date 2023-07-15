@@ -1,0 +1,21 @@
+module "@com_google_protobuf//:protobuf" {
+  export *
+  use "@com_google_protobuf//src/google/protobuf:protobuf"
+  use "@com_google_protobuf//src/google/protobuf/compiler:importer"
+  use "@com_google_protobuf//src/google/protobuf/util:delimited_message_util"
+  use "@com_google_protobuf//src/google/protobuf/util:differencer"
+  use "@com_google_protobuf//src/google/protobuf/util:field_mask_util"
+  use "@com_google_protobuf//src/google/protobuf/util:json_util"
+  use "@com_google_protobuf//src/google/protobuf/util:time_util"
+  use "@com_google_protobuf//src/google/protobuf/util:type_resolver_util"
+  use "crosstool"
+}
+extern module "@com_google_protobuf//src/google/protobuf:protobuf" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/protobuf.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf/compiler:importer" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/compiler/importer.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf/util:delimited_message_util" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/delimited_message_util.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf/util:differencer" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/differencer.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf/util:field_mask_util" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/field_mask_util.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf/util:json_util" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/json_util.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf/util:time_util" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/time_util.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf/util:type_resolver_util" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/util/type_resolver_util.cppmap"
+extern module "crosstool" "../../../../../external/local_config_cc/module.modulemap"

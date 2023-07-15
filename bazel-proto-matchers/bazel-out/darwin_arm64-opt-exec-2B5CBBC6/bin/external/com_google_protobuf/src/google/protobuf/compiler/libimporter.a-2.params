@@ -1,0 +1,6 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/libimporter.a
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/_objs/importer/importer.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/_objs/importer/parser.o

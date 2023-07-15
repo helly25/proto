@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/rust/libnaming.a
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/rust/_objs/naming/naming.o

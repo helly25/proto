@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/libsource_context_proto.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/_objs/source_context_proto/source_context.pb.pic.o

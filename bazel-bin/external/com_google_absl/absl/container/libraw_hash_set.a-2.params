@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/libraw_hash_set.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/_objs/raw_hash_set/raw_hash_set.pic.o

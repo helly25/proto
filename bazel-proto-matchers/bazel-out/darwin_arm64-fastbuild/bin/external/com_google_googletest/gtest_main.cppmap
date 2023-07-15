@@ -1,0 +1,7 @@
+module "@com_google_googletest//:gtest_main" {
+  export *
+  use "@com_google_googletest//:gtest"
+  use "crosstool"
+}
+extern module "@com_google_googletest//:gtest" "../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_googletest/gtest.cppmap"
+extern module "crosstool" "../../../../../external/local_config_cc/module.modulemap"

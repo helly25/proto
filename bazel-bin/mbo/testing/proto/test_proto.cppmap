@@ -1,0 +1,8 @@
+module "//mbo/testing/proto:test_proto" {
+  export *
+  textual header "../../../../../../bazel-out/darwin_arm64-fastbuild/bin/mbo/testing/proto/test.pb.h"
+  use "@com_google_protobuf//src/google/protobuf:protobuf_nowkt"
+  use "crosstool"
+}
+extern module "@com_google_protobuf//src/google/protobuf:protobuf_nowkt" "../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/protobuf_nowkt.cppmap"
+extern module "crosstool" "../../../../../../external/local_config_cc/module.modulemap"

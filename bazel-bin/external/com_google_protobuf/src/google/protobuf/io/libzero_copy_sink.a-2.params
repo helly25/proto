@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/io/libzero_copy_sink.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/io/_objs/zero_copy_sink/zero_copy_sink.pic.o

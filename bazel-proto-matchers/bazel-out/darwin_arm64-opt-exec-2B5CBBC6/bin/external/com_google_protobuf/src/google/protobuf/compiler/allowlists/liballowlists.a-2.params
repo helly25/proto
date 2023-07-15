@@ -1,0 +1,6 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/allowlists/liballowlists.a
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/allowlists/_objs/allowlists/empty_package.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/compiler/allowlists/_objs/allowlists/weak_imports.o

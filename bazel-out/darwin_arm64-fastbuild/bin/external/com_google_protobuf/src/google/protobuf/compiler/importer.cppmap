@@ -1,0 +1,17 @@
+module "@com_google_protobuf//src/google/protobuf/compiler:importer" {
+  export *
+  textual header "../../../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/compiler/_virtual_includes/importer/google/protobuf/compiler/importer.h"
+  textual header "../../../../../../../../../external/com_google_protobuf/src/google/protobuf/compiler/importer.h"
+  textual header "../../../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/compiler/_virtual_includes/importer/google/protobuf/compiler/parser.h"
+  textual header "../../../../../../../../../external/com_google_protobuf/src/google/protobuf/compiler/parser.h"
+  use "@com_google_protobuf//src/google/protobuf:protobuf_nowkt"
+  use "@com_google_absl//absl/log:absl_check"
+  use "@com_google_absl//absl/log:absl_log"
+  use "@com_google_absl//absl/strings:strings"
+  use "crosstool"
+}
+extern module "@com_google_protobuf//src/google/protobuf:protobuf_nowkt" "../../../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/protobuf_nowkt.cppmap"
+extern module "@com_google_absl//absl/log:absl_check" "../../../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/absl_check.cppmap"
+extern module "@com_google_absl//absl/log:absl_log" "../../../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/absl_log.cppmap"
+extern module "@com_google_absl//absl/strings:strings" "../../../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/strings.cppmap"
+extern module "crosstool" "../../../../../../../../../external/local_config_cc/module.modulemap"

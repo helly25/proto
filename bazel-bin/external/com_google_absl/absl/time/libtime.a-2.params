@@ -1,0 +1,9 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/time/libtime.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/time/_objs/time/civil_time.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/time/_objs/time/clock.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/time/_objs/time/duration.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/time/_objs/time/format.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/time/_objs/time/time.pic.o

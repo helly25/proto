@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/io/libio_win32.a
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_protobuf/src/google/protobuf/io/_objs/io_win32/io_win32.o

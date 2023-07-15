@@ -1,0 +1,18 @@
+module "@com_google_absl//absl/container:flat_hash_set" {
+  export *
+  textual header "../../../../../../../external/com_google_absl/absl/container/flat_hash_set.h"
+  use "@com_google_absl//absl/container:container_memory"
+  use "@com_google_absl//absl/container:hash_function_defaults"
+  use "@com_google_absl//absl/container:raw_hash_set"
+  use "@com_google_absl//absl/algorithm:container"
+  use "@com_google_absl//absl/base:core_headers"
+  use "@com_google_absl//absl/memory:memory"
+  use "crosstool"
+}
+extern module "@com_google_absl//absl/container:container_memory" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/container_memory.cppmap"
+extern module "@com_google_absl//absl/container:hash_function_defaults" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/hash_function_defaults.cppmap"
+extern module "@com_google_absl//absl/container:raw_hash_set" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/raw_hash_set.cppmap"
+extern module "@com_google_absl//absl/algorithm:container" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/algorithm/container.cppmap"
+extern module "@com_google_absl//absl/base:core_headers" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/base/core_headers.cppmap"
+extern module "@com_google_absl//absl/memory:memory" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/memory/memory.cppmap"
+extern module "crosstool" "../../../../../../../external/local_config_cc/module.modulemap"

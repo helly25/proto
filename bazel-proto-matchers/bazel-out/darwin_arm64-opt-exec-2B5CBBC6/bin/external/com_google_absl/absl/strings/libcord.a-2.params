@@ -1,0 +1,7 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/libcord.a
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/_objs/cord/cord.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/_objs/cord/cord_analysis.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/_objs/cord/cord_buffer.o

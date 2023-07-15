@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/libtype_proto.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/_objs/type_proto/type.pb.pic.o

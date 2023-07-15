@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/json/libmessage_path.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/json/_objs/message_path/message_path.pic.o

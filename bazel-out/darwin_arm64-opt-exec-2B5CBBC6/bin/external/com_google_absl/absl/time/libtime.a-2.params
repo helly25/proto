@@ -1,0 +1,9 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/time/libtime.a
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/time/_objs/time/civil_time.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/time/_objs/time/clock.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/time/_objs/time/duration.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/time/_objs/time/format.o
+bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/time/_objs/time/time.o

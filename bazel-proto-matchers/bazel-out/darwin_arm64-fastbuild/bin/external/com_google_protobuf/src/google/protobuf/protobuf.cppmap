@@ -1,0 +1,9 @@
+module "@com_google_protobuf//src/google/protobuf:protobuf" {
+  export *
+  use "@com_google_protobuf//src/google/protobuf:protobuf_nowkt"
+  use "@com_google_protobuf//src/google/protobuf:wkt_proto"
+  use "crosstool"
+}
+extern module "@com_google_protobuf//src/google/protobuf:protobuf_nowkt" "../../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/protobuf_nowkt.cppmap"
+extern module "@com_google_protobuf//src/google/protobuf:wkt_proto" "../../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/wkt_proto.cppmap"
+extern module "crosstool" "../../../../../../../../external/local_config_cc/module.modulemap"

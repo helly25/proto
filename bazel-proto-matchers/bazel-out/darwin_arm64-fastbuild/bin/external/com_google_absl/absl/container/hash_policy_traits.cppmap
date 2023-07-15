@@ -1,0 +1,10 @@
+module "@com_google_absl//absl/container:hash_policy_traits" {
+  export *
+  textual header "../../../../../../../external/com_google_absl/absl/container/internal/hash_policy_traits.h"
+  use "@com_google_absl//absl/container:common_policy_traits"
+  use "@com_google_absl//absl/meta:type_traits"
+  use "crosstool"
+}
+extern module "@com_google_absl//absl/container:common_policy_traits" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/container/common_policy_traits.cppmap"
+extern module "@com_google_absl//absl/meta:type_traits" "../../../../../../../bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/meta/type_traits.cppmap"
+extern module "crosstool" "../../../../../../../external/local_config_cc/module.modulemap"

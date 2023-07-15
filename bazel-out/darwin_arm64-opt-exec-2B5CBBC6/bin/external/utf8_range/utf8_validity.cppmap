@@ -1,0 +1,8 @@
+module "@utf8_range//:utf8_validity" {
+  export *
+  textual header "../../../../../external/utf8_range/utf8_validity.h"
+  use "@com_google_absl//absl/strings:strings"
+  use "crosstool"
+}
+extern module "@com_google_absl//absl/strings:strings" "../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/strings.cppmap"
+extern module "crosstool" "../../../../../external/local_config_cc/module.modulemap"

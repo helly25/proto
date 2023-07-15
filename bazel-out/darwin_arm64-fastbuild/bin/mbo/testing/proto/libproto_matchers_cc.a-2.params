@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/mbo/testing/proto/libproto_matchers_cc.a
+bazel-out/darwin_arm64-fastbuild/bin/mbo/testing/proto/_objs/proto_matchers_cc/proto_test_util.pic.o

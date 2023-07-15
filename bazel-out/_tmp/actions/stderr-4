@@ -1,0 +1,13 @@
+ld: warning: ignoring duplicate library '-lpthread'
+ld: warning: ignoring duplicate library '-lm'
+ld: warning: ignoring duplicate library '-lpthread'
+ld: warning: ignoring duplicate library '-lm'
+ld: warning: ignoring duplicate library '-lpthread'
+ld: warning: ignoring duplicate library '-lm'
+ld: warning: ignoring duplicate library '-lpthread'
+ld: warning: ignoring duplicate library '-lm'
+ld: warning: ignoring duplicate library '-lpthread'
+ld: warning: ignoring duplicate library '-lm'
+ld: warning: -undefined error is deprecated
+ld: warning: ignoring duplicate library '-lm'
+ld: warning: search path '/usr/local/lib' not found

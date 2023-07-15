@@ -1,0 +1,11 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/libcord_internal.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/cord_internal/cord_internal.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/cord_internal/cord_rep_btree.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/cord_internal/cord_rep_btree_navigator.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/cord_internal/cord_rep_btree_reader.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/cord_internal/cord_rep_consume.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/cord_internal/cord_rep_crc.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/strings/_objs/cord_internal/cord_rep_ring.pic.o

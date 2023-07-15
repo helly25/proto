@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/flags/libprogram_name.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/flags/_objs/program_name/program_name.pic.o

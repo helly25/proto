@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package mbo.testing.proto;
+
+message TestMessage {
+  optional string name = 1;
+  optional int32 num = 2;
+  optional double val = 3;
+}
+
+message TestMessage2 {
+  repeated int32 num = 1;
+  optional TestMessage one = 2;
+  repeated TestMessage more = 3;
+}

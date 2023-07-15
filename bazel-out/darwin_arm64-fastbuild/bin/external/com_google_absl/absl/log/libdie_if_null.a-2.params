@@ -1,0 +1,5 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/libdie_if_null.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/_objs/die_if_null/die_if_null.pic.o

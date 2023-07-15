@@ -1,0 +1,6 @@
+-static
+-s
+-o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/io/libtokenizer.a
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/io/_objs/tokenizer/strtod.pic.o
+bazel-out/darwin_arm64-fastbuild/bin/external/com_google_protobuf/src/google/protobuf/io/_objs/tokenizer/tokenizer.pic.o

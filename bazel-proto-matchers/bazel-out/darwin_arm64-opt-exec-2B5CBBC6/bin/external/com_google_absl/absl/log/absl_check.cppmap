@@ -1,0 +1,8 @@
+module "@com_google_absl//absl/log:absl_check" {
+  export *
+  textual header "../../../../../../../external/com_google_absl/absl/log/absl_check.h"
+  use "@com_google_absl//absl/log/internal:check_impl"
+  use "crosstool"
+}
+extern module "@com_google_absl//absl/log/internal:check_impl" "../../../../../../../bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/log/internal/check_impl.cppmap"
+extern module "crosstool" "../../../../../../../external/local_config_cc/module.modulemap"
