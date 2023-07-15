@@ -11,7 +11,7 @@ build:macos --features=-supports_dynamic_linker --linkopt=-framework --linkopt=C
 # Define absl=1 to tell googletest to use absl for backtrace.
 build --define absl=1
 
-build --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 --cxxopt=-Werror
+build --cxxopt=-std=c++20 --host_cxxopt=-std=c++20 --cxxopt=-Werror
 test --test_output=errors
 
 # Disable: error: unused function 'CodepointSkipBackwards' [-Werror,-Wunused-function]

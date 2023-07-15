@@ -1,4 +1,5 @@
 // Copyright 2021 The CPP Proto Builder Authors
+// Copyright 2023 M.Boerger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,8 +12,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-// READ: https://google.github.io/cpp-proto-builder
 
 #ifndef MBO_TESTING_PROTO_PROTO_TEST_UTIL_H_
 #define MBO_TESTING_PROTO_PROTO_TEST_UTIL_H_
@@ -749,30 +748,25 @@ inline InnerProtoMatcher IgnoringFields(const Container& ignore_fields,
 // See top comment.
 template <class InnerProtoMatcher, class Container>
 inline InnerProtoMatcher IgnoringFieldPaths(
-    const Container& ignore_field_paths,
-    InnerProtoMatcher inner_proto_matcher) {
+    const Container& ignore_field_paths, InnerProtoMatcher inner_proto_matcher) {
   inner_proto_matcher.mutable_impl().AddCompareIgnoringFieldPaths(
       ignore_field_paths.begin(), ignore_field_paths.end());
   return inner_proto_matcher;
 }
 
-#ifdef LANG_CXX11
 template <class InnerProtoMatcher, class T>
-inline InnerProtoMatcher IgnoringFields(std::initializer_list<T> il,
-                                        InnerProtoMatcher inner_proto_matcher) {
-  inner_proto_matcher.mutable_impl().AddCompareIgnoringFields(il.begin(),
-                                                              il.end());
+inline InnerProtoMatcher IgnoringFields(
+    std::initializer_list<T> il, InnerProtoMatcher inner_proto_matcher) {
+  inner_proto_matcher.mutable_impl().AddCompareIgnoringFields(il.begin(), il.end());
   return inner_proto_matcher;
 }
 
 template <class InnerProtoMatcher, class T>
 inline InnerProtoMatcher IgnoringFieldPaths(
     std::initializer_list<T> il, InnerProtoMatcher inner_proto_matcher) {
-  inner_proto_matcher.mutable_impl().AddCompareIgnoringFieldPaths(il.begin(),
-                                                                  il.end());
+  inner_proto_matcher.mutable_impl().AddCompareIgnoringFieldPaths(il.begin(), il.end());
   return inner_proto_matcher;
 }
-#endif  // LANG_CXX11
 
 // IgnoringRepeatedFieldOrdering(m) returns a matcher that is the same as m,
 // except that it ignores the relative ordering of elements within each repeated

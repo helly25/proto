@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/hash/liblow_level_hash.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/hash/_objs/low_level_hash/low_level_hash.pic.o

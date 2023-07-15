@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/types/libbad_any_cast_impl.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/types/_objs/bad_any_cast_impl/bad_any_cast.pic.o

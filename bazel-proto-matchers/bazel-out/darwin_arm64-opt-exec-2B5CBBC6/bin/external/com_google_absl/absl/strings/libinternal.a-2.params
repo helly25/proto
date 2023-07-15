@@ -1,7 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/libinternal.a
-bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/_objs/internal/escaping.o
-bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/_objs/internal/ostringstream.o
-bazel-out/darwin_arm64-opt-exec-2B5CBBC6/bin/external/com_google_absl/absl/strings/_objs/internal/utf8.o

@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/liblog_entry.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/log/_objs/log_entry/log_entry.pic.o

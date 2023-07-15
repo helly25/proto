@@ -1,6 +1,17 @@
 This is a clone of Google's [Protocolbuffer](https://github.com/protocolbuffers/protobuf) matchers
 which are missing from [GoogleTest](https://github.com/google/googletest).
 
+# Parse Proto
+
+* ParseTextProtoOrDie(text_proto [, std::source_location])
+  * `text_proto` is a text proto best identified as a raw-string with marker 'pb'.
+  * If `text_proto` cannot be parsed into the receiving proto type, then the function will fail.
+
+* ParseTextOrDie<Proto>(text_proto [, std::source_location])
+  * `text_proto` is a text proto best identified as a raw-string with marker 'pb'.
+  * `Proto` is the type to produce.
+  * If `text_proto` cannot be parsed as a `Proto`, then the function will fail.
+
 # Proto Matchers
 
 * EqualsProto(msg)
@@ -87,6 +98,19 @@ TEST(Foo, Test) {
 ```
 
 # Clone
+
+## Parse Proto
+
+The clone was made from Google's [CPP-proto-builder](https://github.com/google/cpp-proto-builder).
+
+The following files were cloned:
+
+```
+cp ../cpp-proto-builder/proto_builder/oss/parse_proto_text.* proto/mbo/proto
+cp ../cpp-proto-builder/proto_builder/oss/parse_proto_text_test.cc proto/mbo/proto
+cp ../cpp-proto-builder/proto_builder/oss/tests/simple_message.proto proto/mbo/proto
+patch <proto/mbo/proto/parse_proto_text.diff
+```
 
 ## Proto Matchers
 

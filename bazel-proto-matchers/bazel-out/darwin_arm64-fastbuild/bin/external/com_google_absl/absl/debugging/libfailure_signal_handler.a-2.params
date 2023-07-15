@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/debugging/libfailure_signal_handler.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/debugging/_objs/failure_signal_handler/failure_signal_handler.pic.o

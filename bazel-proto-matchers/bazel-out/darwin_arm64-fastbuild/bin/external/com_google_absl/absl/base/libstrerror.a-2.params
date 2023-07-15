@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/base/libstrerror.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_absl/absl/base/_objs/strerror/strerror.pic.o

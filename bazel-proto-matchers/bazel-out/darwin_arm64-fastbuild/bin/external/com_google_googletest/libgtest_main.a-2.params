@@ -1,5 +1,0 @@
--static
--s
--o
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_googletest/libgtest_main.a
-bazel-out/darwin_arm64-fastbuild/bin/external/com_google_googletest/_objs/gtest_main/gmock_main.pic.o
