@@ -7,7 +7,8 @@ This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed).
 This is done because the original sources use Abseil's `SourceLocation` has not been open sourced and instead of making
 it available through this project, the project simply requires `std::source_location` which requires C++20.
 
-The project only comes with a [Bazel](https://bazel.build/) BUILD.bazel file and can be added to other Bazel projects:
+The project only comes with a [Bazel](https://bazel.build/) BUILD.bazel file and can be added to other Bazel projects.
+Checkout [Releases](https://github.com/helly25/proto/releases) or use head ref as follows:
 
 ```
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
@@ -15,6 +16,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
   name = "com_helly25_proto",
   url = "https://github.com/helly25/proto/archive/refs/heads/main.tar.gz",
+  # See https://github.com/helly25/proto/releases for releases.
 )
 ```
 
