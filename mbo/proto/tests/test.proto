@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package mbo.testing.proto;
+package mbo.proto.tests;
 
 message TestMessage {
   optional string name = 1;

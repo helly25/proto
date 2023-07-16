@@ -16,13 +16,13 @@
 #include "mbo/proto/parse_text_proto.h"
 
 #include "gmock/gmock.h"
+#include "mbo/proto/matchers.h"
 #include "mbo/proto/tests/simple_message.pb.h"
-#include "mbo/testing/proto/proto_matchers.h"
 
 namespace mbo::proto {
 namespace {
 
-using ::mbo::testing::proto::EqualsProto;
+using ::mbo::proto::EqualsProto;
 using ::mbo::proto::tests::SimpleMessage;
 
 class ParseTextProtoTest : public ::testing::Test {};
@@ -30,17 +30,17 @@ class ParseTextProtoTest : public ::testing::Test {};
 TEST_F(ParseTextProtoTest, ParseOk) {
   EXPECT_THAT(ParseTextOrDie<SimpleMessage>(""), EqualsProto(""));
   EXPECT_THAT(ParseTextOrDie<SimpleMessage>("one: 42"), EqualsProto("one: 42"));
-  EXPECT_THAT((SimpleMessage)ParseTextProtoOrDie("one: 25"),
-              EqualsProto("one: 25"));
+  EXPECT_THAT((SimpleMessage)ParseTextProtoOrDie("one: 25"), EqualsProto("one: 25"));
 }
 
 TEST_F(ParseTextProtoTest, ParseError) {
-  EXPECT_DEATH(ParseTextOrDie<SimpleMessage>("!!!"),
-               // Using [0-9] in lieu of \\d to be compatible in open source.
-               ".*Check failed:.*\n*"
-               "File: '.*/parse_text_proto.*', Line: [0-9]+.*"
-               "ParseTextOrDie<SimpleMessage>.*"
-               "INVALID_ARGUMENT: Line 0, Col 0: Expected identifier, got: !");
+  EXPECT_DEATH(
+      ParseTextOrDie<SimpleMessage>("!!!"),
+      // Using [0-9] in lieu of \\d to be compatible in open source.
+      ".*Check failed:.*\n*"
+      "File: '.*/parse_text_proto.*', Line: [0-9]+.*"
+      "ParseTextOrDie<SimpleMessage>.*"
+      "INVALID_ARGUMENT: Line 0, Col 0: Expected identifier, got: !");
 }
 
 }  // namespace

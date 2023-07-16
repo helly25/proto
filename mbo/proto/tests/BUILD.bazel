@@ -29,3 +29,14 @@ cc_proto_library(
     visibility = ["//mbo/proto:__subpackages__"],
     deps = [":simple_message_proto"],
 )
+
+proto_library(
+    name = "test_proto",
+    srcs = ["test.proto"],
+)
+
+cc_proto_library(
+    name = "test_cc_proto",
+    visibility = ["//mbo/proto:__subpackages__"],
+    deps = [":test_proto"],
+)

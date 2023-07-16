@@ -13,17 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MBO_TESTING_PROTO_PROTO_TEST_UTIL_H_
-#define MBO_TESTING_PROTO_PROTO_TEST_UTIL_H_
+#ifndef MBO_PROTO_MATCHERS_H_
+#define MBO_PROTO_MATCHERS_H_
 
 #include "absl/log/absl_check.h"
-#include "gmock/gmock.h"
 #include "google/protobuf/message.h"
 #include "google/protobuf/text_format.h"
 #include "google/protobuf/util/message_differencer.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-namespace mbo::testing::proto {
+namespace mbo::proto {
 namespace internal {
 
 // Utilities.
@@ -42,7 +42,8 @@ typedef ::google::protobuf::util::MessageDifferencer::RepeatedFieldComparison
 
 // Whether to compare all fields (full) or only fields present in the
 // expected protobuf (partial).
-typedef ::google::protobuf::util::MessageDifferencer::Scope ProtoComparisonScope;
+typedef ::google::protobuf::util::MessageDifferencer::Scope
+    ProtoComparisonScope;
 
 const ProtoFieldComparison kProtoEqual =
     ::google::protobuf::util::MessageDifferencer::EQUAL;
@@ -64,25 +65,21 @@ const ProtoComparisonScope kProtoPartial =
 // Options for comparing two protobufs.
 struct ProtoComparison {
   ProtoComparison()
-      : field_comp(kProtoEqual),
-        float_comp(kProtoExact),
-        treating_nan_as_equal(false),
-        has_custom_margin(false),
+      : field_comp(kProtoEqual), float_comp(kProtoExact),
+        treating_nan_as_equal(false), has_custom_margin(false),
         has_custom_fraction(false),
         repeated_field_comp(kProtoCompareRepeatedFieldsRespectOrdering),
-        scope(kProtoFull),
-        float_margin(0.0),
-        float_fraction(0.0) {}
+        scope(kProtoFull), float_margin(0.0), float_fraction(0.0) {}
 
   ProtoFieldComparison field_comp;
   ProtoFloatComparison float_comp;
   bool treating_nan_as_equal;
-  bool has_custom_margin;    // only used when float_comp = APPROXIMATE
-  bool has_custom_fraction;  // only used when float_comp = APPROXIMATE
+  bool has_custom_margin;   // only used when float_comp = APPROXIMATE
+  bool has_custom_fraction; // only used when float_comp = APPROXIMATE
   RepeatedFieldComparison repeated_field_comp;
   ProtoComparisonScope scope;
-  double float_margin;    // only used when has_custom_margin is set.
-  double float_fraction;  // only used when has_custom_fraction is set.
+  double float_margin;   // only used when has_custom_margin is set.
+  double float_fraction; // only used when has_custom_fraction is set.
   std::vector<std::string> ignore_fields;
   std::vector<std::string> ignore_field_paths;
 };
@@ -93,14 +90,14 @@ const bool kMayBeUninitialized = false;
 
 // Parses the TextFormat representation of a protobuf, allowing required fields
 // to be missing.  Returns true iff successful.
-bool ParsePartialFromAscii(const std::string& pb_ascii,
-                           ::google::protobuf::Message* proto, std::string* error_text);
+bool ParsePartialFromAscii(const std::string &pb_ascii,
+                           ::google::protobuf::Message *proto,
+                           std::string *error_text);
 
 // Returns a protobuf of type Proto by parsing the given TextFormat
 // representation of it.  Required fields can be missing, in which case the
 // returned protobuf will not be fully initialized.
-template <class Proto>
-Proto MakePartialProtoFromAscii(const std::string& str) {
+template <class Proto> Proto MakePartialProtoFromAscii(const std::string &str) {
   Proto proto;
   std::string error_text;
   CHECK(ParsePartialFromAscii(str, &proto, &error_text))
@@ -111,66 +108,69 @@ Proto MakePartialProtoFromAscii(const std::string& str) {
 }
 
 // Returns true iff p and q can be compared (i.e. have the same descriptor).
-bool ProtoComparable(const ::google::protobuf::Message& p, const ::google::protobuf::Message& q);
+bool ProtoComparable(const ::google::protobuf::Message &p,
+                     const ::google::protobuf::Message &q);
 
 // Returns true iff actual and expected are comparable and match.  The
 // comp argument specifies how the two are compared.
-bool ProtoCompare(const ProtoComparison& comp, const ::google::protobuf::Message& actual,
-                  const ::google::protobuf::Message& expected);
+bool ProtoCompare(const ProtoComparison &comp,
+                  const ::google::protobuf::Message &actual,
+                  const ::google::protobuf::Message &expected);
 
 // Overload for ProtoCompare where the expected message is specified as a text
 // proto.  If the text cannot be parsed as a message of the same type as the
 // actual message, a CHECK failure will cause the test to fail and no subsequent
 // tests will be run.
 template <typename Proto>
-inline bool ProtoCompare(const ProtoComparison& comp, const Proto& actual,
-                         const std::string& expected) {
+inline bool ProtoCompare(const ProtoComparison &comp, const Proto &actual,
+                         const std::string &expected) {
   return ProtoCompare(comp, actual, MakePartialProtoFromAscii<Proto>(expected));
 }
 
 // Describes the types of the expected and the actual protocol buffer.
-std::string DescribeTypes(const ::google::protobuf::Message& expected,
-                          const ::google::protobuf::Message& actual);
+std::string DescribeTypes(const ::google::protobuf::Message &expected,
+                          const ::google::protobuf::Message &actual);
 
 // Prints the protocol buffer pointed to by proto.
-std::string PrintProtoPointee(const ::google::protobuf::Message* proto);
+std::string PrintProtoPointee(const ::google::protobuf::Message *proto);
 
 // Describes the differences between the two protocol buffers.
-std::string DescribeDiff(const ProtoComparison& comp,
-                         const ::google::protobuf::Message& actual,
-                         const ::google::protobuf::Message& expected);
+std::string DescribeDiff(const ProtoComparison &comp,
+                         const ::google::protobuf::Message &actual,
+                         const ::google::protobuf::Message &expected);
 
 // Common code for implementing EqualsProto.
 class ProtoMatcherBase {
- public:
+public:
   ProtoMatcherBase(
-      bool must_be_initialized,     // Must the argument be fully initialized?
-      const ProtoComparison& comp)  // How to compare the two protobufs.
+      bool must_be_initialized,    // Must the argument be fully initialized?
+      const ProtoComparison &comp) // How to compare the two protobufs.
       : must_be_initialized_(must_be_initialized), comp_(new auto(comp)) {}
 
-  ProtoMatcherBase(const ProtoMatcherBase& other)
+  ProtoMatcherBase(const ProtoMatcherBase &other)
       : must_be_initialized_(other.must_be_initialized_),
         comp_(new auto(*other.comp_)) {}
 
-  ProtoMatcherBase(ProtoMatcherBase&& other) = default;
+  ProtoMatcherBase(ProtoMatcherBase &&other) = default;
 
   virtual ~ProtoMatcherBase() {}
 
   // Prints the expected protocol buffer.
-  virtual void PrintExpectedTo(::std::ostream* os) const = 0;
+  virtual void PrintExpectedTo(::std::ostream *os) const = 0;
 
   // Returns the expected value as a protobuf object; if the object
   // cannot be created (e.g. in ProtoStringMatcher), explains why to
   // 'listener' and returns nullptr.  The caller must call
   // DeleteExpectedProto() on the returned value later.
-  virtual const ::google::protobuf::Message* CreateExpectedProto(
-      const ::google::protobuf::Message& arg,  // For determining the type of the
-                                     // expected protobuf.
-      ::testing::MatchResultListener* listener) const = 0;
+  virtual const ::google::protobuf::Message *CreateExpectedProto(
+      const ::google::protobuf::Message &arg, // For determining the type of the
+                                              // expected protobuf.
+      ::testing::MatchResultListener *listener) const = 0;
 
   // Deletes the given expected protobuf, which must be obtained from
   // a call to CreateExpectedProto() earlier.
-  virtual void DeleteExpectedProto(const ::google::protobuf::Message* expected) const = 0;
+  virtual void
+  DeleteExpectedProto(const ::google::protobuf::Message *expected) const = 0;
 
   // Makes this matcher compare floating-points approximately.
   void SetCompareApproximately() { comp_->float_comp = kProtoApproximate; }
@@ -217,26 +217,26 @@ class ProtoMatcherBase {
   // Makes this matcher compare protobufs partially.
   void SetComparePartially() { comp_->scope = kProtoPartial; }
 
-  bool MatchAndExplain(const ::google::protobuf::Message& arg,
-                       ::testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(const ::google::protobuf::Message &arg,
+                       ::testing::MatchResultListener *listener) const {
     return MatchAndExplain(arg, false, listener);
   }
 
-  bool MatchAndExplain(const ::google::protobuf::Message* arg,
-                       ::testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(const ::google::protobuf::Message *arg,
+                       ::testing::MatchResultListener *listener) const {
     return (arg != nullptr) && MatchAndExplain(*arg, true, listener);
   }
 
   // Describes the expected relation between the actual protobuf and
   // the expected one.
-  void DescribeRelationToExpectedProto(::std::ostream* os) const {
+  void DescribeRelationToExpectedProto(::std::ostream *os) const {
     if (comp_->repeated_field_comp ==
         kProtoCompareRepeatedFieldsIgnoringOrdering) {
       *os << "(ignoring repeated field ordering) ";
     }
     if (!comp_->ignore_fields.empty()) {
       *os << "(ignoring fields: ";
-      const char* sep = "";
+      const char *sep = "";
       for (size_t i = 0; i < comp_->ignore_fields.size(); ++i, sep = ", ")
         *os << sep << comp_->ignore_fields[i];
       *os << ") ";
@@ -271,12 +271,12 @@ class ProtoMatcherBase {
     PrintExpectedTo(os);
   }
 
-  void DescribeTo(::std::ostream* os) const {
+  void DescribeTo(::std::ostream *os) const {
     *os << "is " << (must_be_initialized_ ? "fully initialized and " : "");
     DescribeRelationToExpectedProto(os);
   }
 
-  void DescribeNegationTo(::std::ostream* os) const {
+  void DescribeNegationTo(::std::ostream *os) const {
     *os << "is " << (must_be_initialized_ ? "not fully initialized or " : "")
         << "not ";
     DescribeRelationToExpectedProto(os);
@@ -284,31 +284,32 @@ class ProtoMatcherBase {
 
   bool must_be_initialized() const { return must_be_initialized_; }
 
-  const ProtoComparison& comp() const { return *comp_; }
+  const ProtoComparison &comp() const { return *comp_; }
 
- private:
-  bool MatchAndExplain(const ::google::protobuf::Message& arg,
+private:
+  bool MatchAndExplain(const ::google::protobuf::Message &arg,
                        bool is_matcher_for_pointer,
-                       ::testing::MatchResultListener* listener) const;
+                       ::testing::MatchResultListener *listener) const;
 
   const bool must_be_initialized_;
   std::unique_ptr<ProtoComparison> comp_;
 };
 
 // Returns a copy of the given ::proto2 message.
-inline ::google::protobuf::Message* CloneProto2(const ::google::protobuf::Message& src) {
-  ::google::protobuf::Message* clone = src.New();
+inline ::google::protobuf::Message *
+CloneProto2(const ::google::protobuf::Message &src) {
+  ::google::protobuf::Message *clone = src.New();
   clone->CopyFrom(src);
   return clone;
 }
 
 // Implements EqualsProto, where the matcher parameter is a protobuf.
 class ProtoMatcher : public ProtoMatcherBase {
- public:
+public:
   ProtoMatcher(
-      const ::google::protobuf::Message& expected,  // The expected protobuf.
-      bool must_be_initialized,     // Must the argument be fully initialized?
-      const ProtoComparison& comp)  // How to compare the two protobufs.
+      const ::google::protobuf::Message &expected, // The expected protobuf.
+      bool must_be_initialized,    // Must the argument be fully initialized?
+      const ProtoComparison &comp) // How to compare the two protobufs.
       : ProtoMatcherBase(must_be_initialized, comp),
         expected_(CloneProto2(expected)) {
     if (must_be_initialized) {
@@ -319,45 +320,46 @@ class ProtoMatcher : public ProtoMatcherBase {
     }
   }
 
-  void PrintExpectedTo(::std::ostream* os) const override {
+  void PrintExpectedTo(::std::ostream *os) const override {
     *os << expected_->GetDescriptor()->full_name() << " ";
     ::testing::internal::UniversalPrint(*expected_, os);
   }
 
-  const ::google::protobuf::Message* CreateExpectedProto(
-      const ::google::protobuf::Message& /* arg */,
-      ::testing::MatchResultListener* /* listener */) const override {
+  const ::google::protobuf::Message *CreateExpectedProto(
+      const ::google::protobuf::Message & /* arg */,
+      ::testing::MatchResultListener * /* listener */) const override {
     return expected_.get();
   }
 
-  void DeleteExpectedProto(const ::google::protobuf::Message* expected) const override {}
+  void DeleteExpectedProto(
+      const ::google::protobuf::Message *expected) const override {}
 
-  const std::shared_ptr<const ::google::protobuf::Message>& expected() const {
+  const std::shared_ptr<const ::google::protobuf::Message> &expected() const {
     return expected_;
   }
 
- private:
+private:
   const std::shared_ptr<const ::google::protobuf::Message> expected_;
 };
 
 // Implements EqualsProto, where the matcher parameter is a string.
 class ProtoStringMatcher : public ProtoMatcherBase {
- public:
+public:
   ProtoStringMatcher(
-      const std::string&
-          expected,              // The text representing the expected protobuf.
-      bool must_be_initialized,  // Must the argument be fully initialized?
-      const ProtoComparison comp)  // How to compare the two protobufs.
+      const std::string
+          &expected,            // The text representing the expected protobuf.
+      bool must_be_initialized, // Must the argument be fully initialized?
+      const ProtoComparison comp) // How to compare the two protobufs.
       : ProtoMatcherBase(must_be_initialized, comp), expected_(expected) {}
 
   // Parses the expected string as a protobuf of the same type as arg,
   // and returns the parsed protobuf (or nullptr when the parse fails).
   // The caller must call DeleteExpectedProto() on the return value
   // later.
-  const ::google::protobuf::Message* CreateExpectedProto(
-      const ::google::protobuf::Message& arg,
-      ::testing::MatchResultListener* listener) const override {
-    ::google::protobuf::Message* expected_proto = arg.New();
+  const ::google::protobuf::Message *
+  CreateExpectedProto(const ::google::protobuf::Message &arg,
+                      ::testing::MatchResultListener *listener) const override {
+    ::google::protobuf::Message *expected_proto = arg.New();
     std::string error_text;
     if (ParsePartialFromAscii(expected_, expected_proto, &error_text)) {
       return expected_proto;
@@ -374,15 +376,16 @@ class ProtoStringMatcher : public ProtoMatcherBase {
     }
   }
 
-  void DeleteExpectedProto(const ::google::protobuf::Message* expected) const override {
+  void DeleteExpectedProto(
+      const ::google::protobuf::Message *expected) const override {
     delete expected;
   }
 
-  void PrintExpectedTo(::std::ostream* os) const override {
+  void PrintExpectedTo(::std::ostream *os) const override {
     *os << "<" << expected_ << ">";
   }
 
- private:
+private:
   const std::string expected_;
 };
 
@@ -390,18 +393,17 @@ typedef ::testing::PolymorphicMatcher<ProtoMatcher> PolymorphicProtoMatcher;
 
 // Common code for implementing WhenDeserialized(proto_matcher) and
 // WhenDeserializedAs<PB>(proto_matcher).
-template <class Proto>
-class WhenDeserializedMatcherBase {
- public:
-  typedef ::testing::Matcher<const Proto&> InnerMatcher;
+template <class Proto> class WhenDeserializedMatcherBase {
+public:
+  typedef ::testing::Matcher<const Proto &> InnerMatcher;
 
-  explicit WhenDeserializedMatcherBase(const InnerMatcher& proto_matcher)
+  explicit WhenDeserializedMatcherBase(const InnerMatcher &proto_matcher)
       : proto_matcher_(proto_matcher) {}
 
   virtual ~WhenDeserializedMatcherBase() {}
 
   // Creates an empty protobuf with the expected type.
-  virtual Proto* MakeEmptyProto() const = 0;
+  virtual Proto *MakeEmptyProto() const = 0;
 
   // Type name of the expected protobuf.
   virtual std::string ExpectedTypeName() const = 0;
@@ -412,8 +414,8 @@ class WhenDeserializedMatcherBase {
 
   // Deserializes the string as a protobuf of the same type as the expected
   // protobuf.
-  Proto* Deserialize(::google::protobuf::io::ZeroCopyInputStream* input) const {
-    Proto* proto = MakeEmptyProto();
+  Proto *Deserialize(::google::protobuf::io::ZeroCopyInputStream *input) const {
+    Proto *proto = MakeEmptyProto();
     if (proto->ParsePartialFromZeroCopyStream(input)) {
       return proto;
     } else {
@@ -422,18 +424,18 @@ class WhenDeserializedMatcherBase {
     }
   }
 
-  void DescribeTo(::std::ostream* os) const {
+  void DescribeTo(::std::ostream *os) const {
     *os << "can be deserialized as a " << TypeArgName() << " that ";
     proto_matcher_.DescribeTo(os);
   }
 
-  void DescribeNegationTo(::std::ostream* os) const {
+  void DescribeNegationTo(::std::ostream *os) const {
     *os << "cannot be deserialized as a " << TypeArgName() << " that ";
     proto_matcher_.DescribeTo(os);
   }
 
-  bool MatchAndExplain(::google::protobuf::io::ZeroCopyInputStream* arg,
-                       ::testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(::google::protobuf::io::ZeroCopyInputStream *arg,
+                       ::testing::MatchResultListener *listener) const {
     // Deserializes the string arg as a protobuf of the same type as the
     // expected protobuf.
     ::std::unique_ptr<const Proto> deserialized_arg(Deserialize(arg));
@@ -443,7 +445,7 @@ class WhenDeserializedMatcherBase {
              proto_matcher_.Matches(*deserialized_arg);
     }
 
-    ::std::ostream* const os = listener->stream();
+    ::std::ostream *const os = listener->stream();
     if (deserialized_arg == nullptr) {
       *os << "which cannot be deserialized as a " << ExpectedTypeName();
       return false;
@@ -463,37 +465,37 @@ class WhenDeserializedMatcherBase {
     return match;
   }
 
-  bool MatchAndExplain(const std::string& str,
-                       ::testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(const std::string &str,
+                       ::testing::MatchResultListener *listener) const {
     ::google::protobuf::io::ArrayInputStream input(str.data(), str.size());
     return MatchAndExplain(&input, listener);
   }
 
   bool MatchAndExplain(absl::string_view sp,
-                       ::testing::MatchResultListener* listener) const {
+                       ::testing::MatchResultListener *listener) const {
     ::google::protobuf::io::ArrayInputStream input(sp.data(), sp.size());
     return MatchAndExplain(&input, listener);
   }
 
-  bool MatchAndExplain(const char* str,
-                       ::testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(const char *str,
+                       ::testing::MatchResultListener *listener) const {
     ::google::protobuf::io::ArrayInputStream input(str, strlen(str));
     return MatchAndExplain(&input, listener);
   }
 
- private:
+private:
   const InnerMatcher proto_matcher_;
 };
 
 // Implements WhenDeserialized(proto_matcher).
 class WhenDeserializedMatcher
     : public WhenDeserializedMatcherBase<::google::protobuf::Message> {
- public:
-  explicit WhenDeserializedMatcher(const PolymorphicProtoMatcher& proto_matcher)
+public:
+  explicit WhenDeserializedMatcher(const PolymorphicProtoMatcher &proto_matcher)
       : WhenDeserializedMatcherBase<::google::protobuf::Message>(proto_matcher),
         expected_proto_(proto_matcher.impl().expected()) {}
 
-  ::google::protobuf::Message* MakeEmptyProto() const override {
+  ::google::protobuf::Message *MakeEmptyProto() const override {
     return expected_proto_->New();
   }
 
@@ -503,7 +505,7 @@ class WhenDeserializedMatcher
 
   std::string TypeArgName() const override { return "protobuf"; }
 
- private:
+private:
   // The expected protobuf specified in the inner matcher
   // (proto_matcher_).  We only need a std::shared_ptr to it instead of
   // making a copy, as the expected protobuf will never be changed
@@ -514,13 +516,13 @@ class WhenDeserializedMatcher
 // Implements WhenDeserializedAs<Proto>(proto_matcher).
 template <class Proto>
 class WhenDeserializedAsMatcher : public WhenDeserializedMatcherBase<Proto> {
- public:
-  typedef ::testing::Matcher<const Proto&> InnerMatcher;
+public:
+  typedef ::testing::Matcher<const Proto &> InnerMatcher;
 
-  explicit WhenDeserializedAsMatcher(const InnerMatcher& inner_matcher)
+  explicit WhenDeserializedAsMatcher(const InnerMatcher &inner_matcher)
       : WhenDeserializedMatcherBase<Proto>(inner_matcher) {}
 
-  virtual Proto* MakeEmptyProto() const { return new Proto; }
+  virtual Proto *MakeEmptyProto() const { return new Proto; }
 
   virtual std::string ExpectedTypeName() const {
     return Proto().GetDescriptor()->full_name();
@@ -531,27 +533,27 @@ class WhenDeserializedAsMatcher : public WhenDeserializedMatcherBase<Proto> {
 
 // Implements EqualsProto for 2-tuple matchers.
 class TupleProtoMatcher {
- public:
-  explicit TupleProtoMatcher(const ProtoComparison& comp)
+public:
+  explicit TupleProtoMatcher(const ProtoComparison &comp)
       : comp_(new auto(comp)) {}
 
-  TupleProtoMatcher(const TupleProtoMatcher& other)
+  TupleProtoMatcher(const TupleProtoMatcher &other)
       : comp_(new auto(*other.comp_)) {}
-  TupleProtoMatcher(TupleProtoMatcher&& other) = default;
+  TupleProtoMatcher(TupleProtoMatcher &&other) = default;
 
   template <typename T1, typename T2>
   explicit operator ::testing::Matcher<::testing::tuple<T1, T2>>() const {
     return MakeMatcher(new Impl<::testing::tuple<T1, T2>>(*comp_));
   }
   template <typename T1, typename T2>
-  explicit operator ::testing::Matcher<const ::testing::tuple<T1, T2>&>()
-      const {
-    return MakeMatcher(new Impl<const ::testing::tuple<T1, T2>&>(*comp_));
+  explicit
+  operator ::testing::Matcher<const ::testing::tuple<T1, T2> &>() const {
+    return MakeMatcher(new Impl<const ::testing::tuple<T1, T2> &>(*comp_));
   }
 
   // Allows matcher transformers, e.g., Approximately(), Partially(), etc. to
   // change the behavior of this 2-tuple matcher.
-  TupleProtoMatcher& mutable_impl() { return *this; }
+  TupleProtoMatcher &mutable_impl() { return *this; }
 
   // Makes this matcher compare floating-points approximately.
   void SetCompareApproximately() { comp_->float_comp = kProtoApproximate; }
@@ -598,32 +600,33 @@ class TupleProtoMatcher {
   // Makes this matcher compares protobufs partially.
   void SetComparePartially() { comp_->scope = kProtoPartial; }
 
- private:
+private:
   template <typename Tuple>
   class Impl : public ::testing::MatcherInterface<Tuple> {
-   public:
-    explicit Impl(const ProtoComparison& comp) : comp_(comp) {}
-    virtual bool MatchAndExplain(
-        Tuple args, ::testing::MatchResultListener* /* listener */) const {
+  public:
+    explicit Impl(const ProtoComparison &comp) : comp_(comp) {}
+    virtual bool
+    MatchAndExplain(Tuple args,
+                    ::testing::MatchResultListener * /* listener */) const {
       using ::testing::get;
       return ProtoCompare(comp_, get<0>(args), get<1>(args));
     }
-    virtual void DescribeTo(::std::ostream* os) const {
+    virtual void DescribeTo(::std::ostream *os) const {
       *os << (comp_.field_comp == kProtoEqual ? "are equal" : "are equivalent");
     }
-    virtual void DescribeNegationTo(::std::ostream* os) const {
+    virtual void DescribeNegationTo(::std::ostream *os) const {
       *os << (comp_.field_comp == kProtoEqual ? "are not equal"
                                               : "are not equivalent");
     }
 
-   private:
+  private:
     const ProtoComparison comp_;
   };
 
   std::unique_ptr<ProtoComparison> comp_;
 };
 
-}  // namespace internal
+} // namespace internal
 
 // Creates a polymorphic matcher that matches a 2-tuple where
 // first.Equals(second) is true.
@@ -635,22 +638,22 @@ inline internal::TupleProtoMatcher EqualsProto() {
 
 // Constructs a matcher that matches the argument if
 // argument.Equals(x) or argument->Equals(x) returns true.
-inline internal::PolymorphicProtoMatcher EqualsProto(
-    const ::google::protobuf::Message& x) {
+inline internal::PolymorphicProtoMatcher
+EqualsProto(const ::google::protobuf::Message &x) {
   internal::ProtoComparison comp;
   comp.field_comp = internal::kProtoEqual;
   return ::testing::MakePolymorphicMatcher(
       internal::ProtoMatcher(x, internal::kMayBeUninitialized, comp));
 }
-inline ::testing::PolymorphicMatcher<internal::ProtoStringMatcher> EqualsProto(
-    const std::string& x) {
+inline ::testing::PolymorphicMatcher<internal::ProtoStringMatcher>
+EqualsProto(const std::string &x) {
   internal::ProtoComparison comp;
   comp.field_comp = internal::kProtoEqual;
   return ::testing::MakePolymorphicMatcher(
       internal::ProtoStringMatcher(x, internal::kMayBeUninitialized, comp));
 }
 template <class Proto>
-inline internal::PolymorphicProtoMatcher EqualsProto(const std::string& str) {
+inline internal::PolymorphicProtoMatcher EqualsProto(const std::string &str) {
   return EqualsProto(internal::MakePartialProtoFromAscii<Proto>(str));
 }
 
@@ -664,29 +667,29 @@ inline internal::TupleProtoMatcher EquivToProto() {
 
 // Constructs a matcher that matches the argument if
 // argument.Equals(x) or argument->Equals(x) returns true.
-inline internal::PolymorphicProtoMatcher EquivToProto(
-    const ::google::protobuf::Message& x) {
+inline internal::PolymorphicProtoMatcher
+EquivToProto(const ::google::protobuf::Message &x) {
   internal::ProtoComparison comp;
   comp.field_comp = internal::kProtoEquiv;
   return ::testing::MakePolymorphicMatcher(
       internal::ProtoMatcher(x, internal::kMayBeUninitialized, comp));
 }
-inline ::testing::PolymorphicMatcher<internal::ProtoStringMatcher> EquivToProto(
-    const std::string& x) {
+inline ::testing::PolymorphicMatcher<internal::ProtoStringMatcher>
+EquivToProto(const std::string &x) {
   internal::ProtoComparison comp;
   comp.field_comp = internal::kProtoEquiv;
   return ::testing::MakePolymorphicMatcher(
       internal::ProtoStringMatcher(x, internal::kMayBeUninitialized, comp));
 }
 template <class Proto>
-inline internal::PolymorphicProtoMatcher EquivToProto(const std::string& str) {
+inline internal::PolymorphicProtoMatcher EquivToProto(const std::string &str) {
   return EqualsProto(internal::MakePartialProtoFromAscii<Proto>(str));
 }
 
 // Approximately(m) returns a matcher that is the same as m, except
 // that it compares floating-point fields approximately (using
-// ::google::protobuf::util::MessageDifferencer's APPROXIMATE comparison option).
-// The inner matcher m can be any of the Equals* and EquivTo* protobuf
+// ::google::protobuf::util::MessageDifferencer's APPROXIMATE comparison
+// option). The inner matcher m can be any of the Equals* and EquivTo* protobuf
 // matchers above.
 template <class InnerProtoMatcher>
 inline InnerProtoMatcher Approximately(InnerProtoMatcher inner_proto_matcher) {
@@ -719,17 +722,17 @@ inline InnerProtoMatcher Approximately(InnerProtoMatcher inner_proto_matcher,
 // The inner matcher m can be any of the Equals* and EquivTo* protobuf matchers
 // above.
 template <class InnerProtoMatcher>
-inline InnerProtoMatcher TreatingNaNsAsEqual(
-    InnerProtoMatcher inner_proto_matcher) {
+inline InnerProtoMatcher
+TreatingNaNsAsEqual(InnerProtoMatcher inner_proto_matcher) {
   inner_proto_matcher.mutable_impl().SetCompareTreatingNaNsAsEqual();
   return inner_proto_matcher;
 }
 
 // IgnoringFields(fields, m) returns a matcher that is the same as m, except the
 // specified fields will be ignored when matching
-// (using ::google::protobuf::util::MessageDifferencer::IgnoreField). Each element in
-// fields are specified by their fully qualified names, i.e., the names
-// corresponding to FieldDescriptor.full_name(). (e.g.
+// (using ::google::protobuf::util::MessageDifferencer::IgnoreField). Each
+// element in fields are specified by their fully qualified names, i.e., the
+// names corresponding to FieldDescriptor.full_name(). (e.g.
 // testing.internal.FooProto2.member). m can be any of the Equals* and EquivTo*
 // protobuf matchers above. It can also be any of the transformer matchers
 // listed here (e.g. Approximately, TreatingNaNsAsEqual) as long as the intent
@@ -738,7 +741,7 @@ inline InnerProtoMatcher TreatingNaNsAsEqual(
 // depending on whether the fields specified in IgnoringFields is part of the
 // fields covered by Partially).
 template <class InnerProtoMatcher, class Container>
-inline InnerProtoMatcher IgnoringFields(const Container& ignore_fields,
+inline InnerProtoMatcher IgnoringFields(const Container &ignore_fields,
                                         InnerProtoMatcher inner_proto_matcher) {
   inner_proto_matcher.mutable_impl().AddCompareIgnoringFields(
       ignore_fields.begin(), ignore_fields.end());
@@ -747,43 +750,48 @@ inline InnerProtoMatcher IgnoringFields(const Container& ignore_fields,
 
 // See top comment.
 template <class InnerProtoMatcher, class Container>
-inline InnerProtoMatcher IgnoringFieldPaths(
-    const Container& ignore_field_paths, InnerProtoMatcher inner_proto_matcher) {
+inline InnerProtoMatcher
+IgnoringFieldPaths(const Container &ignore_field_paths,
+                   InnerProtoMatcher inner_proto_matcher) {
   inner_proto_matcher.mutable_impl().AddCompareIgnoringFieldPaths(
       ignore_field_paths.begin(), ignore_field_paths.end());
   return inner_proto_matcher;
 }
 
 template <class InnerProtoMatcher, class T>
-inline InnerProtoMatcher IgnoringFields(
-    std::initializer_list<T> il, InnerProtoMatcher inner_proto_matcher) {
-  inner_proto_matcher.mutable_impl().AddCompareIgnoringFields(il.begin(), il.end());
+inline InnerProtoMatcher IgnoringFields(std::initializer_list<T> il,
+                                        InnerProtoMatcher inner_proto_matcher) {
+  inner_proto_matcher.mutable_impl().AddCompareIgnoringFields(il.begin(),
+                                                              il.end());
   return inner_proto_matcher;
 }
 
 template <class InnerProtoMatcher, class T>
-inline InnerProtoMatcher IgnoringFieldPaths(
-    std::initializer_list<T> il, InnerProtoMatcher inner_proto_matcher) {
-  inner_proto_matcher.mutable_impl().AddCompareIgnoringFieldPaths(il.begin(), il.end());
+inline InnerProtoMatcher
+IgnoringFieldPaths(std::initializer_list<T> il,
+                   InnerProtoMatcher inner_proto_matcher) {
+  inner_proto_matcher.mutable_impl().AddCompareIgnoringFieldPaths(il.begin(),
+                                                                  il.end());
   return inner_proto_matcher;
 }
 
 // IgnoringRepeatedFieldOrdering(m) returns a matcher that is the same as m,
 // except that it ignores the relative ordering of elements within each repeated
-// field in m. See ::google::protobuf::MessageDifferencer::TreatAsSet() for more details.
+// field in m. See ::google::protobuf::MessageDifferencer::TreatAsSet() for more
+// details.
 template <class InnerProtoMatcher>
-inline InnerProtoMatcher IgnoringRepeatedFieldOrdering(
-    InnerProtoMatcher inner_proto_matcher) {
+inline InnerProtoMatcher
+IgnoringRepeatedFieldOrdering(InnerProtoMatcher inner_proto_matcher) {
   inner_proto_matcher.mutable_impl().SetCompareRepeatedFieldsIgnoringOrdering();
   return inner_proto_matcher;
 }
 
 // Partially(m) returns a matcher that is the same as m, except that
 // only fields present in the expected protobuf are considered (using
-// ::google::protobuf::util::MessageDifferencer's PARTIAL comparison option).  For
-// example, Partially(EqualsProto(p)) will ignore any field that's
-// not set in p when comparing the protobufs. The inner matcher m can
-// be any of the Equals* and EquivTo* protobuf matchers above.
+// ::google::protobuf::util::MessageDifferencer's PARTIAL comparison option).
+// For example, Partially(EqualsProto(p)) will ignore any field that's not set
+// in p when comparing the protobufs. The inner matcher m can be any of the
+// Equals* and EquivTo* protobuf matchers above.
 template <class InnerProtoMatcher>
 inline InnerProtoMatcher Partially(InnerProtoMatcher inner_proto_matcher) {
   inner_proto_matcher.mutable_impl().SetComparePartially();
@@ -794,7 +802,7 @@ inline InnerProtoMatcher Partially(InnerProtoMatcher inner_proto_matcher) {
 // deserialized as a protobuf that matches m.  m must be a protobuf
 // matcher where the expected protobuf type is known at run time.
 inline ::testing::PolymorphicMatcher<internal::WhenDeserializedMatcher>
-WhenDeserialized(const internal::PolymorphicProtoMatcher& proto_matcher) {
+WhenDeserialized(const internal::PolymorphicProtoMatcher &proto_matcher) {
   return ::testing::MakePolymorphicMatcher(
       internal::WhenDeserializedMatcher(proto_matcher));
 }
@@ -804,12 +812,12 @@ WhenDeserialized(const internal::PolymorphicProtoMatcher& proto_matcher) {
 // m, which can be any valid protobuf matcher.
 template <class Proto, class InnerMatcher>
 inline ::testing::PolymorphicMatcher<internal::WhenDeserializedAsMatcher<Proto>>
-WhenDeserializedAs(const InnerMatcher& inner_matcher) {
+WhenDeserializedAs(const InnerMatcher &inner_matcher) {
   return ::testing::MakePolymorphicMatcher(
       internal::WhenDeserializedAsMatcher<Proto>(
-          ::testing::SafeMatcherCast<const Proto&>(inner_matcher)));
+          ::testing::SafeMatcherCast<const Proto &>(inner_matcher)));
 }
 
-}  // namespace mbo::testing::proto
+} // namespace mbo::proto
 
-#endif  // MBO_TESTING_PROTO_PROTO_TEST_UTIL_H_
+#endif // MBO_PROTO_MATCHERS_H_
