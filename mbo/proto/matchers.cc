@@ -30,7 +30,7 @@
 namespace mbo::proto {
 namespace internal {
 
-using RegExpStringPiece = std::string_view;
+using RegExpStringPiece = re2::StringPiece;
 
 // Utilities.
 
