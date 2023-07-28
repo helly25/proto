@@ -131,7 +131,7 @@ BUILD.bazel:
 cc_test(
     name = "test",
     srcs = ["test.cc"],
-    deps = ["@com_helly25_proto_matchers//mbo/proto:matchers",]
+    deps = ["@com_helly25_proto_matchers//mbo/proto:matchers"],
 )
 ```
 
@@ -141,11 +141,24 @@ Source test.cc:
 #include "mbo/proto/matchers.h"
 
 using ::mbo::proto::EqualsProto;
+using ::mbo::proto::IgnoringRepeatedFieldOrdering;
 
-TEST(Foo, Test) {
+TEST(Foo, EqualsProto) {
     MyProto msg;
     msg.set_field("name");
     EXPECT_THAT(msg, EqualsProto(R"pb(field: "name")pb"));
+}
+
+TEST(Foo, Wrapper) {
+    MyProto msg;
+    msg.add_number(1);
+    msg.add_number(3);
+    msg.add_number(2);
+    EXPECT_THAT(msg, IgnoringRepeatedFieldOrdering(EqualsProto(R"pb(
+      number: 1
+      number: 2
+      number: 3
+    )pb")));
 }
 ```
 
