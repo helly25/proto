@@ -22,13 +22,13 @@
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/strings/substitute.h"
+#include "gmock/gmock.h"  // IWYU pragma: keep
 #include "google/protobuf/io/tokenizer.h"
-#include "re2/re2.h"
-#include "gmock/gmock.h"
+#include "google/protobuf/text_format.h"
 #include "gtest/gtest.h"
+#include "re2/re2.h"
 
-namespace mbo::proto {
-namespace internal {
+namespace mbo::proto::internal {
 
 using RegExpStringPiece = re2::StringPiece;
 
@@ -38,6 +38,11 @@ class StringErrorCollector : public ::google::protobuf::io::ErrorCollector {
 public:
   explicit StringErrorCollector(std::string *error_text)
       : error_text_(error_text) {}
+  ~StringErrorCollector() override = default;
+  StringErrorCollector(const StringErrorCollector&) = delete;
+  StringErrorCollector &operator=(const StringErrorCollector&) = delete;
+  StringErrorCollector(StringErrorCollector&&) = delete;
+  StringErrorCollector &operator=(StringErrorCollector&&) = delete;
 
   void AddError(int line, int column, const std::string &message) override {
     absl::SubstituteAndAppend(error_text_, "$0($1): $2\n", line, column,
@@ -51,8 +56,6 @@ public:
 
 private:
   std::string *error_text_;
-  StringErrorCollector(const StringErrorCollector &) = delete;
-  StringErrorCollector &operator=(const StringErrorCollector &) = delete;
 };
 
 bool ParsePartialFromAscii(const std::string &pb_ascii,
@@ -399,5 +402,4 @@ bool ProtoMatcherBase::MatchAndExplain(
   return match;
 }
 
-} // namespace internal
-} // namespace mbo::proto
+}  // namespace mbo::proto::internal

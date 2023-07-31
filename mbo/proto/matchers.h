@@ -16,9 +16,16 @@
 #ifndef MBO_PROTO_MATCHERS_H_
 #define MBO_PROTO_MATCHERS_H_
 
+#include <initializer_list>
+#include <limits>
+#include <memory>
+#include <ostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "absl/log/absl_check.h"
 #include "google/protobuf/message.h"
-#include "google/protobuf/text_format.h"
 #include "google/protobuf/util/message_differencer.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -156,7 +163,7 @@ public:
   virtual ~ProtoMatcherBase() {}
 
   // Prints the expected protocol buffer.
-  virtual void PrintExpectedTo(::std::ostream *os) const = 0;
+  virtual void PrintExpectedTo(std::ostream *os) const = 0;
 
   // Returns the expected value as a protobuf object; if the object
   // cannot be created (e.g. in ProtoStringMatcher), explains why to
@@ -229,7 +236,7 @@ public:
 
   // Describes the expected relation between the actual protobuf and
   // the expected one.
-  void DescribeRelationToExpectedProto(::std::ostream *os) const {
+  void DescribeRelationToExpectedProto(std::ostream *os) const {
     if (comp_->repeated_field_comp ==
         kProtoCompareRepeatedFieldsIgnoringOrdering) {
       *os << "(ignoring repeated field ordering) ";
@@ -271,12 +278,12 @@ public:
     PrintExpectedTo(os);
   }
 
-  void DescribeTo(::std::ostream *os) const {
+  void DescribeTo(std::ostream *os) const {
     *os << "is " << (must_be_initialized_ ? "fully initialized and " : "");
     DescribeRelationToExpectedProto(os);
   }
 
-  void DescribeNegationTo(::std::ostream *os) const {
+  void DescribeNegationTo(std::ostream *os) const {
     *os << "is " << (must_be_initialized_ ? "not fully initialized or " : "")
         << "not ";
     DescribeRelationToExpectedProto(os);
@@ -320,7 +327,7 @@ public:
     }
   }
 
-  void PrintExpectedTo(::std::ostream *os) const override {
+  void PrintExpectedTo(std::ostream *os) const override {
     *os << expected_->GetDescriptor()->full_name() << " ";
     ::testing::internal::UniversalPrint(*expected_, os);
   }
@@ -381,7 +388,7 @@ public:
     delete expected;
   }
 
-  void PrintExpectedTo(::std::ostream *os) const override {
+  void PrintExpectedTo(std::ostream *os) const override {
     *os << "<" << expected_ << ">";
   }
 
@@ -424,12 +431,12 @@ public:
     }
   }
 
-  void DescribeTo(::std::ostream *os) const {
+  void DescribeTo(std::ostream *os) const {
     *os << "can be deserialized as a " << TypeArgName() << " that ";
     proto_matcher_.DescribeTo(os);
   }
 
-  void DescribeNegationTo(::std::ostream *os) const {
+  void DescribeNegationTo(std::ostream *os) const {
     *os << "cannot be deserialized as a " << TypeArgName() << " that ";
     proto_matcher_.DescribeTo(os);
   }
@@ -438,14 +445,14 @@ public:
                        ::testing::MatchResultListener *listener) const {
     // Deserializes the string arg as a protobuf of the same type as the
     // expected protobuf.
-    ::std::unique_ptr<const Proto> deserialized_arg(Deserialize(arg));
+    std::unique_ptr<const Proto> deserialized_arg(Deserialize(arg));
     if (!listener->IsInterested()) {
       // No need to explain the match result.
       return (deserialized_arg != nullptr) &&
              proto_matcher_.Matches(*deserialized_arg);
     }
 
-    ::std::ostream *const os = listener->stream();
+    std::ostream *const os = listener->stream();
     if (deserialized_arg == nullptr) {
       *os << "which cannot be deserialized as a " << ExpectedTypeName();
       return false;
@@ -611,10 +618,10 @@ private:
       using ::testing::get;
       return ProtoCompare(comp_, get<0>(args), get<1>(args));
     }
-    virtual void DescribeTo(::std::ostream *os) const {
+    virtual void DescribeTo(std::ostream *os) const {
       *os << (comp_.field_comp == kProtoEqual ? "are equal" : "are equivalent");
     }
-    virtual void DescribeNegationTo(::std::ostream *os) const {
+    virtual void DescribeNegationTo(std::ostream *os) const {
       *os << (comp_.field_comp == kProtoEqual ? "are not equal"
                                               : "are not equivalent");
     }

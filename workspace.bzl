@@ -82,4 +82,12 @@ def workspace_load_modules():
         tag = "v23.4",
         sha256 = "a700a49470d301f1190a487a923b5095bf60f08f4ae4cac9f5f7c36883d17971",
     )
+    # hedron_compile_commands: Used to generate `compile_commands.json` from Bazel.
+    # > bazel run @hedron_compile_commands//:refresh_all
+    github_archive(
+        name = "hedron_compile_commands",
+        commit = "6f63be6e2ccfdb6a1f248abbb3614107106de4a9",
+        repo = "https://github.com/helly25/bazel-compile-commands-extractor",
+        sha256 = "22aa86db4c1d7c9b417f19b9a4477017d505df58eaed024e68c3452bd1a26b74",
+    )
 
