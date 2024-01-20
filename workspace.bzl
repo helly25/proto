@@ -20,16 +20,17 @@ load("//bzl:archive.bzl", "github_archive", "http_archive")
 def workspace_load_modules():
     """Loads all modules requred by the workspace."""
 
-    # 0.0.6, 2022-08-26
+    # https://github.com/bazelbuild/platforms/releases
     http_archive(
         name = "platforms",
         urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.6/platforms-0.0.6.tar.gz",
-            "https://github.com/bazelbuild/platforms/releases/download/0.0.6/platforms-0.0.6.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.8/platforms-0.0.8.tar.gz",
+            "https://github.com/bazelbuild/platforms/releases/download/0.0.8/platforms-0.0.8.tar.gz",
         ],
-        sha256 = "5308fc1d8865406a49427ba24a9ab53087f17f5266a7aabbfc28823f3916e1ca",
+        sha256 = "8150406605389ececb6da07cbcb509d5637a3ab9a24bc69b1101531367d89d74",
     )
-    # 0.0.7
+
+    # https://github.com/bazelbuild/rules_license/releases
     http_archive(
         name = "rules_license",
         urls = [
@@ -39,22 +40,24 @@ def workspace_load_modules():
         sha256 = "4531deccb913639c30e5c7512a054d5d875698daeb75d8cf90f284375fe7c360",
     )
 
+    # https://github.com/bazelbuild/bazel-skylib/releases
     http_archive(
         name = "bazel_skylib",
-        sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
+        sha256 = "cd55a062e763b9349921f0f5db8c3933288dc8ba4f76dd9416aac68acee3cb94",
         urls = [
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.5.0/bazel-skylib-1.5.0.tar.gz",
+            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.5.0/bazel-skylib-1.5.0.tar.gz",
         ],
     )
 
     # Used for absl/GoogleTest
     # Note GoogleTest uses "com_googlesource_code_re2" rather than "com_google_re2"
-    http_archive(
+    github_archive(
         name = "com_googlesource_code_re2",
-        strip_prefix = "re2-2023-06-02",
-        urls = ["https://github.com/google/re2/archive/refs/tags/2023-06-02.tar.gz"],
-        sha256 = "4ccdd5aafaa1bcc24181e6dd3581c3eee0354734bb9f3cb4306273ffa434b94f",
+        repo = "https://github.com/google/re2",
+        sha256 = "4e6593ac3c71de1c0f322735bc8b0492a72f66ffccfad76e259fa21c41d27d8a",
+        strip_prefix = "re2-2023-11-01",
+        tag = "2023-11-01",
     )
 
     # Abseil, LTS 20230125
@@ -62,32 +65,33 @@ def workspace_load_modules():
     github_archive(
         name = "com_google_absl",
         repo = "https://github.com/abseil/abseil-cpp",
-        tag = "20230125.3",
-        sha256 = "5366d7e7fa7ba0d915014d387b66d0d002c03236448e1ba9ef98122c13b35c36",
+        sha256 = "987ce98f02eefbaf930d6e38ab16aa05737234d7afbab2d5c4ea7adbe50c28ed",
+        strip_prefix = "abseil-cpp-20230802.1",
+        tag = "20230802.1",
     )
 
     # GoogleTest
     github_archive(
         name = "com_google_googletest",
         repo = "https://github.com/google/googletest",
-        strip_prefix = "googletest-1.13.0",
-        tag = "v1.13.0",
-        sha256 = "ad7fdba11ea011c1d925b3289cf4af2c66a352e18d4c7264392fead75e919363",
+        sha256 = "8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7",
+        strip_prefix = "googletest-1.14.0",
+        tag = "v1.14.0",
     )
 
     github_archive(
         name = "com_google_protobuf",
         repo = "https://github.com/protocolbuffers/protobuf",
-        strip_prefix = "protobuf-23.4",
-        tag = "v23.4",
-        sha256 = "a700a49470d301f1190a487a923b5095bf60f08f4ae4cac9f5f7c36883d17971",
+        sha256 = "8ff511a64fc46ee792d3fe49a5a1bcad6f7dc50dfbba5a28b0e5b979c17f9871",
+        strip_prefix = "protobuf-25.2",
+        tag = "v25.2",
     )
+
     # hedron_compile_commands: Used to generate `compile_commands.json` from Bazel.
     # > bazel run @hedron_compile_commands//:refresh_all
     github_archive(
         name = "hedron_compile_commands",
-        commit = "6f63be6e2ccfdb6a1f248abbb3614107106de4a9",
+        commit = "daae6f40adfa5fdb7c89684cbe4d88b691c63b2d",
         repo = "https://github.com/helly25/bazel-compile-commands-extractor",
-        sha256 = "22aa86db4c1d7c9b417f19b9a4477017d505df58eaed024e68c3452bd1a26b74",
+        sha256 = "43451a32bf271e7ba4635a07f7996d535501f066c0fe8feab04fb0c91dd5986e",
     )
-

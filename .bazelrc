@@ -1,3 +1,6 @@
+# Enabling bzlmod results in protobuf version issues...
+build --noenable_bzlmod
+
 # To debug bazel options, uncomment next line.
 # build --announce_rc
 
@@ -16,6 +19,9 @@ test --test_output=errors
 
 # Disable: error: unused function 'CodepointSkipBackwards' [-Werror,-Wunused-function]
 build --per_file_copt=external/utf8_range/utf8_validity.cc@-Wno-unused-function
+
+# Disable deprecation warnings in the protobuf library itself.
+build --per_file_copt=external/com_google_protobuf/.*@-w
 
 build --copt=-fdiagnostics-color=always
 
