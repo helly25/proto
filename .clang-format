@@ -21,18 +21,20 @@ BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeConceptDeclarations: Always
 BreakBeforeTernaryOperators: true
 BreakInheritanceList: BeforeComma
+DerivePointerAlignment: false
 EmptyLineBeforeAccessModifier: Always
 FixNamespaceComments: true
 IndentRequiresClause: false
 InsertBraces: true
 InsertNewlineAtEOF: true
-# InsertTrailingCommas: true <- Would change structs to never bin pack
+## InsertTrailingCommas: true <- Would change structs to never bin pack
 IntegerLiteralSeparator:
   Binary: 0
   Decimal: 3
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 PackConstructorInitializers: NextLine
+PenaltyReturnTypeOnItsOwnLine: 1000
 PointerAlignment: Left
 QualifierAlignment: Left
 ReferenceAlignment: Left

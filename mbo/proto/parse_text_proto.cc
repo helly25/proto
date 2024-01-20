@@ -25,53 +25,50 @@
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 
-namespace mbo::proto {
-namespace internal {
+
+namespace mbo::proto::internal {
 namespace {
 
 // Collects errors from proto parsing.
 class SilentErrorCollector : public google::protobuf::io::ErrorCollector {
  public:
   struct ErrorInfo {
-    int line;
-    int column;
+    int line = 0;
+    int column = 0;
     std::string message;
     absl::LogSeverity severity = absl::LogSeverity::kError;
   };
 
-  void AddError(int line, int column, const std::string& message) override;
-  void AddWarning(int line, int column, const std::string& message) override;
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+  void AddError(int line, int column, const std::string& message) override {
+    errors_.push_back({
+        .line = line,
+        .column = column,
+        .message = message,
+        .severity = absl::LogSeverity::kError,
+    });
+  }
 
-  std::string GetErrors() const;
-  const std::vector<ErrorInfo>& errors() const { return errors_; }
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+  void AddWarning(int line, int column, const std::string& message) override {
+    errors_.push_back({
+        .line = line,
+        .column = column,
+        .message = message,
+        .severity = absl::LogSeverity::kWarning,
+    });
+  }
+
+  std::string GetErrorStr() const;
+  const std::vector<ErrorInfo>& GetErrors() const { return errors_; }
 
  private:
   std::vector<ErrorInfo> errors_;
 };
 
-void SilentErrorCollector::AddError(int line, int column,
-                                    const std::string& message) {
-  ErrorInfo error;
-  error.line = line;
-  error.column = column;
-  error.message = message;
-  error.severity = absl::LogSeverity::kError;
-  errors_.push_back(error);
-}
-
-void SilentErrorCollector::AddWarning(int line, int column,
-                                      const std::string& message) {
-  ErrorInfo error;
-  error.line = line;
-  error.column = column;
-  error.message = message;
-  error.severity = absl::LogSeverity::kWarning;
-  errors_.push_back(error);
-}
-
-std::string SilentErrorCollector::GetErrors() const {
+std::string SilentErrorCollector::GetErrorStr() const {
   std::string result;
-  for (const auto& error : errors()) {
+  for (const auto& error : GetErrors()) {
     absl::StrAppendFormat(&result, "Line %d, Col %d: %s\n", error.line,
                           error.column, error.message);
   }
@@ -80,18 +77,23 @@ std::string SilentErrorCollector::GetErrors() const {
 
 }  // namespace
 
-absl::Status ParseTextInternal(std::string_view text_proto, ::google::protobuf::Message* message,
+absl::Status ParseTextInternal(std::string_view text, ::google::protobuf::Message* message,
                                std::source_location loc) {
   google::protobuf::TextFormat::Parser parser;
   SilentErrorCollector error_collector;
   parser.RecordErrorsTo(&error_collector);
-  if (parser.ParseFromString(std::string(text_proto), message)) {
+  if (parser.ParseFromString(std::string(text), message)) {
     return absl::OkStatus();
   }
   return absl::InvalidArgumentError(
-      absl::StrFormat("%s\nFile: '%s', Line: %d", error_collector.GetErrors(),
+      absl::StrFormat("%s\nFile: '%s', Line: %d", error_collector.GetErrorStr(),
                       loc.file_name(), loc.line()));
 }
 
-}  // namespace internal
-}  // namespace mbo::proto
+void ParseTextOrDieInternal(std::string_view text, ::google::protobuf::Message* message, std::string_view func, std::source_location loc) {
+  absl::Status result = internal::ParseTextInternal(text, message, loc);
+  ABSL_CHECK_OK(result) << func << "<" << message->GetDescriptor()->name() << ">"
+      << " @" << loc.file_name() << ":" << loc.line() << ": " << result;
+}
+
+} // namespace mbo::proto::internal
