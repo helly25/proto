@@ -27,7 +27,7 @@
 #include "google/protobuf/message.h"
 
 namespace mbo::proto {
-namespace internal {
+namespace proto_internal {
 
 void ParseTextOrDieInternal(
     std::string_view text,
@@ -35,7 +35,7 @@ void ParseTextOrDieInternal(
     std::string_view func,
     std::source_location loc);
 
-absl::Status ParseTextInternal(std::string_view text, ::google::protobuf::Message *message, std::source_location loc);
+absl::Status ParseTextInternal(std::string_view text, ::google::protobuf::Message *message, std::string_view func, std::source_location loc);
 
 class ParseTextProtoHelper final {
  public:
@@ -65,7 +65,7 @@ class ParseTextProtoHelper final {
   bool parsed_{false};
 };
 
-}  // namespace internal
+}  // namespace proto_internal
 
 // Parses the text in 'text_proto' into the proto message type requested as return type.
 // The function dies if parsing fails. Example:
@@ -73,23 +73,10 @@ class ParseTextProtoHelper final {
 // ```
 // MyProtoType message = ParseTextProtoOrDie(R"pb(field: 42)pb");
 // ```
-inline internal::ParseTextProtoHelper ParseTextProtoOrDie(
+inline proto_internal::ParseTextProtoHelper ParseTextProtoOrDie(
     std::string_view text_proto,
     std::source_location loc = std::source_location::current()) {
   return {text_proto, loc};
-}
-
-// Parses the text in 'text_proto' into a proto message of type 'T' and return it wrapped as StatusOr.
-// If parsing fails, then an error status will be returned.
-template<typename T>
-requires(std::derived_from<T, ::google::protobuf::Message> && !std::same_as<T, ::google::protobuf::Message>)
-absl::StatusOr<T> ParseText(std::string_view text_proto, std::source_location loc = std::source_location::current()) {
-  T message;
-  absl::Status result = internal::ParseTextInternal(text_proto, &message, loc);
-  if (!result.ok()) {
-    return result;
-  }
-  return message;
 }
 
 // Parses the text in 'text_proto' into a proto message of type 'T'.
@@ -97,9 +84,24 @@ absl::StatusOr<T> ParseText(std::string_view text_proto, std::source_location lo
 // Use this function only if the return type cannot be determined automatically.
 template<typename T>
 requires(std::derived_from<T, ::google::protobuf::Message> && !std::same_as<T, ::google::protobuf::Message>)
-T ParseTextOrDie(std::string_view text_proto, std::source_location loc = std::source_location::current()) {
+inline T ParseTextOrDie(std::string_view text_proto, std::source_location loc = std::source_location::current()) {
   T message;
-  internal::ParseTextOrDieInternal(text_proto, &message, "ParseTextOrDie", loc);
+  proto_internal::ParseTextOrDieInternal(text_proto, &message, "ParseTextOrDie", loc);
+  return message;
+}
+
+// Parses the text in 'text_proto' into a proto message of type 'T' and return it wrapped as StatusOr.
+// If parsing fails, then an error status will be returned.
+template<typename T>
+requires(std::derived_from<T, ::google::protobuf::Message> && !std::same_as<T, ::google::protobuf::Message>)
+inline absl::StatusOr<T> ParseText(std::string_view text_proto, std::source_location loc = std::source_location::current()) {
+  T message;
+  absl::Status result = proto_internal::ParseTextInternal(text_proto, &message, "ParseText", loc);
+  if (!result.ok()) {
+    // We are missing the Google internal update mechanisms, so we may loose details here.
+    // But Google also did not bless the Abseil open-source versions with anything we could drop here...
+    return absl::Status(result.code(), absl::StrCat(result.message()));
+  }
   return message;
 }
 

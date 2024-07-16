@@ -24,6 +24,7 @@ namespace {
 
 using ::mbo::proto::EqualsProto;
 using ::mbo::proto::tests::SimpleMessage;
+using ::testing::ContainsRegex;
 
 class ParseTextProtoTest : public ::testing::Test {};
 
@@ -36,10 +37,11 @@ TEST_F(ParseTextProtoTest, ParseTextOrDieFail) {
   EXPECT_DEATH(
       ParseTextOrDie<SimpleMessage>("!!!"),
       // Using [0-9] in lieu of \\d to be compatible in open source.
-      ".*Check failed:.*\n*"
-      "File: '.*/parse_text_proto.*', Line: [0-9]+.*"
-      "ParseTextOrDie<SimpleMessage>.*"
-      "INVALID_ARGUMENT: Line 0, Col 0: Expected identifier, got: !");
+      ".*Check failed: "    // Prefix
+      "INVALID_ARGUMENT: "  // Status
+      "ParseTextOrDie<SimpleMessage>.*\n.*"                // Called function
+      "File: '.*/parse_text_proto.*', Line: [0-9]+.*\n.*"  // Source
+      "Line 0, Col 0: Expected identifier, got: !.*");     // Error
 }
 
 TEST_F(ParseTextProtoTest, ParseTextProtoOrDiePass) {
@@ -50,10 +52,28 @@ TEST_F(ParseTextProtoTest, ParseTextProtoOrDieFail) {
   EXPECT_DEATH(
       SimpleMessage msg = ParseTextProtoOrDie("!!!"),
       // Using [0-9] in lieu of \\d to be compatible in open source.
-      ".*Check failed:.*\n*"
-      "File: '.*/parse_text_proto.*', Line: [0-9]+.*"
-      "ParseTextProtoOrDie<SimpleMessage>.*"
-      "INVALID_ARGUMENT: Line 0, Col 0: Expected identifier, got: !");
+      ".*Check failed: "    // Prefix
+      "INVALID_ARGUMENT: "  // StatusCode
+      "ParseTextProtoOrDie<SimpleMessage>.*\n.*"           // Called function
+      "File: '.*/parse_text_proto.*', Line: [0-9]+.*\n.*"  // Source
+      "Line 0, Col 0: Expected identifier, got: !.*");     // Error
+}
+
+TEST_F(ParseTextProtoTest, ParseText) {
+  EXPECT_THAT(*ParseText<SimpleMessage>("one: 25"), EqualsProto("one: 25"));
+  const absl::StatusOr<SimpleMessage> status = ParseText<SimpleMessage>("!!!");
+  static constexpr std::string_view expected = //
+      // Using [0-9] in lieu of \\d to be compatible in open source.
+      "ParseText<SimpleMessage>.*\n.*"                     // Called function
+      "File: '.*/parse_text_proto.*', Line: [0-9]+.*\n.*"  // Source
+      "Line 0, Col 0: Expected identifier, got: !.*";      // Error
+  ASSERT_THAT(status.status().ok(), false);
+  EXPECT_THAT(status.status().code(), absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(status.status().message(), ContainsRegex(expected));
+  EXPECT_DEATH(auto msg = *ParseText<SimpleMessage>("!!!"), absl::StrCat(
+    "RAW: Attempting to fetch value instead of handling error ", // Prefix
+    "INVALID_ARGUMENT: ", // StatusCode
+    expected));
 }
 
 }  // namespace
