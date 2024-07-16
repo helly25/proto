@@ -1,11 +1,15 @@
 # 0.5
 
-* Added support for com_google_protobuf >= Protocol Buffers v28.
+* Added support for com_google_protobuf >= Protocol Buffers v26.
 * Moved `ParseTextProtoHelper` into namespace `mbo::proto::proto_internal`.
 * Changed `ParseTextProtoHelper` to only accept derived proto messages on operator access.
 * Changed `ParseTextProtoHelper` to die on parsing failure.
 * Added `ParseText<T>() -> absl::StatusOr<T>`.
 * Improved error message detail for all parsing functions.
+* Updated all dependencies.
+* Verified protobuf versions 25.2, 26.0, 26.1, 27.0, 27.1, 27.2, 28.0-rc1.
+* Added Clang support.
+* Updated GH actions.
 
 # 0.4
 
