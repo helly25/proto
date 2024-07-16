@@ -44,7 +44,7 @@ public:
   StringErrorCollector(StringErrorCollector&&) = delete;
   StringErrorCollector &operator=(StringErrorCollector&&) = delete;
 
-#if GOOGLE_PROTOBUF_VERSION >= 5028000
+#if GOOGLE_PROTOBUF_VERSION >= 5026000
   void RecordError(int line, int column, std::string_view message) override {
 #else
   void AddError(int line, int column, const std::string& message) override {
@@ -52,7 +52,7 @@ public:
     absl::SubstituteAndAppend(error_text_, "$0($1): $2\n", line, column, message);
   }
 
-#if GOOGLE_PROTOBUF_VERSION >= 5028000
+#if GOOGLE_PROTOBUF_VERSION >= 5026000
   void RecordWarning(int line, int column, std::string_view message) override {
 #else
   void AddWarning(int line, int column, const std::string& message) override {

@@ -39,7 +39,7 @@ class SilentErrorCollector : public google::protobuf::io::ErrorCollector {
     absl::LogSeverity severity = absl::LogSeverity::kError;
   };
 
-#if GOOGLE_PROTOBUF_VERSION >= 5028000
+#if GOOGLE_PROTOBUF_VERSION >= 5026000
   void RecordError(int line, int column, std::string_view message) override {
 #else
   void AddError(int line, int column, const std::string& message) override {
@@ -50,7 +50,7 @@ class SilentErrorCollector : public google::protobuf::io::ErrorCollector {
     .severity = absl::LogSeverity::kError});
   }
 
-#if GOOGLE_PROTOBUF_VERSION >= 5028000
+#if GOOGLE_PROTOBUF_VERSION >= 5026000
   void RecordWarning(int line, int column, std::string_view message) override {
 #else
   void AddWarning(int line, int column, const std::string& message) override {
