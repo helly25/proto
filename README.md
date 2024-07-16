@@ -28,15 +28,21 @@ The project is formatted with specific `clang-format` settings which require cla
 * namespace: `mbo::proto`
 
 * `ParseTextProtoOrDie`(`text_proto` [, `std::source_location`])
-  * `text_proto` is a text proto best identified as a raw-string with marker 'pb'.
+  * `text_proto` is a text proto best identified as a raw-string with marker `pb` or `proto`.
   * If `text_proto` cannot be parsed into the receiving proto type, then the function will fail.
   * Prefer this function over template function `ParseTextOrDie`.
 
 * `ParseTextOrDie`<`Proto`>(`text_proto` [, `std::source_location`])
-  * `text_proto` is a text proto best identified as a raw-string with marker 'pb'.
+  * `text_proto` is a text proto best identified as a raw-string with marker `pb` or `proto`.
   * `Proto` is the type to produce.
   * If `text_proto` cannot be parsed as a `Proto`, then the function will fail.
   * Use this only if the `Proto` type cannot be inferred by `ParserTextProtoOrDie`.
+
+* `ParseTest`<`Proto`>(`text_proto` [, `std::source_location`]) -> `absl::StatusOr`<`Proto`>
+  * `text_proto` is a text proto best identified as a raw-string with marker `pb` or `proto`.
+  * `Proto` is the type to produce.
+  * If `text_proto` cannot be parse as a `Proto`, then the function returns a non-`absl::OkStatus`.
+  * Use this function in cases where errors are expected.
 
 ## Usage
 
@@ -179,6 +185,8 @@ cp ../cpp-proto-builder/proto_builder/oss/tests/simple_message.proto proto/mbo/p
 patch <proto/mbo/proto/parse_proto_text.diff
 ```
 
+The diff files are available in the repository history.
+
 ## Proto Matchers
 
 The clone was made from Google's [CPP-proto-builder](https://github.com/google/cpp-proto-builder).
@@ -198,6 +206,8 @@ The following files were cloned:
 cp ../cpp-proto-builder/proto_builder/oss/testing/proto_test_util.* proto/mbo/testing/proto
 patch <proto/mbo/testing/proto_test_util.diff
 ```
+
+The diff files are available in the repository history.
 
 The include guards were updated and the namespace changed to `testing::proto` which allows to
 import the whole namespace easily. Further logging was switched directly to

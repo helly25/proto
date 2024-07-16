@@ -1,5 +1,5 @@
 # Enabling bzlmod results in protobuf version issues...
-build --noenable_bzlmod
+common --noenable_bzlmod
 
 # To debug bazel options, uncomment next line.
 # build --announce_rc

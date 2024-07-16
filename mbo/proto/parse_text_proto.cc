@@ -22,11 +22,11 @@
 #include "google/protobuf/io/tokenizer.h"
 #include "google/protobuf/text_format.h"
 #include "absl/base/log_severity.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 
-
-namespace mbo::proto::internal {
+namespace mbo::proto::proto_internal {
 namespace {
 
 // Collects errors from proto parsing.
@@ -39,36 +39,38 @@ class SilentErrorCollector : public google::protobuf::io::ErrorCollector {
     absl::LogSeverity severity = absl::LogSeverity::kError;
   };
 
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+#if GOOGLE_PROTOBUF_VERSION >= 5028000
+  void RecordError(int line, int column, std::string_view message) override {
+#else
   void AddError(int line, int column, const std::string& message) override {
-    errors_.push_back({
-        .line = line,
-        .column = column,
-        .message = message,
-        .severity = absl::LogSeverity::kError,
-    });
+#endif
+    errors_.push_back({.line = line,
+    .column = column,
+    .message = std::string(message),
+    .severity = absl::LogSeverity::kError});
   }
 
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+#if GOOGLE_PROTOBUF_VERSION >= 5028000
+  void RecordWarning(int line, int column, std::string_view message) override {
+#else
   void AddWarning(int line, int column, const std::string& message) override {
-    errors_.push_back({
-        .line = line,
-        .column = column,
-        .message = message,
-        .severity = absl::LogSeverity::kWarning,
-    });
+#endif
+    errors_.push_back({.line = line,
+    .column = column,
+    .message = std::string(message),
+    .severity = absl::LogSeverity::kWarning});
   }
 
-  std::string GetErrorStr() const;
-  const std::vector<ErrorInfo>& GetErrors() const { return errors_; }
+  std::string GetErrors() const;
+  const std::vector<ErrorInfo>& errors() const { return errors_; }
 
  private:
   std::vector<ErrorInfo> errors_;
 };
 
-std::string SilentErrorCollector::GetErrorStr() const {
+std::string SilentErrorCollector::GetErrors() const {
   std::string result;
-  for (const auto& error : GetErrors()) {
+  for (const auto& error : errors()) {
     absl::StrAppendFormat(&result, "Line %d, Col %d: %s\n", error.line,
                           error.column, error.message);
   }
@@ -77,23 +79,28 @@ std::string SilentErrorCollector::GetErrorStr() const {
 
 }  // namespace
 
-absl::Status ParseTextInternal(std::string_view text, ::google::protobuf::Message* message,
-                               std::source_location loc) {
+absl::Status ParseTextInternal(std::string_view text_proto, ::google::protobuf::Message* message,
+                               std::string_view func, std::source_location loc) {
   google::protobuf::TextFormat::Parser parser;
   SilentErrorCollector error_collector;
   parser.RecordErrorsTo(&error_collector);
-  if (parser.ParseFromString(std::string(text), message)) {
+  if (parser.ParseFromString(std::string(text_proto), message)) {
     return absl::OkStatus();
   }
   return absl::InvalidArgumentError(
-      absl::StrFormat("%s\nFile: '%s', Line: %d", error_collector.GetErrorStr(),
-                      loc.file_name(), loc.line()));
+      absl::StrFormat("%s<%s>\nFile: '%s', Line: %d: %s\nError: %s",
+                      func, message->GetDescriptor()->name(), loc.file_name(), loc.line(), loc.function_name(), error_collector.GetErrors()));
 }
 
-void ParseTextOrDieInternal(std::string_view text, ::google::protobuf::Message* message, std::string_view func, std::source_location loc) {
-  absl::Status result = internal::ParseTextInternal(text, message, loc);
-  ABSL_CHECK_OK(result) << func << "<" << message->GetDescriptor()->name() << ">"
-      << " @" << loc.file_name() << ":" << loc.line() << ": " << result;
+void ParseTextOrDieInternal(
+    std::string_view text,
+    ::google::protobuf::Message* message,
+    std::string_view func,
+    std::source_location loc) {
+  const absl::Status status = ParseTextInternal(text, message, func, loc);
+  if (!status.ok()) {
+    ABSL_LOG(FATAL) << "Check failed: " << status;
+  }
 }
 
-} // namespace mbo::proto::internal
+}  // namespace mbo::proto::proto_internal
