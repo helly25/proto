@@ -64,7 +64,7 @@ TEST_F(ParseTextProtoTest, ParseText) {
   const absl::StatusOr<SimpleMessage> status = ParseText<SimpleMessage>("!!!");
   static constexpr std::string_view expected =  //
                                                 // Using [0-9] in lieu of \\d to be compatible in open source.
-      "ParseText<SimpleMessage>.*\n.*"                     // Called function
+      "ParseText<SimpleMessage>.*\n.*"          // Called function
       "File: '.*/parse_text_proto.*', Line: [0-9]+.*\n.*"  // Source
       "Line 0, Col 0: Expected identifier, got: !.*";      // Error
   ASSERT_THAT(status.status().ok(), false);
