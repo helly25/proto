@@ -19,12 +19,12 @@
 #include <string>
 #include <vector>
 
-#include "google/protobuf/io/tokenizer.h"
-#include "google/protobuf/text_format.h"
 #include "absl/base/log_severity.h"
 #include "absl/log/absl_log.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
+#include "google/protobuf/io/tokenizer.h"
+#include "google/protobuf/text_format.h"
 
 namespace mbo::proto::proto_internal {
 namespace {
@@ -39,29 +39,26 @@ class SilentErrorCollector : public google::protobuf::io::ErrorCollector {
     absl::LogSeverity severity = absl::LogSeverity::kError;
   };
 
-#if GOOGLE_PROTOBUF_VERSION >= 5026000
+#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
   void RecordError(int line, int column, std::string_view message) override {
 #else
   void AddError(int line, int column, const std::string& message) override {
 #endif
-    errors_.push_back({.line = line,
-    .column = column,
-    .message = std::string(message),
-    .severity = absl::LogSeverity::kError});
+    errors_.push_back(
+        {.line = line, .column = column, .message = std::string(message), .severity = absl::LogSeverity::kError});
   }
 
-#if GOOGLE_PROTOBUF_VERSION >= 5026000
+#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
   void RecordWarning(int line, int column, std::string_view message) override {
 #else
   void AddWarning(int line, int column, const std::string& message) override {
 #endif
-    errors_.push_back({.line = line,
-    .column = column,
-    .message = std::string(message),
-    .severity = absl::LogSeverity::kWarning});
+    errors_.push_back(
+        {.line = line, .column = column, .message = std::string(message), .severity = absl::LogSeverity::kWarning});
   }
 
   std::string GetErrors() const;
+
   const std::vector<ErrorInfo>& errors() const { return errors_; }
 
  private:
@@ -71,25 +68,27 @@ class SilentErrorCollector : public google::protobuf::io::ErrorCollector {
 std::string SilentErrorCollector::GetErrors() const {
   std::string result;
   for (const auto& error : errors()) {
-    absl::StrAppendFormat(&result, "Line %d, Col %d: %s\n", error.line,
-                          error.column, error.message);
+    absl::StrAppendFormat(&result, "Line %d, Col %d: %s\n", error.line, error.column, error.message);
   }
   return result;
 }
 
 }  // namespace
 
-absl::Status ParseTextInternal(std::string_view text_proto, ::google::protobuf::Message* message,
-                               std::string_view func, std::source_location loc) {
+absl::Status ParseTextInternal(
+    std::string_view text_proto,
+    ::google::protobuf::Message* message,
+    std::string_view func,
+    std::source_location loc) {
   google::protobuf::TextFormat::Parser parser;
   SilentErrorCollector error_collector;
   parser.RecordErrorsTo(&error_collector);
   if (parser.ParseFromString(std::string(text_proto), message)) {
     return absl::OkStatus();
   }
-  return absl::InvalidArgumentError(
-      absl::StrFormat("%s<%s>\nFile: '%s', Line: %d: %s\nError: %s",
-                      func, message->GetDescriptor()->name(), loc.file_name(), loc.line(), loc.function_name(), error_collector.GetErrors()));
+  return absl::InvalidArgumentError(absl::StrFormat(
+      "%s<%s>\nFile: '%s', Line: %d: %s\nError: %s", func, message->GetDescriptor()->name(), loc.file_name(),
+      loc.line(), loc.function_name(), error_collector.GetErrors()));
 }
 
 void ParseTextOrDieInternal(

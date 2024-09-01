@@ -35,16 +35,16 @@ using RegExpStringPiece = re2::StringPiece;
 // Utilities.
 
 class StringErrorCollector : public ::google::protobuf::io::ErrorCollector {
-public:
-  explicit StringErrorCollector(std::string *error_text)
-      : error_text_(error_text) {}
+ public:
+  explicit StringErrorCollector(std::string* error_text) : error_text_(error_text) {}
+
   ~StringErrorCollector() override = default;
   StringErrorCollector(const StringErrorCollector&) = delete;
-  StringErrorCollector &operator=(const StringErrorCollector&) = delete;
+  StringErrorCollector& operator=(const StringErrorCollector&) = delete;
   StringErrorCollector(StringErrorCollector&&) = delete;
-  StringErrorCollector &operator=(StringErrorCollector&&) = delete;
+  StringErrorCollector& operator=(StringErrorCollector&&) = delete;
 
-#if GOOGLE_PROTOBUF_VERSION >= 5026000
+#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
   void RecordError(int line, int column, std::string_view message) override {
 #else
   void AddError(int line, int column, const std::string& message) override {
@@ -52,7 +52,7 @@ public:
     absl::SubstituteAndAppend(error_text_, "$0($1): $2\n", line, column, message);
   }
 
-#if GOOGLE_PROTOBUF_VERSION >= 5026000
+#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
   void RecordWarning(int line, int column, std::string_view message) override {
 #else
   void AddWarning(int line, int column, const std::string& message) override {
@@ -60,13 +60,11 @@ public:
     absl::SubstituteAndAppend(error_text_, "$0($1): $2\n", line, column, message);
   }
 
-private:
-  std::string *error_text_;
+ private:
+  std::string* error_text_;
 };
 
-bool ParsePartialFromAscii(const std::string &pb_ascii,
-                           ::google::protobuf::Message *proto,
-                           std::string *error_text) {
+bool ParsePartialFromAscii(const std::string& pb_ascii, ::google::protobuf::Message* proto, std::string* error_text) {
   ::google::protobuf::TextFormat::Parser parser;
   StringErrorCollector collector(error_text);
   parser.RecordErrorsTo(&collector);
@@ -75,14 +73,12 @@ bool ParsePartialFromAscii(const std::string &pb_ascii,
 }
 
 // Returns true iff p and q can be compared (i.e. have the same descriptor).
-bool ProtoComparable(const ::google::protobuf::Message &p,
-                     const ::google::protobuf::Message &q) {
+bool ProtoComparable(const ::google::protobuf::Message& p, const ::google::protobuf::Message& q) {
   return p.GetDescriptor() == q.GetDescriptor();
 }
 
-template <typename Container>
-std::string JoinStringPieces(const Container &strings,
-                             std::string_view separator) {
+template<typename Container>
+std::string JoinStringPieces(const Container& strings, std::string_view separator) {
   std::stringstream stream;
   std::string_view sep = "";
   for (const std::string_view str : strings) {
@@ -93,17 +89,15 @@ std::string JoinStringPieces(const Container &strings,
 }
 
 // Find all the descriptors for the ignore_fields.
-std::vector<const ::google::protobuf::FieldDescriptor *>
-GetFieldDescriptors(const ::google::protobuf::Descriptor *proto_descriptor,
-                    const std::vector<std::string> &ignore_fields) {
-  std::vector<const ::google::protobuf::FieldDescriptor *> ignore_descriptors;
+std::vector<const ::google::protobuf::FieldDescriptor*> GetFieldDescriptors(
+    const ::google::protobuf::Descriptor* proto_descriptor,
+    const std::vector<std::string>& ignore_fields) {
+  std::vector<const ::google::protobuf::FieldDescriptor*> ignore_descriptors;
   std::vector<std::string_view> remaining_descriptors;
 
-  const ::google::protobuf::DescriptorPool *pool =
-      proto_descriptor->file()->pool();
-  for (const std::string &name : ignore_fields) {
-    if (const ::google::protobuf::FieldDescriptor *field =
-            pool->FindFieldByName(std::string(name))) {
+  const ::google::protobuf::DescriptorPool* pool = proto_descriptor->file()->pool();
+  for (const std::string& name : ignore_fields) {
+    if (const ::google::protobuf::FieldDescriptor* field = pool->FindFieldByName(std::string(name))) {
       ignore_descriptors.push_back(field);
     } else {
       remaining_descriptors.push_back(name);
@@ -112,23 +106,20 @@ GetFieldDescriptors(const ::google::protobuf::Descriptor *proto_descriptor,
 
   ABSL_QCHECK(remaining_descriptors.empty())
       << "Could not find fields for proto " << proto_descriptor->full_name()
-      << " with fully qualified names: "
-      << JoinStringPieces(remaining_descriptors, ",");
+      << " with fully qualified names: " << JoinStringPieces(remaining_descriptors, ",");
   return ignore_descriptors;
 }
 
 // Sets the ignored fields corresponding to ignore_fields in differencer. Dies
 // if any is invalid.
 void SetIgnoredFieldsOrDie(
-    const ::google::protobuf::Descriptor &root_descriptor,
-    const std::vector<std::string> &ignore_fields,
-    ::google::protobuf::util::MessageDifferencer *differencer) {
+    const ::google::protobuf::Descriptor& root_descriptor,
+    const std::vector<std::string>& ignore_fields,
+    ::google::protobuf::util::MessageDifferencer* differencer) {
   if (!ignore_fields.empty()) {
-    std::vector<const ::google::protobuf::FieldDescriptor *>
-        ignore_descriptors =
-            GetFieldDescriptors(&root_descriptor, ignore_fields);
-    for (std::vector<const ::google::protobuf::FieldDescriptor *>::iterator it =
-             ignore_descriptors.begin();
+    std::vector<const ::google::protobuf::FieldDescriptor*> ignore_descriptors =
+        GetFieldDescriptors(&root_descriptor, ignore_fields);
+    for (std::vector<const ::google::protobuf::FieldDescriptor*>::iterator it = ignore_descriptors.begin();
          it != ignore_descriptors.end(); ++it) {
       differencer->IgnoreField(*it);
     }
@@ -136,29 +127,24 @@ void SetIgnoredFieldsOrDie(
 }
 
 // A criterion that ignores a field path.
-class IgnoreFieldPathCriteria
-    : public ::google::protobuf::util::MessageDifferencer::IgnoreCriteria {
-public:
+class IgnoreFieldPathCriteria : public ::google::protobuf::util::MessageDifferencer::IgnoreCriteria {
+ public:
   explicit IgnoreFieldPathCriteria(
-      const std::vector<
-          ::google::protobuf::util::MessageDifferencer::SpecificField>
-          &field_path)
+      const std::vector<::google::protobuf::util::MessageDifferencer::SpecificField>& field_path)
       : ignored_field_path_(field_path) {}
 
-  bool
-  IsIgnored(const ::google::protobuf::Message &message1,
-            const ::google::protobuf::Message &message2,
-            const ::google::protobuf::FieldDescriptor *field,
-            const std::vector<
-                ::google::protobuf::util::MessageDifferencer::SpecificField>
-                &parent_fields) override {
+  bool IsIgnored(
+      const ::google::protobuf::Message& message1,
+      const ::google::protobuf::Message& message2,
+      const ::google::protobuf::FieldDescriptor* field,
+      const std::vector<::google::protobuf::util::MessageDifferencer::SpecificField>& parent_fields) override {
     // The off by one is for the current field.
     if (parent_fields.size() + 1 != ignored_field_path_.size()) {
       return false;
     }
     for (size_t i = 0; i < parent_fields.size(); ++i) {
-      const auto &cur_field = parent_fields[i];
-      const auto &ignored_field = ignored_field_path_[i];
+      const auto& cur_field = parent_fields[i];
+      const auto& ignored_field = ignored_field_path_[i];
       // We could compare pointers but it's not guaranteed that descriptors come
       // from the same pool.
       if (cur_field.field->full_name() != ignored_field.field->full_name()) {
@@ -175,30 +161,27 @@ public:
     return field->full_name() == ignored_field_path_.back().field->full_name();
   }
 
-private:
-  const std::vector<::google::protobuf::util::MessageDifferencer::SpecificField>
-      ignored_field_path_;
+ private:
+  const std::vector<::google::protobuf::util::MessageDifferencer::SpecificField> ignored_field_path_;
 };
 
 namespace {
-bool Consume(RegExpStringPiece *s, RegExpStringPiece x) {
+bool Consume(RegExpStringPiece* s, RegExpStringPiece x) {
   // We use the implementation of ABSL's StartsWith here until we can pick up a
   // dependency on Abseil.
-  if (x.empty() ||
-      (s->size() >= x.size() && memcmp(s->data(), x.data(), x.size()) == 0)) {
+  if (x.empty() || (s->size() >= x.size() && memcmp(s->data(), x.data(), x.size()) == 0)) {
     s->remove_prefix(x.size());
     return true;
   }
   return false;
 }
-} // namespace
+}  // namespace
 
 // Parses a field path and returns individual components.
-std::vector<::google::protobuf::util::MessageDifferencer::SpecificField>
-ParseFieldPathOrDie(const std::string &relative_field_path,
-                    const ::google::protobuf::Descriptor &root_descriptor) {
-  std::vector<::google::protobuf::util::MessageDifferencer::SpecificField>
-      field_path;
+std::vector<::google::protobuf::util::MessageDifferencer::SpecificField> ParseFieldPathOrDie(
+    const std::string& relative_field_path,
+    const ::google::protobuf::Descriptor& root_descriptor) {
+  std::vector<::google::protobuf::util::MessageDifferencer::SpecificField> field_path;
   // We're parsing a dot-separated list of elements that can be either:
   //   - field names
   //   - extension names
@@ -216,69 +199,53 @@ ParseFieldPathOrDie(const std::string &relative_field_path,
   while (!input.empty()) {
     // Consume a dot, except on the first iteration.
     if (input.size() < relative_field_path.size() && !Consume(&input, ".")) {
-      ABSL_LOG(FATAL) << "Cannot parse field path '" << relative_field_path
-                      << "' at offset "
-                      << relative_field_path.size() - input.size()
-                      << ": expected '.'";
+      ABSL_LOG(FATAL) << "Cannot parse field path '" << relative_field_path << "' at offset "
+                      << relative_field_path.size() - input.size() << ": expected '.'";
     }
     // Try to consume a field name. If that fails, consume an extension name.
     ::google::protobuf::util::MessageDifferencer::SpecificField field;
     std::string name;
-    if (RE2::Consume(&input, field_subscript_regex, &name, &field.index) ||
-        RE2::Consume(&input, field_regex, &name)) {
+    if (RE2::Consume(&input, field_subscript_regex, &name, &field.index) || RE2::Consume(&input, field_regex, &name)) {
       if (field_path.empty()) {
         field.field = root_descriptor.FindFieldByName(std::string(name));
-        ABSL_CHECK(field.field) << "No such field '" << name << "' in message '"
-                                << root_descriptor.full_name() << "'";
+        ABSL_CHECK(field.field) << "No such field '" << name << "' in message '" << root_descriptor.full_name() << "'";
       } else {
-        const ::google::protobuf::util::MessageDifferencer::SpecificField
-            &parent = field_path.back();
-        field.field =
-            parent.field->message_type()->FindFieldByName(std::string(name));
-        ABSL_CHECK(field.field) << "No such field '" << name << "' in '"
-                                << parent.field->full_name() << "'";
+        const ::google::protobuf::util::MessageDifferencer::SpecificField& parent = field_path.back();
+        field.field = parent.field->message_type()->FindFieldByName(std::string(name));
+        ABSL_CHECK(field.field) << "No such field '" << name << "' in '" << parent.field->full_name() << "'";
       }
     } else if (RE2::Consume(&input, extension_regex, &name)) {
-      field.field = ::google::protobuf::DescriptorPool::generated_pool()
-                        ->FindExtensionByName(name);
+      field.field = ::google::protobuf::DescriptorPool::generated_pool()->FindExtensionByName(name);
       ABSL_CHECK(field.field) << "No such extension '" << name << "'";
       if (field_path.empty()) {
         ABSL_CHECK(root_descriptor.IsExtensionNumber(field.field->number()))
-            << "Extension '" << name << "' does not extend message '"
-            << root_descriptor.full_name() << "'";
+            << "Extension '" << name << "' does not extend message '" << root_descriptor.full_name() << "'";
       } else {
-        const ::google::protobuf::util::MessageDifferencer::SpecificField
-            &parent = field_path.back();
-        ABSL_CHECK(parent.field->message_type()->IsExtensionNumber(
-            field.field->number()))
-            << "Extension '" << name << "' does not extend '"
-            << parent.field->full_name() << "'";
+        const ::google::protobuf::util::MessageDifferencer::SpecificField& parent = field_path.back();
+        ABSL_CHECK(parent.field->message_type()->IsExtensionNumber(field.field->number()))
+            << "Extension '" << name << "' does not extend '" << parent.field->full_name() << "'";
       }
     } else {
-      ABSL_LOG(FATAL) << "Cannot parse field path '" << relative_field_path
-                      << "' at offset "
-                      << relative_field_path.size() - input.size()
-                      << ": expected field or extension";
+      ABSL_LOG(FATAL) << "Cannot parse field path '" << relative_field_path << "' at offset "
+                      << relative_field_path.size() - input.size() << ": expected field or extension";
     }
     field_path.push_back(field);
   }
 
   ABSL_CHECK(!field_path.empty());
   ABSL_CHECK(field_path.back().index == -1)
-      << "Terminally ignoring fields by index is currently not supported ('"
-      << relative_field_path << "')";
+      << "Terminally ignoring fields by index is currently not supported ('" << relative_field_path << "')";
   return field_path;
 }
 
 // Sets the ignored field paths corresponding to field_paths in differencer.
 // Dies if any path is invalid.
 void SetIgnoredFieldPathsOrDie(
-    const ::google::protobuf::Descriptor &root_descriptor,
-    const std::vector<std::string> &field_paths,
-    ::google::protobuf::util::MessageDifferencer *differencer) {
-  for (const std::string &field_path : field_paths) {
-    differencer->AddIgnoreCriteria(new IgnoreFieldPathCriteria(
-        ParseFieldPathOrDie(field_path, root_descriptor)));
+    const ::google::protobuf::Descriptor& root_descriptor,
+    const std::vector<std::string>& field_paths,
+    ::google::protobuf::util::MessageDifferencer* differencer) {
+  for (const std::string& field_path : field_paths) {
+    differencer->AddIgnoreCriteria(new IgnoreFieldPathCriteria(ParseFieldPathOrDie(field_path, root_descriptor)));
   }
 }
 
@@ -286,10 +253,10 @@ void SetIgnoredFieldPathsOrDie(
 // described in comp. The configured differencer is the output of this function,
 // but a FieldComparator must be provided to keep ownership clear.
 void ConfigureDifferencer(
-    const internal::ProtoComparison &comp,
-    ::google::protobuf::util::DefaultFieldComparator *comparator,
-    ::google::protobuf::util::MessageDifferencer *differencer,
-    const ::google::protobuf::Descriptor *descriptor) {
+    const internal::ProtoComparison& comp,
+    ::google::protobuf::util::DefaultFieldComparator* comparator,
+    ::google::protobuf::util::MessageDifferencer* differencer,
+    const ::google::protobuf::Descriptor* descriptor) {
   differencer->set_message_field_comparison(comp.field_comp);
   differencer->set_scope(comp.scope);
   comparator->set_float_comparison(comp.float_comp);
@@ -297,30 +264,29 @@ void ConfigureDifferencer(
   differencer->set_repeated_field_comparison(comp.repeated_field_comp);
   SetIgnoredFieldsOrDie(*descriptor, comp.ignore_fields, differencer);
   SetIgnoredFieldPathsOrDie(*descriptor, comp.ignore_field_paths, differencer);
-  if (comp.float_comp == internal::kProtoApproximate &&
-      (comp.has_custom_margin || comp.has_custom_fraction)) {
+  if (comp.float_comp == internal::kProtoApproximate && (comp.has_custom_margin || comp.has_custom_fraction)) {
     // Two fields will be considered equal if they're within the fraction _or_
     // within the margin. So setting the fraction to 0.0 makes this effectively
     // a "SetMargin". Similarly, setting the margin to 0.0 makes this
     // effectively a "SetFraction".
-    comparator->SetDefaultFractionAndMargin(comp.float_fraction,
-                                            comp.float_margin);
+    comparator->SetDefaultFractionAndMargin(comp.float_fraction, comp.float_margin);
   }
   differencer->set_field_comparator(comparator);
 }
 
 // Returns true iff actual and expected are comparable and match.  The
 // comp argument specifies how two are compared.
-bool ProtoCompare(const internal::ProtoComparison &comp,
-                  const ::google::protobuf::Message &actual,
-                  const ::google::protobuf::Message &expected) {
-  if (!ProtoComparable(actual, expected))
+bool ProtoCompare(
+    const internal::ProtoComparison& comp,
+    const ::google::protobuf::Message& actual,
+    const ::google::protobuf::Message& expected) {
+  if (!ProtoComparable(actual, expected)) {
     return false;
+  }
 
   ::google::protobuf::util::MessageDifferencer differencer;
   ::google::protobuf::util::DefaultFieldComparator field_comparator;
-  ConfigureDifferencer(comp, &field_comparator, &differencer,
-                       actual.GetDescriptor());
+  ConfigureDifferencer(comp, &field_comparator, &differencer, actual.GetDescriptor());
 
   // It's important for 'expected' to be the first argument here, as
   // Compare() is not symmetric.  When we do a partial comparison,
@@ -330,28 +296,28 @@ bool ProtoCompare(const internal::ProtoComparison &comp,
 }
 
 // Describes the types of the expected and the actual protocol buffer.
-std::string DescribeTypes(const ::google::protobuf::Message &expected,
-                          const ::google::protobuf::Message &actual) {
-  return "whose type should be " + expected.GetDescriptor()->full_name() +
-         " but actually is " + actual.GetDescriptor()->full_name();
+std::string DescribeTypes(const ::google::protobuf::Message& expected, const ::google::protobuf::Message& actual) {
+  return "whose type should be " + expected.GetDescriptor()->full_name() + " but actually is "
+         + actual.GetDescriptor()->full_name();
 }
 
 // Prints the protocol buffer pointed to by proto.
-std::string PrintProtoPointee(const ::google::protobuf::Message *proto) {
-  if (proto == nullptr)
+std::string PrintProtoPointee(const ::google::protobuf::Message* proto) {
+  if (proto == nullptr) {
     return "";
+  }
 
   return "which points to " + ::testing::PrintToString(*proto);
 }
 
 // Describes the differences between the two protocol buffers.
-std::string DescribeDiff(const internal::ProtoComparison &comp,
-                         const ::google::protobuf::Message &actual,
-                         const ::google::protobuf::Message &expected) {
+std::string DescribeDiff(
+    const internal::ProtoComparison& comp,
+    const ::google::protobuf::Message& actual,
+    const ::google::protobuf::Message& expected) {
   ::google::protobuf::util::MessageDifferencer differencer;
   ::google::protobuf::util::DefaultFieldComparator field_comparator;
-  ConfigureDifferencer(comp, &field_comparator, &differencer,
-                       actual.GetDescriptor());
+  ConfigureDifferencer(comp, &field_comparator, &differencer, actual.GetDescriptor());
 
   std::string diff;
   differencer.ReportDifferencesToString(&diff);
@@ -370,19 +336,19 @@ std::string DescribeDiff(const internal::ProtoComparison &comp,
 }
 
 bool ProtoMatcherBase::MatchAndExplain(
-    const ::google::protobuf::Message &arg,
-    bool is_matcher_for_pointer, // true iff this matcher is used to match
-                                 // a protobuf pointer.
-    ::testing::MatchResultListener *listener) const {
+    const ::google::protobuf::Message& arg,
+    bool is_matcher_for_pointer,  // true iff this matcher is used to match
+                                  // a protobuf pointer.
+    ::testing::MatchResultListener* listener) const {
   if (must_be_initialized_ && !arg.IsInitialized()) {
     *listener << "which isn't fully initialized";
     return false;
   }
 
-  const ::google::protobuf::Message *const expected =
-      CreateExpectedProto(arg, listener);
-  if (expected == nullptr)
+  const ::google::protobuf::Message* const expected = CreateExpectedProto(arg, listener);
+  if (expected == nullptr) {
     return false;
+  }
 
   // Protobufs of different types cannot be compared.
   const bool comparable = ProtoComparable(arg, *expected);
@@ -391,7 +357,7 @@ bool ProtoMatcherBase::MatchAndExplain(
   // Explaining the match result is expensive.  We don't want to waste
   // time calculating an explanation if the listener isn't interested.
   if (listener->IsInterested()) {
-    const char *sep = "";
+    const char* sep = "";
     if (is_matcher_for_pointer) {
       *listener << PrintProtoPointee(&arg);
       sep = ",\n";
