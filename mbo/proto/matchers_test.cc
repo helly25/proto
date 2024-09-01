@@ -23,9 +23,9 @@ using ::testing::Not;
 using ::testing::SafeMatcherCast;
 
 template<typename T, typename M>
-inline std::string GetExplanation(M matcher, const T &value) {
+inline std::string GetExplanation(M matcher, const T& value) {
   std::stringstream ss;
-  SafeMatcherCast<const T &>(matcher).ExplainMatchResultTo(value, &ss);
+  SafeMatcherCast<const T&>(matcher).ExplainMatchResultTo(value, &ss);
   return ss.str();
 }
 
@@ -33,8 +33,7 @@ TEST(Matchers, EqualsProto) {
   const TestMessage msg = ParseTextProtoOrDie(R"pb(num: 42 name: "name")pb");
   EXPECT_THAT(msg, EqualsProto(msg));
   EXPECT_THAT(msg, EqualsProto(R"pb(num: 42 name: "name")pb"));
-  EXPECT_THAT(GetExplanation(EqualsProto(R"pb(num: 43 name: "name")pb"), msg),
-              EndsWith("modified: num: 43 -> 42"));
+  EXPECT_THAT(GetExplanation(EqualsProto(R"pb(num: 43 name: "name")pb"), msg), EndsWith("modified: num: 43 -> 42"));
 }
 
 TEST(Matchers, EquivToProto) {
@@ -83,24 +82,24 @@ TEST(Matchers, IgnoringFieldPathsNested) {
 
 TEST(Matchers, IgnoringFieldPathsRepeatedIndex) {
   const TestMessage2 msg = ParseTextProtoOrDie(R"pb(
-      more { num: 10 }
-      more { num: 20 }
-      )pb");
+    more { num: 10 }
+    more { num: 20 }
+  )pb");
   EXPECT_THAT(msg, IgnoringFieldPaths({"more[0].num"}, EqualsProto(R"pb(
-      more { num: 11 }
-      more { num: 20 }
-      )pb")));
+                                        more { num: 11 }
+                                        more { num: 20 }
+                                      )pb")));
 }
 
 TEST(Matchers, IgnoringFieldPathsRepeatedNested) {
   const TestMessage2 msg = ParseTextProtoOrDie(R"pb(
-      more { num: 10 }
-      more { num: 20 }
-      )pb");
+    more { num: 10 }
+    more { num: 20 }
+  )pb");
   EXPECT_THAT(msg, IgnoringFieldPaths({"more.num"}, EqualsProto(R"pb(
-      more { num: 20 }
-      more { num: 10 }
-      )pb")));
+                                        more { num: 20 }
+                                        more { num: 10 }
+                                      )pb")));
 }
 
 TEST(Matchers, IgnoringFieldPathsTerminalIndex) {
@@ -119,13 +118,13 @@ TEST(Matchers, IgnoringRepeatedFieldOrdering) {
 
 TEST(Matchers, IgnoringRepeatedFieldOrderingNested) {
   const TestMessage2 msg = ParseTextProtoOrDie(R"pb(
-      more { num: 10 }
-      more { num: 20 }
-      )pb");
+    more { num: 10 }
+    more { num: 20 }
+  )pb");
   EXPECT_THAT(msg, IgnoringRepeatedFieldOrdering(EqualsProto(R"pb(
-      more { num: 20 }
-      more { num: 10 }
-      )pb")));
+                more { num: 20 }
+                more { num: 10 }
+              )pb")));
 }
 
 TEST(Matchers, Partially) {

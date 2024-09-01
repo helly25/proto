@@ -35,14 +35,18 @@ void ParseTextOrDieInternal(
     std::string_view func,
     std::source_location loc);
 
-absl::Status ParseTextInternal(std::string_view text, ::google::protobuf::Message *message, std::string_view func, std::source_location loc);
+absl::Status ParseTextInternal(
+    std::string_view text,
+    ::google::protobuf::Message* message,
+    std::string_view func,
+    std::source_location loc);
 
 class ParseTextProtoHelper final {
  public:
   ~ParseTextProtoHelper() noexcept { ABSL_CHECK(parsed_) << "ParseTextProtoOrDie<T> result unused"; }
 
   ParseTextProtoHelper(std::string_view text_proto, std::source_location loc) noexcept
-      : text_proto_(text_proto), loc_(loc)  {}
+      : text_proto_(text_proto), loc_(loc) {}
 
   // This is a purely temporary object... no copy or move may be used.
   ParseTextProtoHelper(const ParseTextProtoHelper&) noexcept = delete;
@@ -94,7 +98,9 @@ inline T ParseTextOrDie(std::string_view text_proto, std::source_location loc = 
 // If parsing fails, then an error status will be returned.
 template<typename T>
 requires(std::derived_from<T, ::google::protobuf::Message> && !std::same_as<T, ::google::protobuf::Message>)
-inline absl::StatusOr<T> ParseText(std::string_view text_proto, std::source_location loc = std::source_location::current()) {
+inline absl::StatusOr<T> ParseText(
+    std::string_view text_proto,
+    std::source_location loc = std::source_location::current()) {
   T message;
   absl::Status result = proto_internal::ParseTextInternal(text_proto, &message, "ParseText", loc);
   if (!result.ok()) {
