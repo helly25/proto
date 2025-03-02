@@ -69,7 +69,7 @@ jobs:
           - llvm_version: "17.0.4"
             proto_version: "28.0"
           - llvm_version: "17.0.4"
-            proto_version: "27.0"
+            proto_version: ""
 
     runs-on: ${{ matrix.os }}
     steps:
