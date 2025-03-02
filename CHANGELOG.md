@@ -1,10 +1,11 @@
 # 0.6.0
 
 * Added Bazel module support.
+* Added new modern `SilentErrorCollector`.
 * Updated Clang to 19.1.6.
 * Updated protobuf to v29.3.
+* Pinned bazel version to 7.2.1.
 * Updated other dependencies to latest.
-* Added new modern `SilentErrorCollector`.
 
 # 0.5
 
