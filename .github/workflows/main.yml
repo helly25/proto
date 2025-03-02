@@ -26,9 +26,9 @@ jobs:
             llvm_version: "17.0.4"
 
           - os: macos-latest
-            proto_version: "29.0"
-          - os: macos-latest
             proto_version: "28.0"
+          - os: macos-latest
+            proto_version: "27.0"
 
           - os: macos-latest
             bazel_config: opt
