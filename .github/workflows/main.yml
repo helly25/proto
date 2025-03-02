@@ -61,6 +61,16 @@ jobs:
           - bazel_config: opt
             proto_version: "26.0"
 
+          - llvm_version: "17.0.4"
+            proto_version: "29.1"
+          - llvm_version: "17.0.4"
+            proto_version: "28.0"
+          - llvm_version: "17.0.4"
+            proto_version: "27.0"
+          - llvm_version: "17.0.4"
+            proto_version: "26.0"
+
+
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -81,21 +91,21 @@ jobs:
 
       - name: Test
         run: |
-          if [ "${{ matrix.bazel_config}}" == "asan"]; then
+          if [ "${{ matrix.bazel_config}}" == "asan" ]; then
             BAZEL_MODE="-c dbg"
             BAZEL_CONFIG="--config=asan"
           fi
-          if [ "${{ matrix.bazel_config}}" == "opt"]; then
+          if [ "${{ matrix.bazel_config}}" == "opt" ]; then
             BAZEL_MODE="-c opt"
             BAZEL_CONFIG=
           fi
-          if [ "${{ matrix.bazel_config}}" == "fastbuild"]; then
+          if [ "${{ matrix.bazel_config}}" == "fastbuild" ]; then
             BAZEL_MODE="-c fastbuild"
             BAZEL_CONFIG=
           fi
           if [ -n "${{ matrix.proto_version }}" ]; then
             CONTROL_FILE=MODULE.bazel
-            sed -e 's,protobuf", version = ".*",protobuf", version = "${{ matrix.proto_version }}",g' "${CONTROL_FILE}" > "${CONTROL_FILE}.new"
+            sed -e 's/protobuf", version = ".*"/protobuf", version = "${{ matrix.proto_version }}"/g' "${CONTROL_FILE}" > "${CONTROL_FILE}.new"
             mv "${CONTROL_FILE}.new" "${CONTROL_FILE}"
           fi
           if [ -n "${{ matrix.llvm_version}}" ]; then
