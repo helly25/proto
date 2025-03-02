@@ -4,6 +4,8 @@
 * Added new modern `SilentErrorCollector`.
 * Updated Clang to 19.1.6.
 * Verified and updated protobuf to v30-rc.2. Note that at least v28.3 ... v29.3 are affected by https://github.com/protocolbuffers/protobuf/issues/19364 which is fixed in v30-rc.2 Note that the affected versions work fine with Clang 19.1.6.
+* Added a patch for MODULE.bazel to be set to protobuf version 28, in order to reduce requirements on complex projects.
+* Added a build matrix merge check to guarantee various combinations work.
 * Pinned bazel version to 7.2.1.
 * Updated other dependencies to latest.
 

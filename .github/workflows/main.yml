@@ -18,21 +18,17 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         compiler: [clang]
-        llvm_version: ["", "17.0.4"]
+        llvm_version: ["19.1.6", "17.0.4"]
         bazel_config: [asan, opt, fastbuild]
-        proto_version: ["", "29.0", "28.0", "27.0"]  # Version 30 -> 30.0-rc2 == current
+        proto_version: ["30", "29.0", "28.0", "27.0"]  # Version 30 -> 30.0-rc2 == current
         exclude:
           - os: macos-latest
             llvm_version: "17.0.4"
 
           - os: macos-latest
-            proto_version: "30.0"
-          - os: macos-latest
             proto_version: "29.0"
           - os: macos-latest
             proto_version: "28.0"
-          - os: macos-latest
-            proto_version: "27.0"
 
           - os: macos-latest
             bazel_config: opt
@@ -45,16 +41,12 @@ jobs:
             llvm_version: "17.0.4"
 
           - bazel_config: asan
-            proto_version: "30.0"
-          - bazel_config: asan
             proto_version: "29.0"
           - bazel_config: asan
             proto_version: "28.0"
           - bazel_config: asan
             proto_version: "27.0"
 
-          - bazel_config: opt
-            proto_version: "30.0"
           - bazel_config: opt
             proto_version: "29.0"
           - bazel_config: opt
@@ -64,12 +56,6 @@ jobs:
 
           - llvm_version: "17.0.4"
             proto_version: "30.0"
-          - llvm_version: "17.0.4"
-            proto_version: "29.0"
-          - llvm_version: "17.0.4"
-            proto_version: "28.0"
-          - llvm_version: "17.0.4"
-            proto_version: ""
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -83,11 +69,11 @@ jobs:
         uses: actions/cache@v4
         with:
             path: "~/.cache/bazel"
-            key: ${{ matrix.os }}-${{ matrix.compiler }}_${{ matrix.bazel_config }}_${{ matrix.proto_version }}-${{github.ref}}-${{ github.sha }}
+            key: ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-${{github.ref}}-${{ github.sha }}
             restore-keys: |
-                ${{ matrix.os }}-${{ matrix.compiler }}_${{ matrix.bazel_config }}_${{ matrix.proto_version }}-${{github.ref}}-
-                ${{ matrix.os }}-${{ matrix.compiler }}_${{ matrix.bazel_config }}_${{ matrix.proto_version }}-refs/heads/main-
-                ${{ matrix.os }}-${{ matrix.compiler }}_${{ matrix.bazel_config }}_${{ matrix.proto_version }}-
+                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-${{github.ref}}-
+                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-refs/heads/main-
+                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-
 
       - name: Test
         run: |
@@ -103,10 +89,10 @@ jobs:
             BAZEL_MODE="-c fastbuild"
             BAZEL_CONFIG=
           fi
-          if [ -n "${{ matrix.proto_version }}" ]; then
+          if [ "${{ matrix.proto_version }}" != "30.0" ]; then
             cp "bazelmod/MODULE.proto${{ matrix.proto_version }}.bazel" MODULE.bazel
           fi
-          if [ -n "${{ matrix.llvm_version}}" ]; then
+          if [ "${{ matrix.llvm_version}}" != "19.1.6" ]; then
             CONTROL_FILE=bazelmod/llvm.MODULE.bazel
             sed -e 's,llvm_version = ".*",llvm_version = "${{ matrix.llvm_version }}",g' "${CONTROL_FILE}" > "${CONTROL_FILE}.new"
             mv "${CONTROL_FILE}.new" "${CONTROL_FILE}"
