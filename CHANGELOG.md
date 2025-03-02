@@ -1,4 +1,4 @@
-# 0.6
+# 0.6.0
 
 * Added Bazelmod support.
 * Updated Clang to 19.1.6.

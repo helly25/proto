@@ -27,7 +27,7 @@ if [ "${BAZELMOD_VERSION}" != "${TAG}" ]; then
   exit 1
 fi
 if [ "${CHANGELOG_VERSION}" != "${TAG}" ]; then
-  echo "ERROR: Tag = '${TAG}' does not match version = '${CHANGELOG_VERSION}' in WORKSPACE."
+  echo "ERROR: Tag = '${TAG}' does not match version = '${CHANGELOG_VERSION}' in CHANGELOG.md."
   exit 1
 fi
 

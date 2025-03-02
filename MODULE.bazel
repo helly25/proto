@@ -16,7 +16,7 @@
 # Due to flag and test references to the repo name we use the old name for now.
 module(
     name = "helly25_proto",
-    version = "0.5.0",
+    version = "0.6.0",
 )
 
 # For local development we include LLVM and Hedron-Compile-Commands.
