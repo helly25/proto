@@ -7,7 +7,12 @@ This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed).
 This is done because the original sources use Abseil's `SourceLocation` has not been open sourced and instead of making
 it available through this project, the project simply requires `std::source_location` which requires C++20.
 
-The project only comes with a [Bazel](https://bazel.build/) BUILD.bazel file and can be added to other Bazel projects.
+The project only comes with a Bazel BUILD.bazel file and can be added to other Bazel projects.
+
+The project is formatted with specific clang-format settings which require clang 16+ (in case of MacOs LLVM 16+ can be installed using brew). For simplicity in dev mode the project pulls the appropriate clang tools and can be compiled with those tools using `bazel [build|test] --config=clang ...`.
+
+## WORKSPACE
+
 Checkout [Releases](https://github.com/helly25/proto/releases) or use head ref as follows:
 
 ```
@@ -20,7 +25,13 @@ http_archive(
 )
 ```
 
-The project is formatted with specific `clang-format` settings which require clang 16+ (in case of MacOs LLVM 16+ can be installed using brew).
+## MODULES.bazel
+
+Check [Releases](https://github.com/helly25/proto/releases) for details. All that is needed is a `bazel_dep` instruction with the correct version.
+
+```
+bazel_dep(name = "helly25_proto", version = "0.0.0")
+```
 
 # Parse Proto
 

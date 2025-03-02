@@ -1,3 +1,9 @@
+# 0.6.0
+
+* Added Bazelmod support.
+* Updated Clang to 19.1.6.
+* Updated protobuf to v29.3.
+
 # 0.5
 
 * Added support for com_google_protobuf >= Protocol Buffers v26.

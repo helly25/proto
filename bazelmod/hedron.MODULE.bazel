@@ -1,4 +1,5 @@
-# Copyright 2024 M.Boerger
+# SPDX-FileCopyrightText: Copyright (c) The helly25/mbo authors (helly25.com)
+# SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@hedron_compile_commands//:refresh_compile_commands.bzl", "refresh_compile_commands")
-
-package(default_visibility = ["//visibility:private"])
-
-licenses(["notice"])
-
-COM_GOOGLE_PROTOBUF = "bazel-out/../../../external/com_google_protobuf/src"
-
-refresh_compile_commands(
-    name = "refresh_all",
-    targets = {
-        "//...": " ".join([
-            "--cxxopt=-I" + COM_GOOGLE_PROTOBUF,
-        ]),
-    },
+bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+git_override(
+    module_name = "hedron_compile_commands",
+    commit = "6dd21b47db481a70c61698742438230e2399b639",
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
 )
