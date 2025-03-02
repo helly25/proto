@@ -70,7 +70,6 @@ jobs:
           - llvm_version: "17.0.4"
             proto_version: "26.0"
 
-
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -113,8 +112,15 @@ jobs:
             sed -e 's,llvm_version = ".*",llvm_version = "${{ matrix.llvm_version }}",g' "${CONTROL_FILE}" > "${CONTROL_FILE}.new"
             mv "${CONTROL_FILE}.new" "${CONTROL_FILE}"
           fi
-          CACHE_ROOT=~/.cache/bazel
-          bazel test --enable_bzlmod --noenable_workspace --output_user_root="${CACHE_ROOT}" test --repository_cache="${CACHE_ROOT}/repo-cache" --config=clang ${BAZEL_MODE} ${BAZEL_CONFIG} //...
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            CACHE_ROOT=~/.cache/bazel
+            OUTPUT_USE_ROOT="-output_user_root=${CACHE_ROOT}"
+            REPOSITORY_CACHE="--repository_cache=${CACHE_ROOT}/repo-cache"
+          else
+            OUTPUT_USE_ROOT=
+            REPOSITORY_CACHE=
+          fi
+          bazel ${OUTPUT_USE_ROOT} test --enable_bzlmod --noenable_workspace ${REPOSITORY_CACHE} --config=clang ${BAZEL_MODE} ${BAZEL_CONFIG} //...
         
   test-ubuntu-gcc-fastbuild:
     runs-on: ubuntu-latest
