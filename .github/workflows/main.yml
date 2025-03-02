@@ -20,19 +20,19 @@ jobs:
         compiler: [clang]
         llvm_version: ["", "17.0.4"]
         bazel_config: [asan, opt, fastbuild]
-        proto_version: ["", "29.1"] #, "28.0", "27.0", "26.0"]
+        proto_version: ["", "29.0", "28.0", "27.0"]  # Version 30 -> 30.0-rc2 == current
         exclude:
           - os: macos-latest
             llvm_version: "17.0.4"
 
           - os: macos-latest
-            proto_version: "29.1"
+            proto_version: "30.0"
+          - os: macos-latest
+            proto_version: "29.0"
           - os: macos-latest
             proto_version: "28.0"
           - os: macos-latest
             proto_version: "27.0"
-          - os: macos-latest
-            proto_version: "26.0"
 
           - os: macos-latest
             bazel_config: opt
@@ -45,31 +45,31 @@ jobs:
             llvm_version: "17.0.4"
 
           - bazel_config: asan
-            proto_version: "29.1"
+            proto_version: "30.0"
+          - bazel_config: asan
+            proto_version: "29.0"
           - bazel_config: asan
             proto_version: "28.0"
           - bazel_config: asan
             proto_version: "27.0"
-          - bazel_config: asan
-            proto_version: "26.0"
 
           - bazel_config: opt
-            proto_version: "29.1"
+            proto_version: "30.0"
+          - bazel_config: opt
+            proto_version: "29.0"
           - bazel_config: opt
             proto_version: "28.0"
           - bazel_config: opt
             proto_version: "27.0"
-          - bazel_config: opt
-            proto_version: "26.0"
 
           - llvm_version: "17.0.4"
-            proto_version: "29.1"
+            proto_version: "30.0"
+          - llvm_version: "17.0.4"
+            proto_version: "29.0"
           - llvm_version: "17.0.4"
             proto_version: "28.0"
           - llvm_version: "17.0.4"
             proto_version: "27.0"
-          - llvm_version: "17.0.4"
-            proto_version: "26.0"
 
     runs-on: ${{ matrix.os }}
     steps:
