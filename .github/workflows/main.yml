@@ -19,19 +19,7 @@ jobs:
         proto_version: ["", "29.1", "28.0", "27.0", "26.0"]
         compiler: [clang]
         llvm_version: ["", "17.0.4"]
-        bazel_config:
-          - asan:
-            env:
-              - BAZEL_MODE=-c dbg
-              - BAZEL_CONFIG=--config=asan
-          - opt:
-            env:
-              - BAZEL_MODE=-c opt
-              - BAZEL_CONFIG=
-          - fastbuild:
-            env:
-              - BAZEL_MODE=-c fastbuild
-              - BAZEL_CONFIG=
+        bazel_config: [asan, opt, fastbuild]
         exclude:
           - os: macos-latest
             llvm_version: "17.0.4"
@@ -64,6 +52,18 @@ jobs:
 
       - name: Test
         run: |
+          if [ "${{ matrix.bazel_config}}" == "asan"]; then
+            BAZEL_MODE="-c dbg"
+            BAZEL_CONFIG="--config=asan"
+          fi
+          if [ "${{ matrix.bazel_config}}" == "opt"]; then
+            BAZEL_MODE="-c opt"
+            BAZEL_CONFIG=
+          fi
+          if [ "${{ matrix.bazel_config}}" == "fastbuild"]; then
+            BAZEL_MODE="-c fastbuild"
+            BAZEL_CONFIG=
+          fi
           if [ -n "${{ matrix.proto_version }}" ]; then
             CONTROL_FILE=MODULE.bazel
             sed -e 's,protobuf", version = ".*",protobuf", version = "${{ matrix.proto_version }}",g' "${CONTROL_FILE}" > "${CONTROL_FILE}.new"
