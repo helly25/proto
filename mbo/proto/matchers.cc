@@ -298,8 +298,9 @@ bool ProtoCompare(
 
 // Describes the types of the expected and the actual protocol buffer.
 std::string DescribeTypes(const ::google::protobuf::Message& expected, const ::google::protobuf::Message& actual) {
-  return absl::StrCat("whose type should be ", expected.GetDescriptor()->full_name(), " but actually is ",
-         actual.GetDescriptor()->full_name());
+  return absl::StrCat(
+      "whose type should be ", expected.GetDescriptor()->full_name(), " but actually is ",
+      actual.GetDescriptor()->full_name());
 }
 
 // Prints the protocol buffer pointed to by proto.

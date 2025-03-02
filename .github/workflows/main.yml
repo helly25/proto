@@ -114,14 +114,14 @@ jobs:
           fi
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
             CACHE_ROOT=~/.cache/bazel
-            OUTPUT_USE_ROOT="-output_user_root=${CACHE_ROOT}"
+            OUTPUT_USE_ROOT="--output_user_root=${CACHE_ROOT}"
             REPOSITORY_CACHE="--repository_cache=${CACHE_ROOT}/repo-cache"
           else
             OUTPUT_USE_ROOT=
             REPOSITORY_CACHE=
           fi
           bazel ${OUTPUT_USE_ROOT} test --enable_bzlmod --noenable_workspace ${REPOSITORY_CACHE} --config=clang ${BAZEL_MODE} ${BAZEL_CONFIG} //...
-        
+
   test-ubuntu-gcc-fastbuild:
     runs-on: ubuntu-latest
     steps:
