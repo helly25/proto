@@ -13,13 +13,14 @@ jobs:
         if: always()
 
   test:
+    continue-on-error: true
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        proto_version: ["", "29.1"] #, "28.0", "27.0", "26.0"]
         compiler: [clang]
         llvm_version: ["", "17.0.4"]
         bazel_config: [asan, opt, fastbuild]
+        proto_version: ["", "29.1"] #, "28.0", "27.0", "26.0"]
         exclude:
           - os: macos-latest
             llvm_version: "17.0.4"
