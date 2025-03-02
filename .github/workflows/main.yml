@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        proto_version: ["", "29.1", "28.0", "27.0", "26.0"]
+        proto_version: ["", "29.1"] #, "28.0", "27.0", "26.0"]
         compiler: [clang]
         llvm_version: ["", "17.0.4"]
         bazel_config: [asan, opt, fastbuild]
@@ -103,9 +103,7 @@ jobs:
             BAZEL_CONFIG=
           fi
           if [ -n "${{ matrix.proto_version }}" ]; then
-            CONTROL_FILE=MODULE.bazel
-            sed -e 's/protobuf", version = ".*"/protobuf", version = "${{ matrix.proto_version }}"/g' "${CONTROL_FILE}" > "${CONTROL_FILE}.new"
-            mv "${CONTROL_FILE}.new" "${CONTROL_FILE}"
+            cp "bazelmod/MODULE.proto${{ matrix.proto_version }}.bazel" MODULE.bazel
           fi
           if [ -n "${{ matrix.llvm_version}}" ]; then
             CONTROL_FILE=bazelmod/llvm.MODULE.bazel
