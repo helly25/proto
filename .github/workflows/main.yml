@@ -20,7 +20,7 @@ jobs:
         compiler: [clang]
         llvm_version: ["19.1.6", "17.0.4"]
         bazel_config: [asan, opt, fastbuild]
-        proto_version: ["30", "29.0", "28.0", "27.0"]  # Version 30 -> 30.0-rc2 == current
+        proto_version: ["30.0", "29.0", "28.0", "27.0"]  # Version 30 -> 30.0-rc2 == current
         exclude:
           - os: macos-latest
             llvm_version: "17.0.4"
