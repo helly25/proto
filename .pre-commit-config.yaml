@@ -1,13 +1,56 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.3.0
+  rev: v3.0.0
   hooks:
   - id: check-merge-conflict
   - id: check-yaml
   - id: end-of-file-fixer
+    exclude: |
+          (?x)(
+            .*[.]patch
+          )
   - id: trailing-whitespace
+    exclude: |
+          (?x)(
+            .*[.]patch
+          )
+
+- repo: local
+  hooks:
+  - id: uncomment-bazelmod-includes
+    name: uncomment-bazelmod-includes
+    description: |
+      The repo version of MODULE.bazel may not have commented out includes.
+    language: pygrep
+    entry: \s*#\s*include
+    files: MODULE.bazel
+  - id: bcr-bazelmod-patch-applies
+    name: bcr-bazelmod-patch-applies
+    description: |
+      The patch in .bcr/patches/bazelmod.patch can be applied
+    language: system
+    entry: patch
+    args: ["-p1", "--dry-run", "-fi", ".bcr/patches/bazelmod.patch"]
+    pass_filenames: False
+    types: [text]
+  - id: github-bazelmod-patch-applies
+    name: github-bazelmod-patch-applies
+    description: |
+      The patch in .github/workflows/bazelmod.patch can be applied
+    language: system
+    entry: patch
+    args: ["-p1", "--dry-run", "-fi", ".github/workflows/bazelmod.patch"]
+    pass_filenames: False
+    types: [text]
+
+- repo: https://github.com/keith/pre-commit-buildifier
+  rev: 8.0.1
+  hooks:
+    - id: buildifier
+    - id: buildifier-lint
+      args: ["--warnings=all"]
 
 - repo: https://github.com/pre-commit/mirrors-clang-format
-  rev: v16.0.4
+  rev: v19.1.6
   hooks:
   - id: clang-format
