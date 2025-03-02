@@ -466,7 +466,7 @@ class WhenDeserializedMatcher : public WhenDeserializedMatcherBase<::google::pro
 
   ::google::protobuf::Message* MakeEmptyProto() const override { return expected_proto_->New(); }
 
-  std::string ExpectedTypeName() const override { return expected_proto_->GetDescriptor()->full_name(); }
+  std::string ExpectedTypeName() const override { return std::string(expected_proto_->GetDescriptor()->full_name()); }
 
   std::string TypeArgName() const override { return "protobuf"; }
 

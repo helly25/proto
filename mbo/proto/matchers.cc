@@ -21,6 +21,7 @@
 
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/substitute.h"
 #include "gmock/gmock.h"  // IWYU pragma: keep
 #include "google/protobuf/io/tokenizer.h"
@@ -297,8 +298,8 @@ bool ProtoCompare(
 
 // Describes the types of the expected and the actual protocol buffer.
 std::string DescribeTypes(const ::google::protobuf::Message& expected, const ::google::protobuf::Message& actual) {
-  return "whose type should be " + expected.GetDescriptor()->full_name() + " but actually is "
-         + actual.GetDescriptor()->full_name();
+  return absl::StrCat("whose type should be ", expected.GetDescriptor()->full_name(), " but actually is ",
+         actual.GetDescriptor()->full_name());
 }
 
 // Prints the protocol buffer pointed to by proto.
@@ -307,7 +308,7 @@ std::string PrintProtoPointee(const ::google::protobuf::Message* proto) {
     return "";
   }
 
-  return "which points to " + ::testing::PrintToString(*proto);
+  return absl::StrCat("which points to ", ::testing::PrintToString(*proto));
 }
 
 // Describes the differences between the two protocol buffers.
@@ -332,7 +333,7 @@ std::string DescribeDiff(
     diff.erase(diff.end() - 1);
   }
 
-  return "with the difference:\n" + diff;
+  return absl::StrCat("with the difference:\n", diff);
 }
 
 bool ProtoMatcherBase::MatchAndExplain(

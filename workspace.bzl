@@ -67,9 +67,10 @@ def workspace_load_modules():
     if not native.existing_rule("com_googlesource_code_re2"):
         http_archive(
             name = "com_googlesource_code_re2",
-            strip_prefix = "re2-2023-06-02",
-            urls = ["https://github.com/google/re2/archive/refs/tags/2023-06-02.tar.gz"],
-            sha256 = "4ccdd5aafaa1bcc24181e6dd3581c3eee0354734bb9f3cb4306273ffa434b94f",
+            strip_prefix = "re2-2024-07-02",
+            url = "https://github.com/google/re2/releases/download/2024-07-02/re2-2024-07-02.tar.gz",
+            sha256 = "eb2df807c781601c14a260a507a5bb4509be1ee626024cb45acbd57cb9d4032b",
+            repo_mapping = {"@abseil-cpp": "@com_google_absl"},
         )
 
     # Abseil, LTS
@@ -77,17 +78,21 @@ def workspace_load_modules():
     github_archive(
         name = "com_google_absl",
         repo = "https://github.com/abseil/abseil-cpp",
-        tag = "20240116.1",
-        sha256 = "3c743204df78366ad2eaf236d6631d83f6bc928d1705dd0000b872e53b73dc6a",
+        tag = "20250127.0",
+        sha256 = "16242f394245627e508ec6bb296b433c90f8d914f73b9c026fddb905e27276e8",
     )
 
     # GoogleTest
     github_archive(
         name = "com_google_googletest",
         repo = "https://github.com/google/googletest",
-        strip_prefix = "googletest-1.14.0",
-        sha256 = "8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7",
-        tag = "v1.14.0",
+        strip_prefix = "googletest-1.16.0",
+        sha256 = "78c676fc63881529bf97bf9d45948d905a66833fbfa5318ea2cd7478cb98f399",
+        tag = "v1.16.0",
+        repo_mapping = {
+            "@abseil-cpp": "@com_google_absl",
+            "@re2": "@com_googlesource_code_re2",
+        },
     )
 
     github_archive(
@@ -112,9 +117,9 @@ def workspace_load_modules():
 
     http_archive(
         name = "com_google_protobuf",
-        sha256 = "008a11cc56f9b96679b4c285fd05f46d317d685be3ab524b2a310be0fbad987e",
-        strip_prefix = "protobuf-29.3",
-        url = "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protobuf-29.3.tar.gz",
+        sha256 = "356c1143fe38fe9f7cc7168b1ab23566d8faee2cd5309e035666815eb4f0463e",
+        strip_prefix = "protobuf-30.0-rc2",
+        url = "https://github.com/protocolbuffers/protobuf/releases/download/v30.0-rc2/protobuf-30.0-rc2.tar.gz",
     )
 
     # Cannot yet support toolchains_llvm 1.0.0. It enables C++20 modules in a broken way.
