@@ -52,6 +52,7 @@ cc_library(
     hdrs = ["parse_text_proto.h"],
     visibility = ["//visibility:public"],
     deps = [
+        ":silent_error_collector_cc",
         "@com_google_absl//absl/base:log_severity",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
@@ -70,6 +71,30 @@ cc_test(
         ":matchers_cc",
         ":parse_text_proto_cc",
         "//mbo/proto/tests:simple_message_cc_proto",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "silent_error_collector_cc",
+    srcs = ["silent_error_collector.cc"],
+    hdrs = ["silent_error_collector.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_google_absl//absl/base:log_severity",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_protobuf//:protobuf",
+    ],
+)
+
+cc_test(
+    name = "silent_error_collector_test",
+    srcs = ["silent_error_collector_test.cc"],
+    deps = [
+        ":silent_error_collector_cc",
+        "//mbo/proto/tests:simple_message_cc_proto",
+        "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest_main",
     ],
 )

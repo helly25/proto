@@ -25,55 +25,9 @@
 #include "absl/strings/string_view.h"
 #include "google/protobuf/io/tokenizer.h"
 #include "google/protobuf/text_format.h"
+#include "mbo/proto/silent_error_collector.h"
 
 namespace mbo::proto::proto_internal {
-namespace {
-
-// Collects errors from proto parsing.
-class SilentErrorCollector : public google::protobuf::io::ErrorCollector {
- public:
-  struct ErrorInfo {
-    int line = 0;
-    int column = 0;
-    std::string message;
-    absl::LogSeverity severity = absl::LogSeverity::kError;
-  };
-
-#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
-  void RecordError(int line, int column, std::string_view message) override {
-#else
-  void AddError(int line, int column, const std::string& message) override {
-#endif
-    errors_.push_back(
-        {.line = line, .column = column, .message = std::string(message), .severity = absl::LogSeverity::kError});
-  }
-
-#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
-  void RecordWarning(int line, int column, std::string_view message) override {
-#else
-  void AddWarning(int line, int column, const std::string& message) override {
-#endif
-    errors_.push_back(
-        {.line = line, .column = column, .message = std::string(message), .severity = absl::LogSeverity::kWarning});
-  }
-
-  std::string GetErrors() const;
-
-  const std::vector<ErrorInfo>& errors() const { return errors_; }
-
- private:
-  std::vector<ErrorInfo> errors_;
-};
-
-std::string SilentErrorCollector::GetErrors() const {
-  std::string result;
-  for (const auto& error : errors()) {
-    absl::StrAppendFormat(&result, "Line %d, Col %d: %s\n", error.line, error.column, error.message);
-  }
-  return result;
-}
-
-}  // namespace
 
 absl::Status ParseTextInternal(
     std::string_view text_proto,
@@ -82,7 +36,7 @@ absl::Status ParseTextInternal(
     std::source_location loc) {
   google::protobuf::TextFormat::Parser parser;
   SilentErrorCollector error_collector;
-  parser.RecordErrorsTo(&error_collector);
+  parser.RecordErrorsTo(error_collector);
   if (parser.ParseFromString(std::string(text_proto), message)) {
     return absl::OkStatus();
   }
