@@ -12,7 +12,41 @@ jobs:
       - uses: pre-commit-ci/lite-action@v1.0.2
         if: always()
 
+  test-gcc:
+    needs: pre-commit
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        compiler: [gcc]
+        gcc_version: [11, 12, 13]
+        bazel_mode: [opt]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bazelbuild/setup-bazelisk@v3
+      - uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.gcc_version }}
+          platform: x64
+      - uses: actions/cache@v4
+        with:
+            path: "~/.cache/bazel"
+            key: ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.gcc_version }}${{ matrix.bazel_mode }}-${{github.ref}}-${{ github.sha }}
+            restore-keys: |
+                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.gcc_version }}${{ matrix.bazel_mode }}-${{github.ref}}-
+                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.gcc_version }}${{ matrix.bazel_mode }}-refs/heads/main-
+                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.gcc_version }}${{ matrix.bazel_mode }}-
+
+      - name: Test
+        run: |
+          # Use WORKSPACE
+          export CC=/usr/local/bin/gcc
+          export CXX=/usr/local/bin/g++
+          bazel test --noenable_bzlmod --enable_workspace -c ${{ matrix.bazel_mode }} //...
+
   test:
+    needs: [pre-commit, test-gcc]
     continue-on-error: true
     strategy:
       matrix:
@@ -59,14 +93,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bazelisk
-        uses: bazelbuild/setup-bazelisk@v3
-
-      - name: Bazel cache
-        uses: actions/cache@v4
+      - uses: actions/checkout@v4
+      - uses: bazelbuild/setup-bazelisk@v3
+      - uses: actions/cache@v4
         with:
             path: "~/.cache/bazel"
             key: ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-${{github.ref}}-${{ github.sha }}
@@ -106,27 +135,3 @@ jobs:
             REPOSITORY_CACHE=
           fi
           bazel ${OUTPUT_USE_ROOT} test --enable_bzlmod --noenable_workspace ${REPOSITORY_CACHE} --config=clang ${BAZEL_MODE} ${BAZEL_CONFIG} //...
-
-  test-ubuntu-gcc-fastbuild:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bazelisk
-        uses: bazelbuild/setup-bazelisk@v3
-
-      - name: Bazel cache
-        uses: actions/cache@v4
-        with:
-            path: "~/.cache/bazel"
-            key: ${{ runner.os }}-gcc_fastbuild-${{github.ref}}-${{ github.sha }}
-            restore-keys: |
-                ${{ runner.os }}-gcc_fastbuild-${{github.ref}}-
-                ${{ runner.os }}-gcc_fastbuild-refs/heads/main-
-                ${{ runner.os }}-gcc_fastbuild-
-
-      - name: Test GCC/Fastbuild
-        run: |
-          # Use WORKSPACE
-          CC=gcc bazel test --noenable_bzlmod --enable_workspace -c fastbuild //...
