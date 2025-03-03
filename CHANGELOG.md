@@ -1,3 +1,8 @@
+# 0.6.1
+
+* Updated license/copyright to add SPDX headers.
+* Updated internal tooling.
+
 # 0.6.0
 
 * Added Bazel module support.

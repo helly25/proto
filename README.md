@@ -1,37 +1,4 @@
-This package contains a collection of utilities around Google's [Protocolbuffer](https://github.com/protocolbuffers/protobuf). Some of the files were cloned from other repositories as described in section [Clone](#clone).
-
-# Installation and requirements
-
-This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed).
-
-This is done because the original sources use Abseil's `SourceLocation` has not been open sourced and instead of making
-it available through this project, the project simply requires `std::source_location` which requires C++20.
-
-The project only comes with a Bazel BUILD.bazel file and can be added to other Bazel projects.
-
-The project is formatted with specific clang-format settings which require clang 16+ (in case of MacOs LLVM 16+ can be installed using brew). For simplicity in dev mode the project pulls the appropriate clang tools and can be compiled with those tools using `bazel [build|test] --config=clang ...`.
-
-## WORKSPACE
-
-Checkout [Releases](https://github.com/helly25/proto/releases) or use head ref as follows:
-
-```
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-  name = "com_helly25_proto",
-  url = "https://github.com/helly25/proto/archive/refs/heads/main.tar.gz",
-  # See https://github.com/helly25/proto/releases for releases.
-)
-```
-
-## MODULES.bazel
-
-Check [Releases](https://github.com/helly25/proto/releases) for details. All that is needed is a `bazel_dep` instruction with the correct version.
-
-```
-bazel_dep(name = "helly25_proto", version = "0.0.0")
-```
+This package contains a collection of utilities around Google's [Protocolbuffer](https://github.com/protocolbuffers/protobuf). The functions offered in this packages are widely used across Google's C++ code base and have saved tens of thousands of engineering hours.
 
 # Parse Proto
 
@@ -63,7 +30,7 @@ BUILD.bazel:
 cc_test(
     name = "test",
     srcs = ["test.cc"],
-    deps = ["@com_helly25_proto_matchers//mbo/proto:parse_text_proto",]
+    deps = ["@com_helly25_proto//mbo/proto:parse_text_proto",]
 )
 ```
 
@@ -75,10 +42,21 @@ Source test.cc:
 using ::mbo::proto::ParseTextProtoOrDie;
 
 TEST(Foo, Test) {
-    MyProto msg = ParseTextProtoOrDie(R"pb(field: "name")pb");
+    MyProto msg = ParseTextProtoOrDie(R"pb(
+      field: "name"
+      what: "Just dump the plain text-proto as C++ raw-string."
+      )pb");
     // ...
 }
 ```
+
+Note:
+* In the above example the proto is not manually constructed field by field.
+* Instead the text-proto output is directly used as a C++ raw-string.
+* Further the C++ raw-string is enclosed in `pb` markers which some tidy tools identify and use to correctly format the text-proto.
+* One of the biggest advantages of these parse function is that their result can be assigned into a const variable.
+
+The `ParseTextProtoOrDie` function dies if the input text-proto is not valid. That is done because the function emulates type safety this way. That is the author will likely only have to fix this once while many people will read the code. Further, this is test input that is supposed to be correct as is. If the input is of dynamic nature, then `ParseText<ProtoType>(std::string_view)` has to be used.
 
 # Proto Matchers
 
@@ -150,13 +128,15 @@ BUILD.bazel:
 cc_test(
     name = "test",
     srcs = ["test.cc"],
-    deps = ["@com_helly25_proto_matchers//mbo/proto:matchers"],
+    deps = ["@com_helly25_proto//mbo/proto:matchers"],
 )
 ```
 
 Source test.cc:
 
 ```.cc
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "mbo/proto/matchers.h"
 
 using ::mbo::proto::EqualsProto;
@@ -165,27 +145,83 @@ using ::mbo::proto::IgnoringRepeatedFieldOrdering;
 TEST(Foo, EqualsProto) {
     MyProto msg;
     msg.set_field("name");
-    EXPECT_THAT(msg, EqualsProto(R"pb(field: "name")pb"));
+    EXPECT_THAT(msg, EqualsProto(R"pb(
+      field: "name"
+      )pb"));
+}
+```
+
+In the above example `EqualsProto` takes the text-proto as a C++ raw-string.
+
+The matchers can of course be combined with the parse functions. The below shows how a `FunctionUnderTest` can be tested. It receives the proto input directly from the parse function and the matcher compares it directly to the expected golden result text-proto. Note how there is no field-by-field processing anywhere. No dstraction from what is being tested and what the expectations are. Or in other words the test avoids misleading and error prone in-test logic. And becasue the function-under-test is called inside the EXPECT_THAT macro the gtest failure messages will show what actually failed (and not something like "Input: temp_var").
+
+```.cc
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
+#include "mbo/proto/matchers.h"
+#include "mbo/proto/parse_text_proto.h"
+
+using ::mbo::proto::EqualsProto;
+using ::mbo::proto::IgnoringRepeatedFieldOrdering;
+using ::mbo::proto::ParseTextProtoOrDie;
+
+MyProto FunctionUnderTest(const MyProto& proto) {
+  return proto;
 }
 
 TEST(Foo, Wrapper) {
-    MyProto msg;
-    msg.add_number(1);
-    msg.add_number(3);
-    msg.add_number(2);
-    EXPECT_THAT(msg, IgnoringRepeatedFieldOrdering(EqualsProto(R"pb(
+    const MyProto input = ParseTextProtoOrDie(R"pb(
       number: 1
       number: 2
       number: 3
-    )pb")));
+    )pb");
+    EXPECT_THAT(
+      FunctionUnderTest(input),
+      IgnoringRepeatedFieldOrdering(EqualsProto(R"pb(
+        number: 1
+        number: 2
+        number: 3
+      )pb")));
 }
+```
+
+# Installation and requirements
+
+This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed). The project's CI test a combination of Clang and GCC compilers on Linux/Ubuntu and MacOS.
+
+The reliance on a C++20 compiler is because it uses `std::source_location` since Google's Abseil's `SourceLocation` has not been open sourced.
+
+The project only comes with a Bazel BUILD.bazel file and can be added to other Bazel projects.
+
+The project is formatted with specific clang-format settings which require clang 16+ (in case of MacOs LLVM 16+ can be installed using brew). For simplicity in dev mode the project pulls the appropriate clang tools and can be compiled with those tools using `bazel [build|test] --config=clang ...`.
+
+## WORKSPACE
+
+Checkout [Releases](https://github.com/helly25/proto/releases) or use head ref as follows:
+
+```
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+  name = "com_helly25_proto",
+  url = "https://github.com/helly25/proto/archive/refs/heads/main.tar.gz",
+  # See https://github.com/helly25/proto/releases for releases.
+)
+```
+
+## MODULES.bazel
+
+Check [Releases](https://github.com/helly25/proto/releases) for details. All that is needed is a `bazel_dep` instruction with the correct version.
+
+```
+bazel_dep(name = "helly25_proto", version = "0.0.0", repo_name = "com_helly25_proto")
 ```
 
 # Clone
 
-## Parse Proto
+The clone was made from Google's [CPP-proto-builder](https://github.com/google/cpp-proto-builder), of which the project lead is the original author and lead for over a decade. That includes in particular the parse_proto components which were invented in their original form around 2012 and used widely throughout Google.
 
-The clone was made from Google's [CPP-proto-builder](https://github.com/google/cpp-proto-builder).
+## Parse Proto
 
 The following files were cloned:
 
@@ -200,7 +236,7 @@ The diff files are available in the repository history.
 
 ## Proto Matchers
 
-The clone was made from Google's [CPP-proto-builder](https://github.com/google/cpp-proto-builder).
+The matchers are part of Google's [CPP-proto-builder](https://github.com/google/cpp-proto-builder), (see above).
 Alternatively this could have been done from:
 
 * [FHIR](https://github.com/google/fhir),

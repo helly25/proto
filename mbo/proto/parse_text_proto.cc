@@ -1,5 +1,5 @@
-// Copyright 2021 The CPP Proto Builder Authors
-// Copyright 2023 M.Boerger
+// SPDX-FileCopyrightText: Copyright (c) The helly25/mbo authors (helly25.com), The CPP Proto Builder Authors
+// SPDX-License-Identifier: Apache-2.0
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
