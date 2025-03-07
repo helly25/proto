@@ -48,7 +48,7 @@ jobs:
         compiler: [clang]
         llvm_version: [20.1.0, 19.1.6, 17.0.4]
         bazel_config: [asan, cpp23, opt, fastbuild]
-        proto_version: [30.0, 29.0, 28.0, 27.0]
+        proto_version: ['30.0', '29.0', '28.0', '27.0']
         exclude:
           - os: macos-latest
             llvm_version: 17.0.4
