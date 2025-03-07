@@ -117,9 +117,9 @@ def workspace_load_modules():
 
     http_archive(
         name = "com_google_protobuf",
-        sha256 = "356c1143fe38fe9f7cc7168b1ab23566d8faee2cd5309e035666815eb4f0463e",
-        strip_prefix = "protobuf-30.0-rc2",
-        url = "https://github.com/protocolbuffers/protobuf/releases/download/v30.0-rc2/protobuf-30.0-rc2.tar.gz",
+        sha256 = "9df0e9e8ebe39f4fbbb9cf7db3d811287fe3616b2f191eb2bf5eaa12539c881f",
+        strip_prefix = "protobuf-30.0",
+        url = "https://github.com/protocolbuffers/protobuf/releases/download/v30.0/protobuf-30.0.tar.gz",
     )
 
     # Cannot yet support toolchains_llvm 1.0.0. It enables C++20 modules in a broken way.
