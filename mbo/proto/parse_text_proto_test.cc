@@ -78,5 +78,10 @@ TEST_F(ParseTextProtoTest, ParseText) {
           expected));
 }
 
+TEST_F(ParseTextProtoTest, Macro) {
+  const SimpleMessage proto = PARSE_TEXT_PROTO("one: 42");
+  EXPECT_THAT(proto, EqualsProto("one: 42"));
+}
+
 }  // namespace
 }  // namespace mbo::proto
