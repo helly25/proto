@@ -17,121 +17,92 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        bazel_mode: [bzlmod, workspace]
         compiler: [gcc]
         gcc_version: [11, 12, 13]
-        bazel_mode: [opt]
+        bazel_config: [cpp23, opt]
+        exclude:
+          - bazel_mode: workspace
+            gcc_version: 11
+          - bazel_mode: workspace
+            gcc_version: 13
+          - gcc_version: 11
+            bazel_config: cpp23
+          - gcc_version: 12
+            bazel_config: cpp23
 
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: bazelbuild/setup-bazelisk@v3
-      - uses: egor-tensin/setup-gcc@v1
-        with:
-          version: ${{ matrix.gcc_version }}
-          platform: x64
-      - uses: actions/cache@v4
-        with:
-            path: "~/.cache/bazel"
-            key: ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.gcc_version }}${{ matrix.bazel_mode }}-${{github.ref}}-${{ github.sha }}
-            restore-keys: |
-                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.gcc_version }}${{ matrix.bazel_mode }}-${{github.ref}}-
-                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.gcc_version }}${{ matrix.bazel_mode }}-refs/heads/main-
-                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.gcc_version }}${{ matrix.bazel_mode }}-
+    uses: ./.github/workflows/test.yml
+    with:
+      os: ${{ matrix.os }}
+      bazel_mode: ${{ matrix.bazel_mode }}
+      compiler: ${{ matrix.compiler }}
+      gcc_version: ${{ matrix.gcc_version }}
+      bazel_config: ${{ matrix.bazel_config }}
 
-      - name: Test
-        run: |
-          # Use WORKSPACE
-          export CC=/usr/local/bin/gcc
-          export CXX=/usr/local/bin/g++
-          bazel test --noenable_bzlmod --enable_workspace -c ${{ matrix.bazel_mode }} //...
-
-  test:
+  test-clang:
     needs: [pre-commit, test-gcc]
-    continue-on-error: true
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        bazel_mode: [bzlmod]
         compiler: [clang]
-        llvm_version: ["19.1.6", "17.0.4"]
-        bazel_config: [asan, opt, fastbuild]
-        proto_version: ["30.0", "29.0", "28.0", "27.0"]  # Version 30 -> 30.0-rc2 == current
+        llvm_version: [20.1.0, 19.1.6, 17.0.4]
+        bazel_config: [asan, cpp23, opt, fastbuild]
+        proto_version: [30.0, 29.0, 28.0, 27.0]
         exclude:
           - os: macos-latest
-            llvm_version: "17.0.4"
+            llvm_version: 17.0.4
+          - os: macos-latest
+            proto_version: 28.0
+          - os: macos-latest
+            proto_version: 27.0
 
-          - os: macos-latest
-            proto_version: "28.0"
-          - os: macos-latest
-            proto_version: "27.0"
-
-          - os: macos-latest
-            bazel_config: opt
           - os: macos-latest
             bazel_config: asan
+          - os: macos-latest
+            bazel_config: cpp23
+          - os: macos-latest
+            bazel_config: fastbuild
 
           - bazel_config: asan
-            llvm_version: "17.0.4"
-          - bazel_config: opt
-            llvm_version: "17.0.4"
+            llvm_version: 17.0.4
+          - bazel_config: asan
+            llvm_version: 20.1.0
+          - bazel_config: cpp23
+            llvm_version: 17.0.4
+          - bazel_config: fastbuild
+            llvm_version: 19.1.6
+          - bazel_config: fastbuild
+            llvm_version: 17.0.4
+          - bazel_config: fastbuild
+            llvm_version: 20.1.0
 
           - bazel_config: asan
-            proto_version: "29.0"
+            proto_version: 29.0
           - bazel_config: asan
-            proto_version: "28.0"
+            proto_version: 28.0
           - bazel_config: asan
-            proto_version: "27.0"
+            proto_version: 27.0
 
-          - bazel_config: opt
-            proto_version: "29.0"
-          - bazel_config: opt
-            proto_version: "28.0"
-          - bazel_config: opt
-            proto_version: "27.0"
+          - bazel_config: cpp23
+            proto_version: 28.0
+          - bazel_config: cpp23
+            proto_version: 27.0
 
-          - llvm_version: "17.0.4"
-            proto_version: "30.0"
+          - bazel_config: fastbuild
+            proto_version: 30.0
+          - bazel_config: fastbuild
+            proto_version: 28.0
+          - bazel_config: fastbuild
+            proto_version: 27.0
 
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: bazelbuild/setup-bazelisk@v3
-      - uses: actions/cache@v4
-        with:
-            path: "~/.cache/bazel"
-            key: ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-${{github.ref}}-${{ github.sha }}
-            restore-keys: |
-                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-${{github.ref}}-
-                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-refs/heads/main-
-                ${{ matrix.os }}-${{ matrix.compiler }}${{ matrix.llvm_version }}${{ matrix.bazel_config }}-${{ matrix.proto_version }}-
+          - llvm_version: 17.0.4
+            proto_version: 30.0
 
-      - name: Test
-        run: |
-          if [ "${{ matrix.bazel_config}}" == "asan" ]; then
-            BAZEL_MODE="-c dbg"
-            BAZEL_CONFIG="--config=asan"
-          fi
-          if [ "${{ matrix.bazel_config}}" == "opt" ]; then
-            BAZEL_MODE="-c opt"
-            BAZEL_CONFIG=
-          fi
-          if [ "${{ matrix.bazel_config}}" == "fastbuild" ]; then
-            BAZEL_MODE="-c fastbuild"
-            BAZEL_CONFIG=
-          fi
-          if [ "${{ matrix.proto_version }}" != "30.0" ]; then
-            cp "bazelmod/MODULE.proto${{ matrix.proto_version }}.bazel" MODULE.bazel
-          fi
-          if [ "${{ matrix.llvm_version}}" != "19.1.6" ]; then
-            CONTROL_FILE=bazelmod/llvm.MODULE.bazel
-            sed -e 's,llvm_version = ".*",llvm_version = "${{ matrix.llvm_version }}",g' "${CONTROL_FILE}" > "${CONTROL_FILE}.new"
-            mv "${CONTROL_FILE}.new" "${CONTROL_FILE}"
-          fi
-          if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            CACHE_ROOT=~/.cache/bazel
-            OUTPUT_USE_ROOT="--output_user_root=${CACHE_ROOT}"
-            REPOSITORY_CACHE="--repository_cache=${CACHE_ROOT}/repo-cache"
-          else
-            OUTPUT_USE_ROOT=
-            REPOSITORY_CACHE=
-          fi
-          bazel ${OUTPUT_USE_ROOT} test --enable_bzlmod --noenable_workspace ${REPOSITORY_CACHE} --config=clang ${BAZEL_MODE} ${BAZEL_CONFIG} //...
+    uses: ./.github/workflows/test.yml
+    with:
+      os: ${{ matrix.os }}
+      bazel_mode: ${{ matrix.bazel_mode }}
+      compiler: ${{ matrix.compiler }}
+      bazel_config: ${{ matrix.bazel_config }}
+      proto_version: ${{ matrix.proto_version }}

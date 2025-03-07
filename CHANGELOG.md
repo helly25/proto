@@ -1,3 +1,8 @@
+# 0.6.2
+
+* Updated protobuf dev dependency to v30.0 to ensure compatibility.
+* Updated CI matrix to cover more combinations.
+
 # 0.6.1
 
 * Updated license/copyright to add SPDX headers.
