@@ -87,9 +87,15 @@ jobs:
             proto_version: 27.0
 
           - bazel_config: cpp23
+            proto_version: 29.0
+          - bazel_config: cpp23
             proto_version: 28.0
           - bazel_config: cpp23
             proto_version: 27.0
+          - bazel_config: cpp23
+            llvm_version: 17.0.4
+          - bazel_config: cpp23
+            llvm_version: 19.1.6
 
           - bazel_config: fastbuild
             proto_version: 30.0

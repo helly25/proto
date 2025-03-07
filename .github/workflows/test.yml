@@ -70,11 +70,11 @@ jobs:
       - uses: actions/cache@v4
         with:
             path: "~/.cache/bazel"
-            key: ${{ inputs.os }}-${{ inputs.bazel_mode }}${{ inputs.compiler }}${{ inputs.llvm_version }}${{ inputs.gcc_version }}${{ inputs.bazel_config }}${{ inputs.module_version }}-${{github.ref}}-${{ github.sha }}
+            key: ${{ inputs.os }}-${{ inputs.bazel_mode }}${{ inputs.compiler }}${{ inputs.llvm_version }}${{ inputs.gcc_version }}${{ inputs.proto_version }}${{ inputs.bazel_config }}${{ inputs.module_version }}-${{github.ref}}-${{ github.sha }}
             restore-keys: |
-                ${{ inputs.os }}-${{ inputs.bazel_mode }}${{ inputs.compiler }}${{ inputs.llvm_version }}${{ inputs.gcc_version }}${{ inputs.bazel_config }}${{ inputs.module_version }}-${{github.ref}}-
-                ${{ inputs.os }}-${{ inputs.bazel_mode }}${{ inputs.compiler }}${{ inputs.llvm_version }}${{ inputs.gcc_version }}${{ inputs.bazel_config }}${{ inputs.module_version }}-refs/heads/main-
-                ${{ inputs.os }}-${{ inputs.bazel_mode }}${{ inputs.compiler }}${{ inputs.llvm_version }}${{ inputs.gcc_version }}${{ inputs.bazel_config }}${{ inputs.module_version }}-
+                ${{ inputs.os }}-${{ inputs.bazel_mode }}${{ inputs.compiler }}${{ inputs.llvm_version }}${{ inputs.gcc_version }}${{ inputs.proto_version }}${{ inputs.bazel_config }}${{ inputs.module_version }}-${{github.ref}}-
+                ${{ inputs.os }}-${{ inputs.bazel_mode }}${{ inputs.compiler }}${{ inputs.llvm_version }}${{ inputs.gcc_version }}${{ inputs.proto_version }}${{ inputs.bazel_config }}${{ inputs.module_version }}-refs/heads/main-
+                ${{ inputs.os }}-${{ inputs.bazel_mode }}${{ inputs.compiler }}${{ inputs.llvm_version }}${{ inputs.gcc_version }}${{ inputs.proto_version }}${{ inputs.bazel_config }}${{ inputs.module_version }}-
       - run: |
           declare -a BAZEL_INIT=()
           declare -a BAZEL_ARGS=()
