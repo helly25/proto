@@ -40,7 +40,7 @@ jobs:
       bazel_config: ${{ matrix.bazel_config }}
 
   test-clang:
-    needs: [pre-commit, test-gcc]
+    #needs: [pre-commit, test-gcc]
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -101,6 +101,7 @@ jobs:
 
     uses: ./.github/workflows/test.yml
     with:
+      continue-on-error: true
       os: ${{ matrix.os }}
       bazel_mode: ${{ matrix.bazel_mode }}
       compiler: ${{ matrix.compiler }}

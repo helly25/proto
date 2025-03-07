@@ -93,6 +93,8 @@ jobs:
           fi
           if [ "${{ inputs.compiler }}" == "clang" ]; then
             BAZEL_ARGS+=("--config=clang")
+            unset CC
+            unset CXX
             if [ -r "bazelmod/llvm.${{ inputs.llvm_version }}.MODULE.bazel" ]; then
               cp "bazelmod/llvm.${{ inputs.llvm_version }}.MODULE.bazel" bazelmod/llvm.MODULE.bazel
             elif [ "${{ inputs.llvm_version }}" != "19.1.6" ]; then
