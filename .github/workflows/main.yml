@@ -53,6 +53,8 @@ jobs:
           - os: macos-latest
             llvm_version: 17.0.4
           - os: macos-latest
+            llvm_version: 20.1.0
+          - os: macos-latest
             proto_version: 28.0
           - os: macos-latest
             proto_version: 27.0
