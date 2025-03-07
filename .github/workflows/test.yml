@@ -129,4 +129,5 @@ jobs:
           fi
           echo "BAZEL_INIT: ${BAZEL_INIT[@]}"
           echo "BAZEL_ARGS: ${BAZEL_ARGS[@]}"
+          cat bazelmod/llvm.MODULE.bazel
           bazel "${BAZEL_INIT[@]}" test "${BAZEL_ARGS[@]}" //...
