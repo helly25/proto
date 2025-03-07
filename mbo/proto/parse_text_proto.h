@@ -113,4 +113,18 @@ inline absl::StatusOr<T> ParseText(
 
 }  // namespace mbo::proto
 
+#ifndef PARSE_TEXT_PROTO
+// The elusive `PARSE_TEXT_PROTO` as supported by clang-tidy:
+// https://clang.llvm.org/docs/ClangFormatStyleOptions.html.
+//
+// Around 2010 writing tests involving Google protobuffers was so annoying but
+// yet so prevalent, that I implemented a type-erasure solution which is the
+// ParseTextProtoOrDie function. However, we could not yet apply C++11's amazing
+// std::source_location and thus had to apply __FILE__ and __LINE__ macro
+// techniques. Today, you really want to use the function. However, clang-tidy
+// still allows for special support, where the macro is known to take a
+// text-proto and thus clang-tidy applies automatic text-proto formatting.
+#define PARSE_TEXT_PROTO(text) ParseTextProtoOrDie(text)
+#endif  // !PARSE_TEXT_PROTO
+
 #endif  // MBO_PROTO_PARSE_TEXT_PROTO_H_

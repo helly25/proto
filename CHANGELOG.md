@@ -2,6 +2,7 @@
 
 * Updated protobuf dev dependency to v30.0 to ensure compatibility.
 * Updated CI matrix to cover more combinations.
+* Implemented (again) the elusive `PARSE_TEXT_PROTO` from 2010 as referenced by clang-tidy's documentation.
 
 # 0.6.1
 
