@@ -105,4 +105,4 @@ jobs:
       bazel_mode: ${{ matrix.bazel_mode }}
       compiler: ${{ matrix.compiler }}
       bazel_config: ${{ matrix.bazel_config }}
-      proto_version: ${{ matrix.proto_version }}
+      proto_version: "${{ matrix.proto_version }}"
