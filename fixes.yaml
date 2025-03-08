@@ -1,0 +1,28 @@
+---
+MainSourceFile:  '/home/marcus/helly25/proto/mbo/proto/silent_error_collector.h'
+Diagnostics:
+  - DiagnosticName:  misc-include-cleaner
+    DiagnosticMessage:
+      Message:         'no header providing "GOOGLE_PROTOBUF_VERSION" is directly included'
+      FilePath:        'mbo/proto/matchers.cc'
+      FileOffset:      1881
+      Replacements:
+        - FilePath:        'mbo/proto/matchers.cc'
+          Offset:          1209
+          Length:          0
+          ReplacementText: "#include \"google/protobuf/stubs/common.h\"\n"
+    Level:           Warning
+    BuildDirectory:  '/home/marcus/helly25/proto'
+  - DiagnosticName:  misc-include-cleaner
+    DiagnosticMessage:
+      Message:         'no header providing "GOOGLE_PROTOBUF_VERSION" is directly included'
+      FilePath:        'mbo/proto/silent_error_collector_test.cc'
+      FileOffset:      1398
+      Replacements:
+        - FilePath:        'mbo/proto/silent_error_collector_test.cc'
+          Offset:          948
+          Length:          0
+          ReplacementText: "#include \"google/protobuf/stubs/common.h\"\n"
+    Level:           Warning
+    BuildDirectory:  '/home/marcus/helly25/proto'
+...
