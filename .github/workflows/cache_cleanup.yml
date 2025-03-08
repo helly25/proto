@@ -13,7 +13,7 @@ jobs:
           set -euo pipefail
 
           echo "Fetching list of cache keys for branch '${BRANCH}'."
-          cacheKeysForPR=$(gh cache list --ref "${BRANCH}"" --limit 100 --json id --jq '.[].id')
+          cacheKeysForPR=$(gh cache list --ref "${BRANCH}" --limit 100 --json id --jq '.[].id')
 
           echo "Deleting caches..."
           for cacheKey in $cacheKeysForPR
