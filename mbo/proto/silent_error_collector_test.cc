@@ -21,7 +21,7 @@
 #include "absl/strings/str_split.h"
 #include "gmock/gmock.h"
 #include "google/protobuf/io/tokenizer.h"
-#include "google/protobuf/stubs/common.h"
+// #include "google/protobuf/stubs/common.h"  // Via tokenizer.h
 #include "gtest/gtest.h"
 
 namespace mbo::proto {

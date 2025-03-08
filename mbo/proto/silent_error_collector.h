@@ -17,6 +17,7 @@
 #define MBO_PROTO_SILENT_ERROR_COLLECTOR_H_
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -33,6 +34,7 @@ namespace mbo::proto {
 // protobuf library versions.
 class SilentErrorCollector {
  public:
+  // NOLINTBEGIN(readability-identifier-naming)
   struct ErrorInfo {
     int line = 0;
     int column = 0;
@@ -51,14 +53,18 @@ class SilentErrorCollector {
   SilentErrorCollector(SilentErrorCollector&&) noexcept = default;
   SilentErrorCollector& operator=(SilentErrorCollector&&) noexcept = default;
 
+  virtual ~SilentErrorCollector() = default;
+
   // Records a single message. In client code that manually needs to add messages always use this
   // variant and never RecordError/Warning or AddError/Warning.
   void Record(int line, int column, std::string_view message, absl::LogSeverity severity) {
     errors_.push_back({.line = line, .column = column, .message = std::string(message), .severity = severity});
   }
 
+  // NOLINTNEXTLINE(*-explicit-constructor,*-explicit-conversions)
   operator ::google::protobuf::io::ErrorCollector&() & { return *impl_; }
 
+  // NOLINTNEXTLINE(*-explicit-constructor,*-explicit-conversions)
   operator ::google::protobuf::io::ErrorCollector*() & { return &*impl_; }
 
   virtual std::string FormatError(const ErrorInfo& error) const;
@@ -75,12 +81,14 @@ class SilentErrorCollector {
 
   auto end() const { return errors_.end(); }
 
+  // NOLINTEND(readability-identifier-naming)
+
  private:
   class Impl : public ::google::protobuf::io::ErrorCollector {
    public:
     Impl() = delete;
 
-    Impl(SilentErrorCollector& collector) : collector_(collector) {}
+    explicit Impl(SilentErrorCollector& collector) : collector_(collector) {}
 
 #if GOOGLE_PROTOBUF_VERSION >= 5'026'000
     void RecordError(int line, int column, std::string_view message) override {
