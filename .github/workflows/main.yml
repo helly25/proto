@@ -126,7 +126,7 @@ jobs:
         compiler: [clang]
         llvm_version: [19.1.6]
         bazel_config: [opt]
-        module_version: [proto27]
+        module_version: [proto27.0]
 
     uses: ./.github/workflows/test.yml
     with:
