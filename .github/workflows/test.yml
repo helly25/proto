@@ -66,7 +66,8 @@ jobs:
         if: ${{ inputs.compiler == 'gcc' }}
         with:
           version: ${{ inputs.gcc_version }}
-          platform: x64
+          platform: ${{ runner.arch }}
+
       - uses: actions/cache@v4
         with:
             path: "~/.cache/bazel"
@@ -78,11 +79,9 @@ jobs:
       - run: |
           declare -a BAZEL_INIT=()
           declare -a BAZEL_ARGS=()
-          if [ "${{ inputs.os }}" == "macos-latest" ]; then
-            CACHE_ROOT=~/.cache/bazel
-            BAZEL_INIT+=("--output_user_root=${CACHE_ROOT}")
-            BAZEL_ARGS+=("--repository_cache=${CACHE_ROOT}/repo-cache")
-          fi
+          CACHE_ROOT=~/.cache
+          BAZEL_INIT+=("--output_user_root=${CACHE_ROOT}/bazel")
+          BAZEL_ARGS+=("--repository_cache=${CACHE_ROOT}/bazel_repo-cache")
           if [ "${{ inputs.bazel_mode}}" == "workspace" ]; then
             BAZEL_ARGS+=("--noenable_bzlmod" "--enable_workspace")
           elif [ "${{ inputs.bazel_mode}}" == "bzlmod" ]; then

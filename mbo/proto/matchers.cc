@@ -30,7 +30,7 @@
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/tokenizer.h"
 #include "google/protobuf/message.h"
-#include "google/protobuf/stubs/common.h"
+// #include "google/protobuf/stubs/common.h"  // Via tokenizer.h
 #include "google/protobuf/text_format.h"
 #include "google/protobuf/util/field_comparator.h"
 #include "gtest/gtest.h"
