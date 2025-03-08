@@ -66,7 +66,8 @@ jobs:
         if: ${{ inputs.compiler == 'gcc' }}
         with:
           version: ${{ inputs.gcc_version }}
-          platform: x64
+          platform: ${{ runner.arch }}
+
       - uses: actions/cache@v4
         with:
             path: "~/.cache/bazel"
