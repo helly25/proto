@@ -1,6 +1,7 @@
 # 0.6.3
 
 * Made macro `PARSE_TEXT_PROTO` issue a deprecation warning.
+* Raise minimum zlib version when built with proto version 27.0 for MacOS.
 
 # 0.6.2
 
