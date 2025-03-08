@@ -16,13 +16,11 @@
 #include "mbo/proto/silent_error_collector.h"
 
 #include <string>
-#include <vector>
+#include <string_view>
 
-#include "absl/base/log_severity.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_join.h"
-#include "google/protobuf/io/tokenizer.h"
 
 namespace mbo::proto {
 

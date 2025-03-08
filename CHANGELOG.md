@@ -1,3 +1,7 @@
+# 0.6.3
+
+* Made macro `PARSE_TEXT_PROTO` issue a deprecation warning.
+
 # 0.6.2
 
 * Updated protobuf dev dependency to v30.0 to ensure compatibility.
@@ -8,6 +12,7 @@
 
 * Updated license/copyright to add SPDX headers.
 * Updated internal tooling.
+* Released to baze-central-registry for the first time.
 
 # 0.6.0
 
