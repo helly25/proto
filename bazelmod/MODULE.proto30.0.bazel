@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Module helly25/proto with proto version 30.0."""
+
 # Due to flag and test references to the repo name we use the old name for now.
-"""Bazelmod file for protobuf version 30.0"""
 module(
     name = "helly25_proto",
     version = "0.0.0",

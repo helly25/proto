@@ -15,9 +15,8 @@
 
 #include "mbo/proto/matchers.h"
 
-#include <iostream>
+#include <sstream>
 #include <string>
-#include <type_traits>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -30,7 +29,6 @@ namespace {
 using ::mbo::proto::ParseTextProtoOrDie;
 using ::mbo::proto::tests::TestMessage;
 using ::mbo::proto::tests::TestMessage2;
-using ::testing::Each;
 using ::testing::EndsWith;
 using ::testing::HasSubstr;
 using ::testing::Matches;
@@ -38,10 +36,10 @@ using ::testing::Not;
 using ::testing::SafeMatcherCast;
 
 template<typename T, typename M>
-inline std::string GetExplanation(M matcher, const T& value) {
-  std::stringstream ss;
-  SafeMatcherCast<const T&>(matcher).ExplainMatchResultTo(value, &ss);
-  return ss.str();
+inline std::string GetExplanation(const M& matcher, const T& value) {
+  std::stringstream sss;
+  SafeMatcherCast<const T&>(matcher).ExplainMatchResultTo(value, &sss);
+  return sss.str();
 }
 
 TEST(Matchers, EqualsProto) {

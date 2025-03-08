@@ -69,6 +69,11 @@ class ParseTextProtoHelper final {
   bool parsed_{false};
 };
 
+[[deprecated("Use mbo::proto::ParseTextProtoOrDie(R\"pb(...)pb\")")]] inline proto_internal::ParseTextProtoHelper
+DeprecatedParseTextProtoOrDie(std::string_view text_proto, std::source_location loc = std::source_location::current()) {
+  return {text_proto, loc};
+}
+
 }  // namespace proto_internal
 
 // Parses the text in 'text_proto' into the proto message type requested as return type.
@@ -124,7 +129,14 @@ inline absl::StatusOr<T> ParseText(
 // techniques. Today, you really want to use the function. However, clang-tidy
 // still allows for special support, where the macro is known to take a
 // text-proto and thus clang-tidy applies automatic text-proto formatting.
-#define PARSE_TEXT_PROTO(text) ParseTextProtoOrDie(text)
+//
+// The correct replacement for the macro uses the 'pb' raw-string delimiter:
+// ```
+// ParseTextProtoOrDie(R"pb(...)pb")
+// ```
+//
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define PARSE_TEXT_PROTO(text) proto_internal::DeprecatedParseTextProtoOrDie(text)
 #endif  // !PARSE_TEXT_PROTO
 
 #endif  // MBO_PROTO_PARSE_TEXT_PROTO_H_

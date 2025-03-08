@@ -17,8 +17,11 @@
 
 #include <string>
 
+#include "absl/base/log_severity.h"
 #include "absl/strings/str_split.h"
 #include "gmock/gmock.h"
+#include "google/protobuf/io/tokenizer.h"
+#include "google/protobuf/stubs/common.h"
 #include "gtest/gtest.h"
 
 namespace mbo::proto {
@@ -31,26 +34,27 @@ using ::testing::SizeIs;
 
 struct SilentErrorCollectorTest : ::testing::Test {
   // Simulate adding an error using an `ErrorCollector*`
-  static void Error(int line, int column, const std::string& message, ::google::protobuf::io::ErrorCollector* ec) {
-    ASSERT_THAT(ec, NotNull());
+  static void Error(int line, int column, const std::string& msg, ::google::protobuf::io::ErrorCollector* errors) {
+    ASSERT_THAT(errors, NotNull());
 #if GOOGLE_PROTOBUF_VERSION >= 5'026'000
-    ec->RecordError(line, column, message);
+    errors->RecordError(line, column, msg);
 #else
-    ec->AddError(line, column, message);
+    errors->AddError(line, column, message);
 #endif
   }
 
   // Simulate adding a warning using an `ErrorCollector&`
-  static void Warning(int line, int column, const std::string& message, ::google::protobuf::io::ErrorCollector& ec) {
+  static void Warning(int line, int column, const std::string& msg, ::google::protobuf::io::ErrorCollector& errors) {
 #if GOOGLE_PROTOBUF_VERSION >= 5'026'000
-    ec.RecordWarning(line, column, message);
+    errors.RecordWarning(line, column, msg);
 #else
-    ec.AddWarning(line, column, message);
+    errors.AddWarning(line, column, message);
 #endif
   }
 };
 
 TEST_F(SilentErrorCollectorTest, Test) {
+  // NOLINTBEGIN(*-magic-numbers)
   SilentErrorCollector collector;
   EXPECT_THAT(collector, IsEmpty());
   EXPECT_THAT(collector, SizeIs(0));
@@ -70,6 +74,7 @@ TEST_F(SilentErrorCollectorTest, Test) {
           "Line 25, Col 42: error",
           "Line 33, Col 99: warning",
       }));
+  // NOLINTEND(*-magic-numbers)
 }
 
 }  // namespace mbo::proto

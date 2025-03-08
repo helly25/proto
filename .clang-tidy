@@ -14,22 +14,25 @@ Checks: >
   -cppcoreguidelines-avoid-const-or-ref-data-members,
   -fuchsia*,
   google-*,
+  -google-build-using-namespace,
   -hicpp-no-assembler,
   -llvm-else-after-return,
-  llvm-header-guard,
   -llvm-include-order,
   -llvmlibc-*,
   misc-*,
   modernize-*,
   -modernize-use-nodiscard,
+  -modernize-use-std-format,
   -modernize-use-trailing-return-type,
   performance-*,
+  -performance-enum-size,
   portability-*,
   readability-*,
+  -readability-avoid-nested-conditional-operator,
   -readability-else-after-return,
+  -readability-redundant-inline-specifier,
 
 WarningsAsErrors: true
-AnalyzeTemporaryDtors: false
 FormatStyle:       '.clang-format'
 CheckOptions:
   - key:             bugprone-signed-char-misuse.CharTypdefsToIgnore
@@ -62,6 +65,8 @@ CheckOptions:
     value:           'NULL'
   - key:             performance-unnecessary-value-param.AllowedTypes
     value:           'absl::Status;absl::StatusOr;std::string_view'
+  - key:             readability-function-cognitive-complexity.Threshold
+    value:           '25'
   - key:             readability-braces-around-statements.ShortStatementLines
     value:           '1'
   - key:             readability-identifier-length.IgnoredLoopCounterNames

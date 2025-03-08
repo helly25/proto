@@ -15,23 +15,28 @@
 
 #include "mbo/proto/matchers.h"
 
-#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <sstream>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/strip.h"
 #include "absl/strings/substitute.h"
-#include "gmock/gmock.h"  // IWYU pragma: keep
+#include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/tokenizer.h"
+#include "google/protobuf/message.h"
+#include "google/protobuf/stubs/common.h"
 #include "google/protobuf/text_format.h"
+#include "google/protobuf/util/field_comparator.h"
 #include "gtest/gtest.h"
 #include "re2/re2.h"
 
 namespace mbo::proto::internal {
-
-using RegExpStringPiece = re2::StringPiece;
 
 // Utilities.
 
@@ -73,15 +78,17 @@ bool ParsePartialFromAscii(const std::string& pb_ascii, ::google::protobuf::Mess
   return parser.ParseFromString(std::string(pb_ascii), proto);
 }
 
-// Returns true iff p and q can be compared (i.e. have the same descriptor).
-bool ProtoComparable(const ::google::protobuf::Message& p, const ::google::protobuf::Message& q) {
-  return p.GetDescriptor() == q.GetDescriptor();
+// Returns true iff `lhs` and `rhs` can be compared (i.e. have the same descriptor).
+bool ProtoComparable(const ::google::protobuf::Message& lhs, const ::google::protobuf::Message& rhs) {
+  return lhs.GetDescriptor() == rhs.GetDescriptor();
 }
+
+namespace {
 
 template<typename Container>
 std::string JoinStringPieces(const Container& strings, std::string_view separator) {
   std::stringstream stream;
-  std::string_view sep = "";
+  std::string_view sep;
   for (const std::string_view str : strings) {
     stream << sep << str;
     sep = separator;
@@ -118,11 +125,10 @@ void SetIgnoredFieldsOrDie(
     const std::vector<std::string>& ignore_fields,
     ::google::protobuf::util::MessageDifferencer* differencer) {
   if (!ignore_fields.empty()) {
-    std::vector<const ::google::protobuf::FieldDescriptor*> ignore_descriptors =
+    const std::vector<const ::google::protobuf::FieldDescriptor*> ignore_descriptors =
         GetFieldDescriptors(&root_descriptor, ignore_fields);
-    for (std::vector<const ::google::protobuf::FieldDescriptor*>::iterator it = ignore_descriptors.begin();
-         it != ignore_descriptors.end(); ++it) {
-      differencer->IgnoreField(*it);
+    for (const auto& ignore_descriptor : ignore_descriptors) {
+      differencer->IgnoreField(ignore_descriptor);
     }
   }
 }
@@ -135,15 +141,15 @@ class IgnoreFieldPathCriteria : public ::google::protobuf::util::MessageDifferen
       : ignored_field_path_(field_path) {}
 
   bool IsIgnored(
-      const ::google::protobuf::Message& message1,
-      const ::google::protobuf::Message& message2,
+      const ::google::protobuf::Message& /*message1*/,
+      const ::google::protobuf::Message& /*message2*/,
       const ::google::protobuf::FieldDescriptor* field,
       const std::vector<::google::protobuf::util::MessageDifferencer::SpecificField>& parent_fields) override {
     // The off by one is for the current field.
     if (parent_fields.size() + 1 != ignored_field_path_.size()) {
       return false;
     }
-    for (size_t i = 0; i < parent_fields.size(); ++i) {
+    for (std::size_t i = 0; i < parent_fields.size(); ++i) {
       const auto& cur_field = parent_fields[i];
       const auto& ignored_field = ignored_field_path_[i];
       // We could compare pointers but it's not guaranteed that descriptors come
@@ -166,19 +172,8 @@ class IgnoreFieldPathCriteria : public ::google::protobuf::util::MessageDifferen
   const std::vector<::google::protobuf::util::MessageDifferencer::SpecificField> ignored_field_path_;
 };
 
-namespace {
-bool Consume(RegExpStringPiece* s, RegExpStringPiece x) {
-  // We use the implementation of ABSL's StartsWith here until we can pick up a
-  // dependency on Abseil.
-  if (x.empty() || (s->size() >= x.size() && memcmp(s->data(), x.data(), x.size()) == 0)) {
-    s->remove_prefix(x.size());
-    return true;
-  }
-  return false;
-}
-}  // namespace
-
 // Parses a field path and returns individual components.
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::vector<::google::protobuf::util::MessageDifferencer::SpecificField> ParseFieldPathOrDie(
     const std::string& relative_field_path,
     const ::google::protobuf::Descriptor& root_descriptor) {
@@ -196,10 +191,10 @@ std::vector<::google::protobuf::util::MessageDifferencer::SpecificField> ParseFi
   const RE2 field_subscript_regex(R"(([^.()[\]]+)\[(\d+)\])");
   const RE2 extension_regex(R"(\(([^)]+)\))");
 
-  RegExpStringPiece input(relative_field_path);
+  std::string_view input(relative_field_path);
   while (!input.empty()) {
     // Consume a dot, except on the first iteration.
-    if (input.size() < relative_field_path.size() && !Consume(&input, ".")) {
+    if (input.size() < relative_field_path.size() && !absl::ConsumePrefix(&input, ".")) {
       ABSL_LOG(FATAL) << "Cannot parse field path '" << relative_field_path << "' at offset "
                       << relative_field_path.size() - input.size() << ": expected '.'";
     }
@@ -246,7 +241,8 @@ void SetIgnoredFieldPathsOrDie(
     const std::vector<std::string>& field_paths,
     ::google::protobuf::util::MessageDifferencer* differencer) {
   for (const std::string& field_path : field_paths) {
-    differencer->AddIgnoreCriteria(new IgnoreFieldPathCriteria(ParseFieldPathOrDie(field_path, root_descriptor)));
+    differencer->AddIgnoreCriteria(
+        std::make_unique<IgnoreFieldPathCriteria>(ParseFieldPathOrDie(field_path, root_descriptor)));
   }
 }
 
@@ -274,6 +270,8 @@ void ConfigureDifferencer(
   }
   differencer->set_field_comparator(comparator);
 }
+
+}  // namespace
 
 // Returns true iff actual and expected are comparable and match.  The
 // comp argument specifies how two are compared.
@@ -330,7 +328,7 @@ std::string DescribeDiff(
   differencer.Compare(expected, actual);
 
   // Removes the trailing '\n' in the diff to make the output look nicer.
-  if (diff.length() > 0 && *(diff.end() - 1) == '\n') {
+  if (!diff.empty() && *(diff.end() - 1) == '\n') {
     diff.erase(diff.end() - 1);
   }
 

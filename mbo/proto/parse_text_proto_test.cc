@@ -15,7 +15,11 @@
 
 #include "mbo/proto/parse_text_proto.h"
 
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/strings/str_cat.h"
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "mbo/proto/matchers.h"
 #include "mbo/proto/tests/simple_message.pb.h"
 
@@ -50,7 +54,7 @@ TEST_F(ParseTextProtoTest, ParseTextProtoOrDiePass) {
 
 TEST_F(ParseTextProtoTest, ParseTextProtoOrDieFail) {
   EXPECT_DEATH(
-      SimpleMessage msg = ParseTextProtoOrDie("!!!"),
+      const SimpleMessage msg = ParseTextProtoOrDie("!!!"),
       // Using [0-9] in lieu of \\d to be compatible in open source.
       ".*Check failed: "                                   // Prefix
       "INVALID_ARGUMENT: "                                 // StatusCode
@@ -62,25 +66,38 @@ TEST_F(ParseTextProtoTest, ParseTextProtoOrDieFail) {
 TEST_F(ParseTextProtoTest, ParseText) {
   EXPECT_THAT(*ParseText<SimpleMessage>("one: 25"), EqualsProto("one: 25"));
   const absl::StatusOr<SimpleMessage> status = ParseText<SimpleMessage>("!!!");
-  static constexpr std::string_view expected =  //
-                                                // Using [0-9] in lieu of \\d to be compatible in open source.
-      "ParseText<SimpleMessage>.*\n.*"          // Called function
+  static constexpr std::string_view kExpected =  //
+                                                 // Using [0-9] in lieu of \\d to be compatible in open source.
+      "ParseText<SimpleMessage>.*\n.*"           // Called function
       "File: '.*/parse_text_proto.*', Line: [0-9]+.*\n.*"  // Source
       "Line 0, Col 0: Expected identifier, got: !.*";      // Error
   ASSERT_THAT(status.status().ok(), false);
   EXPECT_THAT(status.status().code(), absl::StatusCode::kInvalidArgument);
-  EXPECT_THAT(status.status().message(), ContainsRegex(expected));
+  EXPECT_THAT(status.status().message(), ContainsRegex(kExpected));
   EXPECT_DEATH(
       auto msg = *ParseText<SimpleMessage>("!!!"),
       absl::StrCat(
           "RAW: Attempting to fetch value instead of handling error ",  // Prefix
           "INVALID_ARGUMENT: ",                                         // StatusCode
-          expected));
+          kExpected));
 }
 
 TEST_F(ParseTextProtoTest, Macro) {
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif  // defined(__clang__)
+  // NOLINTNEXTLINE(clang-diagnostic-deprecated-declarations)
   const SimpleMessage proto = PARSE_TEXT_PROTO("one: 42");
   EXPECT_THAT(proto, EqualsProto("one: 42"));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif  // defined(__clang__)
 }
 
 }  // namespace
