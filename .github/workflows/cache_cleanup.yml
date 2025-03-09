@@ -12,13 +12,14 @@ jobs:
         run: |
           set -euo pipefail
 
+          # We could fetch the prefix list and per prefix keep one. But main cannot see the feature branch cahce :-(
           echo "Fetching list of cache keys for head ref '${HEAD_REF}' on PR '${PULL_REQUEST}'."
           cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id --jq '.[].id')
 
           echo "Deleting caches..."
-          for cacheKey in ${cacheKeysForPR}; do
-            echo "Deleting cache: '${cacheKey}'"
-            gh cache delete "${cacheKey}" || echo "Error deleting: '${cacheKey}'."
+          for cacheKey in ${cacheKeysForPR}"; do
+            echo "Deleting cache: ${cacheKey}"
+            gh cache delete "${cacheKey}" || echo "Error deleting: ${cacheKey}"
           done
           echo "Done"
         env:
