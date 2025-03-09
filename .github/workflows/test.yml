@@ -57,8 +57,6 @@ on:
 
 env:
   CACHE_KEY_PREFIX: ${{inputs.os}}-${{inputs.bazel_mode}}_${{inputs.compiler}}_${{inputs.llvm_version}}_${{inputs.gcc_version}}_${{inputs.proto_version}}_${{inputs.bazel_config}}_${{inputs.module_version}}
-  GH_TOKEN: ${{secrets.CACHE_ACCESS}}
-  GH_REPO: ${{github.repository}}
 
 jobs:
   test:
@@ -147,6 +145,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          env
+
           echo "Fetching list of old caches for key prefix ${{env.CACHE_KEY_PREFIX}}-${{github.ref}}..."
           oldCacheKeys=$(gh cache list  --limit 100 --json id,key,ref,createdAt --jq "map(select(.key|startswith(\"${CACHE_KEY_PREFIX}-${{github.ref}}\")))|sort_by(.createdAt)|.[:-1]|.[].id")
 
@@ -155,3 +155,6 @@ jobs:
             echo "Deleting cache: ${$cacheKey}"
             gh cache delete "${cacheKey}" || echo "Error deleting: ${$cacheKey}"
           done
+        env:
+          GH_TOKEN: ${{secrets.CACHE_ACCESS}}
+          GH_REPO: ${{github.repository}}
