@@ -34,11 +34,11 @@ jobs:
 
           closedBeforeDate="$(date -Iminutes --date=-4hours)"
           echo "Fetching list of branch names for PRs closed before: ${closedBeforeDate}."
-          closedPRs=$(gh pr list -s closed --json headRefName,closedAt --jq "map(select(.closedAt < \"${closedBeforeDate}\"))|.[].headRefName")
-          for closedPR in ${closedPRs}; do
-            echo "Deleting caches for '${closedPR}'..."
-            cacheKeysForPR=$(gh cache list --ref "ref/heads/${closedPR}" --limit 250 --json id --jq '.[].id')
-            for cacheKey in ${cacheKeysForPR}; do
+          closedPrList=$(gh pr list -s closed --json headRefName,closedAt --jq "map(select(.closedAt < \"${closedBeforeDate}\"))|.[].headRefName")
+          for closedPr in ${closedPrList}; do
+            echo "Deleting caches for '${closedPr}'..."
+            cacheKeyList=$(gh cache list --ref "refs/heads/${closedPr}" --limit 250 --json id --jq '.[].id')
+            for cacheKey in ${cacheKeyList}; do
               echo "Deleting cache: '${cacheKey}'"
               gh cache delete "${cacheKey}" || echo "Error deleting: '${cacheKey}'."
             done
