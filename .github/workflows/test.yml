@@ -55,12 +55,15 @@ on:
         type: string
         default: ''
 
+env:
+  CACHE_KEY_PREFIX: ${{inputs.os}}-${{inputs.bazel_mode}}_${{inputs.compiler}}_${{inputs.llvm_version}}_${{inputs.gcc_version}}_${{inputs.proto_version}}_${{inputs.bazel_config}}_${{inputs.module_version}}
+  GH_TOKEN: ${{secrets.CACHE_ACCESS}}
+  GH_REPO: ${{github.repository}}
+
 jobs:
   test:
     runs-on: ${{inputs.os}}
     continue-on-error: ${{inputs.continue-on-error}}
-    env:
-      CACHE_KEY_PREFIX: ${{inputs.os}}-${{inputs.bazel_mode}}_${{inputs.compiler}}_${{inputs.llvm_version}}_${{inputs.gcc_version}}_${{inputs.proto_version}}_${{inputs.bazel_config}}_${{inputs.module_version}}
     steps:
       - uses: actions/checkout@v4
       - uses: bazelbuild/setup-bazelisk@v3
@@ -135,11 +138,16 @@ jobs:
           echo "BAZEL_ARGS: ${BAZEL_ARGS[@]}"
           bazel "${BAZEL_INIT[@]}" test "${BAZEL_ARGS[@]}" //...
 
-      - name: Cleanup old caches for key prefix ${{env.CACHE_KEY_PREFIX}}-${{github.ref}}
+  cleanup:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: test
+    steps:
+      - name: Cleanup old caches
         run: |
           set -euo pipefail
 
-          echo "Fetching list of old caches..."
+          echo "Fetching list of old caches for key prefix ${{env.CACHE_KEY_PREFIX}}-${{github.ref}}..."
           oldCacheKeys=$(gh cache list  --limit 100 --json id,key,ref,createdAt --jq "map(select(.key|startswith(\"${CACHE_KEY_PREFIX}-${{github.ref}}\")))|sort_by(.createdAt)|.[:-1]|.[].id")
 
           echo "Deleting caches for ${closedPR}..."
@@ -147,6 +155,3 @@ jobs:
             echo "Deleting cache: ${$cacheKey}"
             gh cache delete "${cacheKey}" || echo "Error deleting: ${$cacheKey}"
           done
-        env:
-          GH_TOKEN: ${{secrets.CACHE_ACCESS}}
-          GH_REPO: ${{github.repository}}
