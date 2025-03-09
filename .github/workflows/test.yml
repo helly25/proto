@@ -148,9 +148,9 @@ jobs:
           echo "Fetching list of old caches for key prefix ${{env.CACHE_KEY_PREFIX}}-${{github.ref}}..."
           oldCacheKeys=$(gh cache list  --limit 100 --json id,key,ref,createdAt --jq "map(select(.key|startswith(\"${CACHE_KEY_PREFIX}-${{github.ref}}\")))|sort_by(.createdAt)|.[:-1]|.[].id")
 
-          echo "Deleting caches for ${closedPR}..."
+          echo "Deleting caches..."
           for cacheKey in "${oldCacheKeys[@]}"; do
-            echo "Deleting cache: ${$acheKey}"
+            echo "Deleting cache: ${cacheKey}"
             gh cache delete "${cacheKey}" || echo "Error deleting: ${cacheKey}"
           done
         env:
