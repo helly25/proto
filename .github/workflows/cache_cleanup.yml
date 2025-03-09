@@ -17,9 +17,9 @@ jobs:
           cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id --jq '.[].id')
 
           echo "Deleting caches..."
-          for cacheKey in ${cacheKeysForPR}"; do
+          for cacheKey in ${cacheKeysForPR}; do
             echo "Deleting cache: ${cacheKey}"
-            gh cache delete "${cacheKey}" || echo "Error deleting: ${cacheKey}"
+            gh cache delete "${cacheKey}" || echo "Error deleting: ${cacheKey}."
           done
           echo "Done"
         env:
