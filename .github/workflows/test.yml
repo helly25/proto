@@ -146,13 +146,13 @@ jobs:
           set -euo pipefail
 
           PREFIX="${{env.CACHE_KEY_PREFIX}}-${{github.ref}}"
-          echo "Fetching list of old caches for key prefix ${PREFIX}..."
-          oldCacheKeys=$(gh cache list  --limit 250 --json id,key,ref,createdAt --jq "map(select(.key|startswith(\"${PREFIX}\")))|sort_by(.createdAt)|.[:-1]|.[].id")
+          echo "Fetching list of old caches for key prefix '${PREFIX}''..."
+          cacheKeyList=$(gh cache list  --limit 250 --json id,key,ref,createdAt --jq "map(select(.key|startswith(\"${PREFIX}\")))|sort_by(.createdAt)|.[:-1]|.[].id")
 
           echo "Deleting caches..."
-          for cacheKey in ${oldCacheKeys}; do
-            echo "Deleting cache: ${cacheKey}"
-            gh cache delete "${cacheKey}" || echo "Error deleting: ${cacheKey}"
+          for cacheKey in ${cacheKeyList}; do
+            echo "Deleting cache: '${cacheKey}'"
+            gh cache delete "${cacheKey}" || echo "Error deleting: '${cacheKey}'."
           done
         env:
           GH_TOKEN: ${{secrets.CACHE_ACCESS}}
