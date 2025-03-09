@@ -14,6 +14,7 @@ jobs:
 
   test-gcc:
     needs: pre-commit
+    secrets: inherit
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -41,6 +42,7 @@ jobs:
 
   test-clang:
     needs: [pre-commit, test-gcc]
+    secrets: inherit
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -119,6 +121,7 @@ jobs:
 
   test-bcr:
     needs: [pre-commit, test-gcc]
+    secrets: inherit
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
