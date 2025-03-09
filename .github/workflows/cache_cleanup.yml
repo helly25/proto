@@ -8,7 +8,7 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     steps:
-      - name: Cleanup
+      - name: Cleanup caches from current PR
         run: |
           set -euo pipefail
 
@@ -16,14 +16,32 @@ jobs:
           cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id --jq '.[].id')
 
           echo "Deleting caches..."
-          for cacheKey in $cacheKeysForPR
-          do
-              echo "Deleting cache: ${cacheKey}"
-              gh cache delete "${cacheKey}" || echo "Error deleting: ${cacheKey}"
+          for cacheKey in "${cacheKeysForPR[@]}"; do
+            echo "Deleting cache: ${cacheKey}"
+            gh cache delete "${cacheKey}" || echo "Error deleting: ${cacheKey}"
           done
           echo "Done"
         env:
-          GH_TOKEN: ${{ secrets.CACHE_ACCESS }}
-          GH_REPO: ${{ github.repository }}
-          PULL_REQUEST: refs/pull/${{ github.event.pull_request.number }}/merge
-          HEAD_REF: refs/heads/${{ github.head_ref }}
+          GH_TOKEN: ${{secrets.CACHE_ACCESS}}
+          GH_REPO: ${{github.repository}}
+          PULL_REQUEST: refs/pull/${{github.event.pull_request.number}}/merge
+          HEAD_REF: refs/heads/${{github.head_ref}}
+
+      - name: Cleanup caches from old PRs
+        run: |
+          set -euo pipefail
+
+          closedBeforeDate="$(date -Iminutes --date=-4hours)"
+          echo "Fetching list of branch names for PRs closed before: ${closedBeforeDate}."
+          closedPRs=$(gh pr list -s closed --json headRefName,closedAt --jq "map(select(.closedAt < \"${closedBeforeDate}\"))|.[].headRefName")
+          for closedPR in "${closedPRs[@]}"; do
+            echo "Deleting caches for ${closedPR}..."
+            cacheKeysForPR=$(gh cache list --ref "ref/heads/${closedPR}" --limit 250 --json id --jq '.[].id')
+            for cacheKey in "${cacheKeysForPR[@]}"; do
+              echo "Deleting cache: ${cacheKey}"
+              gh cache delete "${cacheKey}" || echo "Error deleting: ${cacheKey}"
+            done
+          done
+        env:
+          GH_TOKEN: ${{secrets.CACHE_ACCESS}}
+          GH_REPO: ${{github.repository}}
