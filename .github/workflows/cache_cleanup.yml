@@ -1,4 +1,4 @@
-name: cleanup caches by a branch
+name: Cleanup caches by head/ref after merging.
 on:
   pull_request:
     types:
@@ -12,8 +12,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "Fetching list of cache keys for branch '${BRANCH}'."
-          cacheKeysForPR=$(gh cache list --ref "${BRANCH}" --limit 100 --json id --jq '.[].id')
+          echo "Fetching list of cache keys for head ref '${HEAD_REF}' on PR '${PULL_REQUEST}'."
+          cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id --jq '.[].id')
 
           echo "Deleting caches..."
           for cacheKey in $cacheKeysForPR
@@ -25,4 +25,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.CACHE_ACCESS }}
           GH_REPO: ${{ github.repository }}
-          BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge
+          PULL_REQUEST: refs/pull/${{ github.event.pull_request.number }}/merge
+          HEAD_REF: refs/heads/${{ github.head_ref }}
