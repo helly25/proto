@@ -20,7 +20,7 @@ jobs:
         os: [ubuntu-latest]
         bazel_mode: [bzlmod, workspace]
         compiler: [gcc]
-        gcc_version: [11, 12, 13]
+        gcc_version: [9, 10, 11, 12, 13]
         bazel_config: [cpp23, opt]
         exclude:
           - bazel_mode: workspace
@@ -51,6 +51,7 @@ jobs:
         llvm_version: [20.1.0, 19.1.6, 17.0.4]
         bazel_config: [asan, cpp23, opt, fastbuild]
         proto_version: ['30.0', '29.0', '28.0', '27.0']
+        module_default: ['proto30.0']
         exclude:
           - os: macos-latest
             llvm_version: 17.0.4
@@ -117,7 +118,8 @@ jobs:
       compiler: ${{ matrix.compiler }}
       llvm_version: "${{ matrix.llvm_version }}"
       bazel_config: ${{ matrix.bazel_config }}
-      proto_version: "${{ matrix.proto_version }}"
+      module_version: "proto${{ matrix.proto_version }}"
+      module_default: "${{ matrix.module_default }}"
 
   test-bcr:
     needs: [pre-commit, test-gcc]
@@ -126,7 +128,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         bazel_mode: [bzlmod]
-        compiler: [clang]
+        compiler: [gcc]
+        gcc_version: [9]
         llvm_version: [19.1.6]
         bazel_config: [opt]
         module_version: [proto27.0]
