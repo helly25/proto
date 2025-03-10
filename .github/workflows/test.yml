@@ -42,21 +42,21 @@ on:
         description: 'The GCC version to use. This is only for compiler=gcc and will be ignored otherwise (e.g. 11, 12, 13).'
         type: string
         default: ''
-      proto_version:
-        description: 'The Protobuf version to use, e.g. "30.0" (selects //bazelmod/MODULE.proto30.0.bazel).'
-        type: string
-        default: ''
       bazel_config:
         description: 'The way how Bazel should operate compilation and tests, one of (asan, fastbuild, opt).'
         type: string
         default: opt
       module_version:
-        description: 'Version string for the MODULE.$ver.bazel to be copied from the bzlmod directory.'
+        description: 'Version string for the "MODULE.${module_version}.bazel" to be copied from the bzlmod directory.'
+        type: string
+        default: ''
+      module_default:
+        description: 'If the "module_version" has this value, then no "MODULE.${module_version}.bazel" will be copied.'
         type: string
         default: ''
 
 env:
-  CACHE_KEY_PREFIX: ${{inputs.os}}-${{inputs.bazel_mode}}_${{inputs.compiler}}_${{inputs.llvm_version}}_${{inputs.gcc_version}}_${{inputs.proto_version}}_${{inputs.bazel_config}}_${{inputs.module_version}}
+  CACHE_KEY_PREFIX: ${{inputs.os}}-${{inputs.bazel_mode}}_${{inputs.compiler}}_${{inputs.llvm_version}}_${{inputs.gcc_version}}_${{inputs.bazel_config}}_${{inputs.module_version}}
 
 jobs:
   test:
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: bazelbuild/setup-bazelisk@v3
       - uses: egor-tensin/setup-gcc@v1
-        if: ${{inputs.compiler == 'gcc'}}
+        if: ${{inputs.compiler == 'gcc' && inputs.gcc_version != ''}}
         with:
           version: ${{inputs.gcc_version}}
           platform: ${{runner.arch}}
@@ -81,6 +81,10 @@ jobs:
               ${{env.CACHE_KEY_PREFIX}}
       - name: Build and Test
         run: |
+          if [ "${{inputs.compiler}}:${{inputs.gcc_version}}" == "gcc:" ]; then
+            echo "ERROR: When compiler=='gcc', then a valid 'compiler_version' must be given."
+            exit 1
+          fi
           declare -a BAZEL_INIT=()
           declare -a BAZEL_ARGS=()
           CACHE_ROOT=~/.cache
@@ -108,13 +112,12 @@ jobs:
           elif [ "${{inputs.compiler}}" == "gcc" ]; then
             export CC=/usr/local/bin/gcc
             export CXX=/usr/local/bin/g++
+          elif [ "${{inputs.compiler}}" == "native" ]; then
+            # Use whatever is found!
+            [ -n "${CC}" ] && [ -x "${CC}" ] && echo "CC: $(${CC} --version)"
+            [ -n "${CXX}" ] && [ -x "${CXX}" ] && echo "CXX: $(${CXX} --version)"
           else
             echo "ERROR: Matrix/Input var 'compiler' must be one of [clang, gcc]."
-          fi
-          if [ -n "${{inputs.proto_version}}" ]; then
-            if [ "${{inputs.proto_version}}" != "30.0" ]; then
-              cp "bazelmod/MODULE.proto${{inputs.proto_version}}.bazel" MODULE.bazel
-            fi
           fi
           if [ "${{inputs.bazel_config}}" == "asan" ]; then
             BAZEL_ARGS+=("-c" "dbg" "--config=asan")
@@ -128,9 +131,8 @@ jobs:
             echo "ERROR: Matrix/Input var 'bazel_config' must be one of [asan, cpp23, fastbuild, opt]."
           fi
           if [ -n "${{inputs.module_version}}" ]; then
-            cp "bazelmod/MODULE.${{inputs.module_version}}.bazel" MODULE.bazel
-            if [ -n "${{inputs.proto_version}}" ]; then
-              echo "ERROR: Matrix/Input var 'module_version' cannot be used together with var 'proto_version'."
+            if [ "${{inputs.module_version}}" != "${{inputs.module_default}}" ]; then
+              cp "bazelmod/MODULE.${{inputs.module_version}}.bazel" MODULE.bazel
             fi
           fi
           echo "BAZEL_INIT: ${BAZEL_INIT[@]}"
