@@ -14,7 +14,11 @@ jobs:
 
           # We could fetch the prefix list and per prefix keep one. But main cannot see the feature branch cahce :-(
           echo "Fetching list of cache keys for head ref '${HEAD_REF}' on PR '${PULL_REQUEST}'."
-          cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id --jq '.[].id')
+          if [ "${HEAD_REF}" == "refs/heads/main" ]; then
+            cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id,createdAt --jq 'sort_by(.createdAt)|.[:-1]|.[].id')
+          else
+            cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id --jq '.[].id')
+          fi
 
           echo "Deleting caches..."
           for cacheKey in ${cacheKeysForPR}; do
