@@ -56,7 +56,7 @@ on:
         default: ''
 
 env:
-  CACHE_KEY_PREFIX: ${{inputs.os}}-${{inputs.bazel_mode}}_${{inputs.compiler}}_${{inputs.llvm_version}}_${{inputs.gcc_version}}_${{inputs.bazel_config}}_${{inputs.module_version}}
+  CACHE_KEY_PREFIX: ${{inputs.os}}-${{inputs.bazel_mode}}_${{inputs.compiler}}_${{inputs.compiler == 'clang' && inputs.llvm_version || ''}}_${{inputs.compiler == 'gcc' && inputs.gcc_version || ''}}_${{inputs.bazel_config}}_${{inputs.module_version}}
 
 jobs:
   test:
