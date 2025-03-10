@@ -9,17 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cleanup caches from current PR
+        # We could fetch the prefix list and per prefix keep only one.
+        # But for simplicity and safety we only work on the reported branch.
+        # On the main branch this `cache_cleanup` workflow may not delete the last version as that
+        # that would mean that the `test` workflow triggered for the same state will not find any
+        # caches. That is because the the `cache_cleanup` workflow is much faster and will most
+        # likely finish during the initial `pre-commit` job of the `test` workflow.
         run: |
           set -euo pipefail
-
-          # We could fetch the prefix list and per prefix keep one. But main cannot see the feature branch cahce :-(
           echo "Fetching list of cache keys for head ref '${HEAD_REF}' on PR '${PULL_REQUEST}'."
           if [ "${HEAD_REF}" == "refs/heads/main" ]; then
             cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id,createdAt --jq 'sort_by(.createdAt)|.[:-1]|.[].id')
           else
             cacheKeysForPR=$(gh cache list --ref "${HEAD_REF}" --limit 100 --json id --jq '.[].id')
           fi
-
           echo "Deleting caches..."
           for cacheKey in ${cacheKeysForPR}; do
             echo "Deleting cache: ${cacheKey}"
@@ -35,7 +38,6 @@ jobs:
       - name: Cleanup caches from old PRs
         run: |
           set -euo pipefail
-
           closedBeforeDate="$(date -Iminutes --date=-4hours)"
           echo "Fetching list of branch names for PRs closed before: ${closedBeforeDate}."
           closedPrList=$(gh pr list -s closed --json headRefName,closedAt --jq "map(select(.closedAt < \"${closedBeforeDate}\"))|.[].headRefName")
