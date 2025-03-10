@@ -79,7 +79,8 @@ jobs:
               ${{env.CACHE_KEY_PREFIX}}-${{github.ref}}
               ${{env.CACHE_KEY_PREFIX}}-refs/heads/main
               ${{env.CACHE_KEY_PREFIX}}
-      - run: |
+      - name: Build and Test
+        run: |
           declare -a BAZEL_INIT=()
           declare -a BAZEL_ARGS=()
           CACHE_ROOT=~/.cache
