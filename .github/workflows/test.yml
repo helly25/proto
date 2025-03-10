@@ -117,7 +117,7 @@ jobs:
             [ -n "${CC}" ] && [ -x "${CC}" ] && echo "CC: $(${CC} --version)"
             [ -n "${CXX}" ] && [ -x "${CXX}" ] && echo "CXX: $(${CXX} --version)"
           else
-            echo "ERROR: Matrix/Input var 'compiler' must be one of [clang, gcc]."
+            echo "ERROR: Matrix/Input var 'compiler' must be one of [clang, gcc, native]."
           fi
           if [ "${{inputs.bazel_config}}" == "asan" ]; then
             BAZEL_ARGS+=("-c" "dbg" "--config=asan")
