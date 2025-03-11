@@ -23,6 +23,7 @@ jobs:
         compiler: [gcc]
         gcc_version: [11, 12, 13]
         bazel_config: [cpp23, opt]
+        proto_version: [30.0]
         exclude:
           - bazel_mode: workspace
             gcc_version: 11
@@ -40,6 +41,7 @@ jobs:
       compiler: ${{ matrix.compiler }}
       gcc_version: ${{ matrix.gcc_version }}
       bazel_config: ${{ matrix.bazel_config }}
+      module_version: "proto${{ matrix.proto_version }}"
       module_default: proto30.0
 
   test-clang:
@@ -133,7 +135,7 @@ jobs:
         gcc_version: [11]
         llvm_version: [19.1.6]
         bazel_config: [opt]
-        module_version: [proto27.0]
+        proto_version: [27.0]
         exclude:
           - os: ubuntu-latest
             compiler: native
@@ -149,7 +151,7 @@ jobs:
       gcc_version: ${{ matrix.gcc_version }}
       llvm_version: ${{ matrix.llvm_version }}
       bazel_config: ${{ matrix.bazel_config }}
-      module_version: ${{ matrix.module_version }}
+      module_version: "proto${{ matrix.proto_version }}"
       module_default: proto30.0
 
   done:
