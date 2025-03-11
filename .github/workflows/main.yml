@@ -40,6 +40,7 @@ jobs:
       compiler: ${{ matrix.compiler }}
       gcc_version: ${{ matrix.gcc_version }}
       bazel_config: ${{ matrix.bazel_config }}
+      module_default: proto30.0
 
   test-clang:
     needs: [pre-commit, test-gcc]
@@ -52,7 +53,6 @@ jobs:
         llvm_version: [20.1.0, 19.1.6, 17.0.4]
         bazel_config: [asan, cpp23, fastbuild, opt]
         proto_version: ['30.0', '29.0', '28.0', '27.0']
-        module_default: ['proto30.0']
         exclude:
           - os: macos-latest
             llvm_version: 17.0.4
@@ -117,10 +117,10 @@ jobs:
       os: ${{ matrix.os }}
       bazel_mode: ${{ matrix.bazel_mode }}
       compiler: ${{ matrix.compiler }}
-      llvm_version: "${{ matrix.llvm_version }}"
+      llvm_version: ${{ matrix.llvm_version }}
       bazel_config: ${{ matrix.bazel_config }}
       module_version: "proto${{ matrix.proto_version }}"
-      module_default: "${{ matrix.module_default }}"
+      module_default: proto30.0
 
   test-bcr:
     needs: [pre-commit, test-gcc]
@@ -150,6 +150,7 @@ jobs:
       llvm_version: ${{ matrix.llvm_version }}
       bazel_config: ${{ matrix.bazel_config }}
       module_version: ${{ matrix.module_version }}
+      module_default: proto30.0
 
   done:
     needs: [pre-commit, test-gcc, test-clang, test-bcr]
