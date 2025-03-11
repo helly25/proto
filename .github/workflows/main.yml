@@ -23,7 +23,7 @@ jobs:
         compiler: [gcc]
         gcc_version: [11, 12, 13]
         bazel_config: [cpp23, opt]
-        proto_version: [30.0]
+        proto_version: ['30.0']
         exclude:
           - bazel_mode: workspace
             gcc_version: 11
@@ -135,7 +135,7 @@ jobs:
         gcc_version: [11]
         llvm_version: [19.1.6]
         bazel_config: [opt]
-        proto_version: [27.0]
+        proto_version: ['27.0']
         exclude:
           - os: ubuntu-latest
             compiler: native
