@@ -1,5 +1,6 @@
 name: Test
 on: [push]
+
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
@@ -49,7 +50,7 @@ jobs:
         bazel_mode: [bzlmod]
         compiler: [clang]
         llvm_version: [20.1.0, 19.1.6, 17.0.4]
-        bazel_config: [asan, cpp23, opt, fastbuild]
+        bazel_config: [asan, cpp23, fastbuild, opt]
         proto_version: ['30.0', '29.0', '28.0', '27.0']
         module_default: ['proto30.0']
         exclude:
