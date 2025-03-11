@@ -1,5 +1,7 @@
 # 0.6.4
 
+* Added LLVM-20.1.0 config for Linux-Arm64 and MacOs-Arm64 platforms.
+
 # 0.6.3
 
 * Made macro `PARSE_TEXT_PROTO` issue a deprecation warning.
