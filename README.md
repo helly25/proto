@@ -1,5 +1,7 @@
 This package contains a collection of utilities around Google's [Protocolbuffer](https://github.com/protocolbuffers/protobuf). The functions offered in this packages are widely used across Google's C++ code base and have saved tens of thousands of engineering hours.
 
+[![Test](https://github.com/helly25/proto/actions/workflows/main.yml/badge.svg)](https://github.com/helly25/proto/actions/workflows/main.yml)
+
 # Parse Proto
 
 * rule: `@com_helly25_proto//mbo/proto:parse_text_proto_cc`
