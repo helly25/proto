@@ -79,7 +79,7 @@ EXCLUDES=(
 } >> .gitattributes
 
 # Build the archive
-git archive --format=tar.gz --prefix="${PREFIX}/" "${TAG}" -o "${ARCHIVE}" --add-virtual-file="VERSION:${TAG}\n" --worktree-attributes
+git archive --format=tar.gz --prefix="${PREFIX}/" "${TAG}" -o "${ARCHIVE}" --add-virtual-file="${PREFIX}/VERSION:${TAG}\n" --worktree-attributes
 
 SHA256="$(shasum -a 256 "${ARCHIVE}" | awk '{print $1}')"
 
