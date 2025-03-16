@@ -1,4 +1,6 @@
-This package contains a collection of utilities around Google's [Protocolbuffer](https://github.com/protocolbuffers/protobuf). The functions offered in this packages are widely used across Google's C++ code base and have saved tens of thousands of engineering hours.
+This package contains a collection of utilities around Google's [Protocolbuffer](https://github.com/protocolbuffers/protobuf). The functions offered in this packages are widely used across Google's C++ code base and have saved tens of thousands of engineering hours. Some of these functons were originally implemented by the author and later re-implemented or cloned (see below).
+
+The project works with Google's proto library version 27, 28, 29 and 30. Packages are available at [Bazel Central Registry](https://registry.bazel.build/modules/helly25_proto) and [Github](https://github.com/helly25/proto/releases).
 
 [![Test](https://github.com/helly25/proto/actions/workflows/main.yml/badge.svg)](https://github.com/helly25/proto/actions/workflows/main.yml)
 
@@ -189,9 +191,9 @@ TEST(Foo, Wrapper) {
 
 # Installation and requirements
 
-This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed). The project's CI test a combination of Clang and GCC compilers on Linux/Ubuntu and MacOS.
+This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed). The project's CI tests a combination of Clang and GCC compilers on Linux/Ubuntu and MacOS. The project can be used with Google's proto libraries in versions [27, 28, 29, 30].
 
-The reliance on a C++20 compiler is because it uses `std::source_location` since Google's Abseil's `SourceLocation` has not been open sourced.
+The reliance on a C++20 compiler is because it uses `std::source_location` since Google's Abseil `absl::SourceLocation` has not been open sourced.
 
 The project only comes with a Bazel BUILD.bazel file and can be added to other Bazel projects.
 
@@ -206,14 +208,16 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
   name = "com_helly25_proto",
-  url = "https://github.com/helly25/proto/archive/refs/heads/main.tar.gz",
-  # See https://github.com/helly25/proto/releases for releases.
+  url = "https://github.com/helly25/proto/releases/download/0.0.0/proto-0.0.0.tar.gz",
+  sha256 = "", # See https://github.com/helly25/proto/releases for releases versions and SHA codes.
 )
 ```
 
 ## MODULES.bazel
 
-Check [Releases](https://github.com/helly25/proto/releases) for details. All that is needed is a `bazel_dep` instruction with the correct version.
+The [BCR](https://registry.bazel.build/modules/helly25_proto) version has its dependencies pushed down to the lowest supported versions but those can be bumped locally. For each supported proto version there is a separate `MODULE.proto<version>.bazel` file that contains the minimum requirements of the necessary support repos.
+
+Check [Releases](https://registry.bazel.build/modules/helly25_proto) for details. All that is needed is a `bazel_dep` instruction with the correct version.
 
 ```
 bazel_dep(name = "helly25_proto", version = "0.0.0", repo_name = "com_helly25_proto")

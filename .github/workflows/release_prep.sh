@@ -49,17 +49,24 @@ fi
 # Instead of embed the version in MODULE.bazel, we expect it to be correct already.
 # perl -pi -e "s/version = \"\d+\.\d+\.\d+\",/version = \"${TAG}\",/g" MODULE.bazel
 
-# Apply patches
-for patch in "${PATCHES[@]}"; do
-    patch -s -p 1 <"${patch}"
-done
-
 # Empty `BUILD.bazel`
 {
     cat tools/header.txt
     echo ""
     echo "\"\"\"Empty root BUILD for @${BAZELMOD_NAME}.\"\"\""
 } > BUILD.bazel
+
+# Drop dev stuff
+rm -rf .bcr
+rm -rf .github
+rm -rf .pre-commit
+rm -rf tools
+rm -f .pre-commit-config.yaml
+
+# Apply patches
+for patch in "${PATCHES[@]}"; do
+    patch -s -p 1 <"${patch}"
+done
 
 # Build the archive
 git archive --format=tar.gz --prefix="${PREFIX}/" "${TAG}" -o "${ARCHIVE}"

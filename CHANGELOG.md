@@ -1,3 +1,8 @@
+# 1.0.0
+
+* Changed to empty root BUILD file for release packages.
+* Cut and packaged version 1.0.0 (no functionality changes compared to 0.6.4).
+
 # 0.6.4
 
 * Added LLVM-20.1.0 config for Linux-Arm64 and MacOs-Arm64 platforms.
