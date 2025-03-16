@@ -1,4 +1,8 @@
-# 1.0.0+bcr1
+# 1.0.1
+
+* Repackage 1.0.0.
+
+# 1.0.0
 
 * Changed to empty root BUILD file for release packages.
 * Cut and packaged version 1.0.0 (no functionality changes compared to 0.6.4).
