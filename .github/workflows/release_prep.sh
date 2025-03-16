@@ -56,6 +56,13 @@ fi
     echo "\"\"\"Empty root BUILD for @${BAZELMOD_NAME}.\"\"\""
 } > BUILD.bazel
 
+# Drop dev stuff
+rm -rf .bcr
+rm -rf .github
+rm -rf .pre-commit
+rm -rf tools
+rm -f .pre-commit-config.yaml
+
 # Apply patches
 for patch in "${PATCHES[@]}"; do
     patch -s -p 1 <"${patch}"
