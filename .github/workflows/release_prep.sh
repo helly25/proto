@@ -56,20 +56,30 @@ fi
     echo "\"\"\"Empty root BUILD for @${BAZELMOD_NAME}.\"\"\""
 } > BUILD.bazel
 
-# Drop dev stuff
-rm -rf .bcr
-rm -rf .github
-rm -rf .pre-commit
-rm -rf tools
-rm -f .pre-commit-config.yaml
-
 # Apply patches
 for patch in "${PATCHES[@]}"; do
     patch -s -p 1 <"${patch}"
 done
 
+# Exclude some dev stuff from the archive.
+EXCLUDES=(
+    ".bcr"
+    ".github"
+    ".pre-commit"
+    ".pre-commit-config.yaml"
+    "tools"
+)
+{
+    for exclude in "${EXCLUDES[@]}"; do
+        echo "${exclude} export-ignore"
+        if [[ -d "${exclude}" ]]; then
+            echo "${exclude}/** export-ignore"
+        fi
+    done
+} >> .gitattributes
+
 # Build the archive
-git archive --format=tar.gz --prefix="${PREFIX}/" "${TAG}" -o "${ARCHIVE}"
+git archive --format=tar.gz --prefix="${PREFIX}/" "${TAG}" -o "${ARCHIVE}" --add-virtual-file=VERSION="${TAG}\n" --worktree-attributes
 
 SHA256="$(shasum -a 256 "${ARCHIVE}" | awk '{print $1}')"
 
