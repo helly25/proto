@@ -18,12 +18,12 @@
 # Due to flag and test references to the repo name we use the old name for now.
 module(
     name = "helly25_proto",
-    version = "1.0.1",
+    version = "1.0.2",
 )
 
 # For local development we include LLVM and Hedron-Compile-Commands.
 # For bazelmod usage these have to be provided by the main module - if necessary.
-include("//bazelmod:hedron.MODULE.bazel")
+include("//bazelmod:dev.MODULE.bazel")
 
 include("//bazelmod:llvm.MODULE.bazel")
 
