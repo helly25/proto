@@ -54,6 +54,13 @@ for patch in "${PATCHES[@]}"; do
     patch -s -p 1 <"${patch}"
 done
 
+# Empty `BUILD.bazel`
+{
+    cat tools/header.txt
+    echo ""
+    echo "\"\"\"Empty root BUILD for @${BAZELMOD_NAME}.\"\"\""
+} > BUILD.bazel
+
 # Build the archive
 git archive --format=tar.gz --prefix="${PREFIX}/" "${TAG}" -o "${ARCHIVE}"
 
