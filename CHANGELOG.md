@@ -1,3 +1,7 @@
+# 1.0.2
+
+* Applied DWYU cleanup.
+
 # 1.0.1
 
 * Repackage 1.0.0.
