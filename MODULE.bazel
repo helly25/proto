@@ -21,7 +21,7 @@ module(
     version = "1.0.2",
 )
 
-# For local development we include LLVM and Hedron-Compile-Commands.
+# For local development we include LLVM, Hedron-Compile-Commands, etc.
 # For bazelmod usage these have to be provided by the main module - if necessary.
 include("//bazelmod:dev.MODULE.bazel")
 
