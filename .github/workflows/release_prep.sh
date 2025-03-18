@@ -91,18 +91,6 @@ echo "## [Changelog](https://github.com/helly25/${PACKAGE_NAME}/blob/${TAG}/CHAN
 awk '/^#/{f+=1;if(f>1)exit} !/^#/{print}' < CHANGELOG.md
 
 cat << EOF
-## For Bazel WORKSPACE
-
-\`\`\`
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-  name = "${WORKSPACE_NAME}",
-  url = "https://github.com/helly25/${PACKAGE_NAME}/releases/download/${TAG}/${ARCHIVE}",
-  sha256 = "${SHA256}",
-)
-\`\`\`
-
 ## For Bazel MODULES.bazel
 
 \`\`\`
@@ -115,5 +103,17 @@ Copy [llvm.MODULE.bazel](https://github.com/helly25/${PACKAGE_NAME}/blob/main/ba
 
 \`\`\`
 include("//:llvm.MODULE.bazel")
+\`\`\`
+
+## For Bazel WORKSPACE
+
+\`\`\`
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+  name = "${WORKSPACE_NAME}",
+  url = "https://github.com/helly25/${PACKAGE_NAME}/releases/download/${TAG}/${ARCHIVE}",
+  sha256 = "${SHA256}",
+)
 \`\`\`
 EOF
