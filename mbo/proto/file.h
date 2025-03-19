@@ -18,7 +18,6 @@
 
 #include <filesystem>
 #include <source_location>
-#include <string_view>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -63,7 +62,7 @@ absl::Status WriteBinaryProtoFile(
 
 template<IsProtoType ProtoType>
 absl::StatusOr<ProtoType> ReadTextProtoFile(
-    std::string_view filename,
+    const std::filesystem::path& filename,
     const std::source_location& src_loc = std::source_location::current()) {
   ProtoType result;
   const auto status = proto_internal::ReadTextProtoFile(filename, result, src_loc);
