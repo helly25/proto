@@ -189,6 +189,82 @@ TEST(Foo, Wrapper) {
 }
 ```
 
+# Proto Files
+
+* rule: `@com_helly25_proto//mbo/proto:file_cc`
+* namespace: `mbo::proto`
+
+* `ReadBinaryProtoFile`<`ProtoType`>(`filename`)
+  * Reads a binary proto file. Usually using `.pb` file extension.
+  * `ProtoType` the protocol buffer type to read.
+  * `filename` the filename to read from.
+  * Returns either an error or the parsed protocol buffer.
+
+* `ReadTextProtoFile`<`ProtoType`>(`filename`)
+  * Reads a text proto file. Usually using `.textproto` file extension.
+  * `ProtoType` the protocol buffer type to read.
+  * `filename` the filename to read from.
+
+* `WriteBinaryProtoFile`(`filename`, `message`)
+  * Writes a binary proto file. Usually using `.pb` file extension.
+  * `filename` the filename to read from.
+  * `message` the protocol buffer to write.
+  * Returns `absl::OkStatus()` or an error status.
+
+* `WriteTextProtoFile`(`filename`, `message`)
+  * Writes a text proto file. Usually using `.textproto` file extension.
+  * `filename` the filename to read from.
+  * `message` the protocol buffer to write.
+  * Returns `absl::OkStatus()` or an error status.
+
+## Usage
+
+```.cc
+#include <filesystem>
+#include <iostream>
+
+#include "mbo/proto/file.h"
+#include "my_protos/my_proto.pb.h"  # Containing `MyProto`
+
+using ::mbo::proto::ReadBinaryProtoFile;
+using ::mbo::proto::ReadTextProtoFile;
+using ::mbo::proto::WriteBinaryProtoFile;
+using ::mbo::proto::WriteTextProtoFile;
+
+int UseBinaryProto(const MyProto& my_proto, const std::filesystem::path& filename) {
+  const auto result = WriteBinaryProtoFile(filename, my_proto);
+  if (!auto.ok()) {
+    std::cerr << "Error: " << result.status() << "\n";
+    return 1;
+  }
+  const auto proto = ReadBinaryProtoFile(filename);
+  if (!proto.ok()) {
+    std::cerr << "Error: " << proto.status() << "\n";
+    return 2;
+  }
+  return 0;
+}
+
+int UseTextProto(const MyProto& my_proto, const std::filesystem::path& filename) {
+  const auto result = WriteTextProtoFile(filename, my_proto);
+  if (!auto.ok()) {
+    std::cerr << "Error: " << result.status() << "\n";
+    return 4;
+  }
+  const auto proto = ReadTextProtoFile(filename);
+  if (!proto.ok()) {
+    std::cerr << "Error: " << proto.status() << "\n";
+    return 8;
+  }
+  return 0;
+}
+
+int main() {
+  const MyProto my_proto;
+  return UseBinaryProto(my_proto, "my_file.pb") + UseTextProto(my_proto, "my_file.textproto");
+}
+```
+
 # Installation and requirements
 
 This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed). The project's CI tests a combination of Clang and GCC compilers on Linux/Ubuntu and MacOS. The project can be used with Google's proto libraries in versions [27, 28, 29, 30].

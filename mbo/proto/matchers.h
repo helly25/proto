@@ -449,7 +449,7 @@ class WhenDeserializedMatcherBase {
     return MatchAndExplain(&input, listener);
   }
 
-  bool MatchAndExplain(absl::string_view str, ::testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(std::string_view str, ::testing::MatchResultListener* listener) const {
     // NOLINTNEXTLINE(*-narrowing-conversions)
     ::google::protobuf::io::ArrayInputStream input(str.data(), str.size());
     return MatchAndExplain(&input, listener);

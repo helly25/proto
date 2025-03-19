@@ -1,3 +1,7 @@
+# 1.1.0
+
+* Added `ReadBinaryProtoFile`, `ReadTextProtoFile`, `WriteBinaryProtoFile`, `WriteTextProtoFile`.
+
 # 1.0.2
 
 * Applied DWYU cleanup.
