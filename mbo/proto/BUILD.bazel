@@ -20,6 +20,36 @@ package(default_visibility = ["//visibility:private"])
 licenses(["notice"])
 
 cc_library(
+    name = "file_cc",
+    srcs = ["file.cc"],
+    hdrs = ["file.h"],
+    implementation_deps = [
+        ":silent_error_collector_cc",
+        "@com_google_absl//absl/log:absl_log",
+        "@com_google_protobuf//src/google/protobuf/io",
+    ],
+    deps = [
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_protobuf//:protobuf",
+        "@com_google_protobuf//:protobuf_headers",
+    ],
+)
+
+cc_test(
+    name = "file_test",
+    srcs = ["file_test.cc"],
+    deps = [
+        ":file_cc",
+        ":matchers_cc",
+        "//mbo/proto/tests:simple_message_cc_proto",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
     name = "matchers_cc",
     testonly = 1,
     srcs = ["matchers.cc"],
