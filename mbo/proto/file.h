@@ -46,6 +46,27 @@ absl::Status ReadTextProtoFile(
 
 class ReadBinaryProtoFile {
  public:
+  // Static read function - so it's address can be taken.
+  template<IsProtoType ProtoType>
+  static absl::StatusOr<ProtoType> As(
+      const std::filesystem::path& filename,
+      const std::source_location& src_loc = std::source_location::current()) {
+    ProtoType result;
+    const auto status = proto_internal::ReadBinaryProtoFile(filename, result, src_loc);
+    if (!status.ok()) {
+      return status;
+    }
+    return result;
+  }
+
+  // Static read function - so it's address can be taken.
+  template<IsProtoType ProtoType>
+  static ProtoType OrDie(
+      const std::filesystem::path& filename,
+      const std::source_location& src_loc = std::source_location::current()) {
+    return *As<ProtoType>(filename, src_loc);
+  }
+
   ReadBinaryProtoFile() = delete;
 
   explicit ReadBinaryProtoFile(
@@ -79,16 +100,6 @@ class ReadBinaryProtoFile {
     return *proto;
   }
 
-  template<IsProtoType ProtoType>
-  absl::StatusOr<ProtoType> As() const {
-    return *this;
-  }
-
-  template<IsProtoType ProtoType>
-  ProtoType OrDie() const {
-    return *this;
-  }
-
  private:
   const std::filesystem::path filename_;
   const std::source_location src_loc_;
@@ -102,6 +113,27 @@ absl::Status WriteBinaryProtoFile(
 
 class ReadTextProtoFile {
  public:
+  // Static read function - so it's address can be taken.
+  template<IsProtoType ProtoType>
+  static absl::StatusOr<ProtoType> As(
+      const std::filesystem::path& filename,
+      const std::source_location& src_loc = std::source_location::current()) {
+    ProtoType result;
+    const auto status = proto_internal::ReadTextProtoFile(filename, result, src_loc);
+    if (!status.ok()) {
+      return status;
+    }
+    return result;
+  }
+
+  // Static read function - so it's address can be taken.
+  template<IsProtoType ProtoType>
+  static ProtoType OrDie(
+      const std::filesystem::path& filename,
+      const std::source_location& src_loc = std::source_location::current()) {
+    return *As<ProtoType>(filename, src_loc);
+  }
+
   ReadTextProtoFile() = delete;
 
   explicit ReadTextProtoFile(
@@ -133,16 +165,6 @@ class ReadTextProtoFile {
     ABSL_LOG_IF(FATAL, !proto.ok()).AtLocation(src_loc_.file_name(), static_cast<int>(src_loc_.line()))
         << proto.status();
     return *proto;
-  }
-
-  template<IsProtoType ProtoType>
-  absl::StatusOr<ProtoType> As() const {
-    return *this;
-  }
-
-  template<IsProtoType ProtoType>
-  ProtoType OrDie() const {
-    return *this;
   }
 
  private:

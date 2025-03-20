@@ -53,8 +53,8 @@ TEST_F(FileProtoTest, BinaryProto) {
   ASSERT_TRUE(result.ok());
   EXPECT_THAT(*result, EqualsProto(message));
   EXPECT_THAT(SimpleMessage(ReadBinaryProtoFile("test.pb")), EqualsProto(message));
-  EXPECT_THAT(*ReadBinaryProtoFile("test.pb").As<SimpleMessage>(), EqualsProto(message));
-  EXPECT_THAT(ReadBinaryProtoFile("test.pb").OrDie<SimpleMessage>(), EqualsProto(message));
+  EXPECT_THAT(*ReadBinaryProtoFile::As<SimpleMessage>("test.pb"), EqualsProto(message));
+  EXPECT_THAT(ReadBinaryProtoFile::OrDie<SimpleMessage>("test.pb"), EqualsProto(message));
 }
 
 TEST_F(FileProtoTest, BinaryProtoError) {
@@ -83,8 +83,8 @@ TEST_F(FileProtoTest, TextProto) {
   ASSERT_TRUE(result.ok());
   EXPECT_THAT(*result, EqualsProto(message));
   EXPECT_THAT(SimpleMessage(ReadTextProtoFile("test.textproto")), EqualsProto(message));
-  EXPECT_THAT(*ReadTextProtoFile("test.textproto").As<SimpleMessage>(), EqualsProto(message));
-  EXPECT_THAT(ReadTextProtoFile("test.textproto").OrDie<SimpleMessage>(), EqualsProto(message));
+  EXPECT_THAT(*ReadTextProtoFile::As<SimpleMessage>("test.textproto"), EqualsProto(message));
+  EXPECT_THAT(ReadTextProtoFile::OrDie<SimpleMessage>("test.textproto"), EqualsProto(message));
 }
 
 TEST_F(FileProtoTest, TextProtoError) {

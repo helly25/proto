@@ -248,8 +248,8 @@ int UseBinaryProto(const MyProto& my_proto, const std::filesystem::path& filenam
   }
   // Reading with given template type parameter.
   {
-    const auto proto_or_status = ReadBinaryProtoFile(filename).As<MyProto>();
-    const auto proto = ReadBinaryProtoFile(filename).OrDie<MyProto>();
+    const auto proto_or_status = ReadBinaryProtoFile::As<MyProto>(filename);
+    const auto proto = ReadBinaryProtoFile::OrDie<MyProto>(filename);
   }
   return 0;
 }
@@ -268,8 +268,8 @@ int UseTextProto(const MyProto& my_proto, const std::filesystem::path& filename)
   }
   // Reading with given template type parameter.
   {
-    const auto proto_or_status = ReadTextProtoFile(filename).As<MyProto>();
-    const auto proto = ReadTextProtoFile(filename).OrDie<MyProto>();
+    const auto proto_or_status = ReadTextProtoFile::As<MyProto>(filename);
+    const auto proto = ReadTextProtoFile::OrDie<MyProto>(filename);
   }
   return 0;
 }
