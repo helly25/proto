@@ -49,21 +49,24 @@ TEST_F(FileProtoTest, BinaryProto) {
   message.add_two(33);
   message.add_two(42);
   ASSERT_TRUE(WriteBinaryProtoFile("test.pb", message).ok());
-  const auto result = ReadBinaryProtoFile<SimpleMessage>("test.pb");
+  const absl::StatusOr<SimpleMessage> result = ReadBinaryProtoFile("test.pb");
   ASSERT_TRUE(result.ok());
   EXPECT_THAT(*result, EqualsProto(message));
+  EXPECT_THAT(SimpleMessage(ReadBinaryProtoFile("test.pb")), EqualsProto(message));
+  EXPECT_THAT(*ReadBinaryProtoFile("test.pb").As<SimpleMessage>(), EqualsProto(message));
+  EXPECT_THAT(ReadBinaryProtoFile("test.pb").OrDie<SimpleMessage>(), EqualsProto(message));
 }
 
 TEST_F(FileProtoTest, BinaryProtoError) {
   {
-    const auto result = ReadBinaryProtoFile<SimpleMessage>("DoesNotExist.pb");
+    const absl::StatusOr<SimpleMessage> result = ReadBinaryProtoFile("DoesNotExist.pb");
     ASSERT_FALSE(result.ok());
     EXPECT_THAT(result.status().code(), absl::StatusCode::kNotFound);
     EXPECT_THAT(result.status().message(), HasSubstr("Cannot open 'DoesNotExist.pb'"));
   }
   {
     ASSERT_TRUE(WriteFile("SomeFile.pb", "\xFF"));
-    const auto result = ReadBinaryProtoFile<SimpleMessage>("SomeFile.pb");
+    const absl::StatusOr<SimpleMessage> result = ReadBinaryProtoFile("SomeFile.pb");
     ASSERT_FALSE(result.ok());
     EXPECT_THAT(result.status().code(), absl::StatusCode::kAborted);
     EXPECT_THAT(result.status().message(), HasSubstr("Cannot parse binary proto file 'SomeFile.pb'"));
@@ -76,21 +79,24 @@ TEST_F(FileProtoTest, TextProto) {
   message.add_two(33);
   message.add_two(42);
   ASSERT_TRUE(WriteTextProtoFile("test.textproto", message).ok());
-  const auto result = ReadTextProtoFile<SimpleMessage>("test.textproto");
+  const absl::StatusOr<SimpleMessage> result = ReadTextProtoFile("test.textproto");
   ASSERT_TRUE(result.ok());
   EXPECT_THAT(*result, EqualsProto(message));
+  EXPECT_THAT(SimpleMessage(ReadTextProtoFile("test.textproto")), EqualsProto(message));
+  EXPECT_THAT(*ReadTextProtoFile("test.textproto").As<SimpleMessage>(), EqualsProto(message));
+  EXPECT_THAT(ReadTextProtoFile("test.textproto").OrDie<SimpleMessage>(), EqualsProto(message));
 }
 
 TEST_F(FileProtoTest, TextProtoError) {
   {
-    const auto result = ReadTextProtoFile<SimpleMessage>("DoesNotExist.textproto");
+    const absl::StatusOr<SimpleMessage> result = ReadTextProtoFile("DoesNotExist.textproto");
     ASSERT_FALSE(result.ok());
     EXPECT_THAT(result.status().code(), absl::StatusCode::kNotFound);
     EXPECT_THAT(result.status().message(), HasSubstr("Cannot open 'DoesNotExist.textproto'"));
   }
   {
     ASSERT_TRUE(WriteFile("SomeFile.textproto", "\xFF"));
-    const auto result = ReadTextProtoFile<SimpleMessage>("SomeFile.textproto");
+    const absl::StatusOr<SimpleMessage> result = ReadTextProtoFile("SomeFile.textproto");
     ASSERT_FALSE(result.ok());
     EXPECT_THAT(result.status().code(), absl::StatusCode::kAborted);
     EXPECT_THAT(result.status().message(), HasSubstr("Cannot parse text proto file 'SomeFile.textproto'"));

@@ -19,6 +19,7 @@
 #include <filesystem>
 #include <source_location>
 
+#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "google/protobuf/message.h"
@@ -43,34 +44,112 @@ absl::Status ReadTextProtoFile(
 
 }  // namespace proto_internal
 
-template<IsProtoType ProtoType>
-absl::StatusOr<ProtoType> ReadBinaryProtoFile(
-    const std::filesystem::path& filename,
-    const std::source_location& src_loc = std::source_location::current()) {
-  ProtoType result;
-  const auto status = proto_internal::ReadBinaryProtoFile(filename, result, src_loc);
-  if (!status.ok()) {
-    return status;
+class ReadBinaryProtoFile {
+ public:
+  ReadBinaryProtoFile() = delete;
+
+  explicit ReadBinaryProtoFile(
+      std::filesystem::path filename,
+      const std::source_location& src_loc = std::source_location::current())
+      : filename_(std::move(filename)), src_loc_(src_loc) {}
+
+  ReadBinaryProtoFile(const ReadBinaryProtoFile&) = delete;
+  ReadBinaryProtoFile& operator=(const ReadBinaryProtoFile&) = delete;
+  ReadBinaryProtoFile(ReadBinaryProtoFile&&) = delete;
+  ReadBinaryProtoFile& operator=(ReadBinaryProtoFile&&) = delete;
+
+  ~ReadBinaryProtoFile() { ABSL_LOG_IF(DFATAL, !converted_) << "ReadBinaryProtoFile has not read the file."; }
+
+  template<int&..., IsProtoType ProtoType>
+  operator absl::StatusOr<ProtoType>() const {  // NOLINT(*-explicit-*)
+    converted_ = true;
+    ProtoType result;
+    const auto status = proto_internal::ReadBinaryProtoFile(filename_, result, src_loc_);
+    if (!status.ok()) {
+      return status;
+    }
+    return result;
   }
-  return result;
-}
+
+  template<int&..., IsProtoType ProtoType>
+  operator ProtoType() const {  // NOLINT(*-explicit-*)
+    absl::StatusOr<ProtoType> proto = *this;
+    ABSL_LOG_IF(FATAL, !proto.ok()).AtLocation(src_loc_.file_name(), static_cast<int>(src_loc_.line()))
+        << proto.status();
+    return *proto;
+  }
+
+  template<IsProtoType ProtoType>
+  absl::StatusOr<ProtoType> As() const {
+    return *this;
+  }
+
+  template<IsProtoType ProtoType>
+  ProtoType OrDie() const {
+    return *this;
+  }
+
+ private:
+  const std::filesystem::path filename_;
+  const std::source_location src_loc_;
+  mutable bool converted_ = false;
+};
 
 absl::Status WriteBinaryProtoFile(
     const std::filesystem::path& filename,
     const ::google::protobuf::Message& proto,
     const std::source_location& src_loc = std::source_location::current());
 
-template<IsProtoType ProtoType>
-absl::StatusOr<ProtoType> ReadTextProtoFile(
-    const std::filesystem::path& filename,
-    const std::source_location& src_loc = std::source_location::current()) {
-  ProtoType result;
-  const auto status = proto_internal::ReadTextProtoFile(filename, result, src_loc);
-  if (!status.ok()) {
-    return status;
+class ReadTextProtoFile {
+ public:
+  ReadTextProtoFile() = delete;
+
+  explicit ReadTextProtoFile(
+      std::filesystem::path filename,
+      const std::source_location& src_loc = std::source_location::current())
+      : filename_(std::move(filename)), src_loc_(src_loc) {}
+
+  ReadTextProtoFile(const ReadTextProtoFile&) = delete;
+  ReadTextProtoFile& operator=(const ReadTextProtoFile&) = delete;
+  ReadTextProtoFile(ReadTextProtoFile&&) = delete;
+  ReadTextProtoFile& operator=(ReadTextProtoFile&&) = delete;
+
+  ~ReadTextProtoFile() { ABSL_LOG_IF(DFATAL, !converted_) << "ReadTextProtoFile has not read the file."; }
+
+  template<int&..., IsProtoType ProtoType>
+  operator absl::StatusOr<ProtoType>() const {  // NOLINT(*-explicit-*)
+    converted_ = true;
+    ProtoType result;
+    const auto status = proto_internal::ReadTextProtoFile(filename_, result, src_loc_);
+    if (!status.ok()) {
+      return status;
+    }
+    return result;
   }
-  return result;
-}
+
+  template<int&..., IsProtoType ProtoType>
+  operator ProtoType() const {  // NOLINT(*-explicit-*)
+    absl::StatusOr<ProtoType> proto = *this;
+    ABSL_LOG_IF(FATAL, !proto.ok()).AtLocation(src_loc_.file_name(), static_cast<int>(src_loc_.line()))
+        << proto.status();
+    return *proto;
+  }
+
+  template<IsProtoType ProtoType>
+  absl::StatusOr<ProtoType> As() const {
+    return *this;
+  }
+
+  template<IsProtoType ProtoType>
+  ProtoType OrDie() const {
+    return *this;
+  }
+
+ private:
+  const std::filesystem::path filename_;
+  const std::source_location src_loc_;
+  mutable bool converted_ = false;
+};
 
 absl::Status WriteTextProtoFile(
     const std::filesystem::path& filename,
