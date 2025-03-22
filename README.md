@@ -30,7 +30,7 @@ The project works with Google's proto library version 27, 28, 29 and 30. Package
 
 BUILD.bazel:
 
-```
+```bzl
 cc_test(
     name = "test",
     srcs = ["test.cc"],
@@ -40,7 +40,7 @@ cc_test(
 
 Source test.cc:
 
-```.cc
+```c++
 #include "mbo/proto/parse_text_proto.h"
 
 using ::mbo::proto::ParseTextProtoOrDie;
@@ -128,7 +128,7 @@ The `ParseTextProtoOrDie` function dies if the input text-proto is not valid. Th
 
 BUILD.bazel:
 
-```
+```bzl
 cc_test(
     name = "test",
     srcs = ["test.cc"],
@@ -138,7 +138,7 @@ cc_test(
 
 Source test.cc:
 
-```.cc
+```c++
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "mbo/proto/matchers.h"
@@ -159,7 +159,7 @@ In the above example `EqualsProto` takes the text-proto as a C++ raw-string.
 
 The matchers can of course be combined with the parse functions. The below shows how a `FunctionUnderTest` can be tested. It receives the proto input directly from the parse function and the matcher compares it directly to the expected golden result text-proto. Note how there is no field-by-field processing anywhere. No dstraction from what is being tested and what the expectations are. Or in other words the test avoids misleading and error prone in-test logic. And becasue the function-under-test is called inside the EXPECT_THAT macro the gtest failure messages will show what actually failed (and not something like "Input: temp_var").
 
-```.cc
+```c++
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "mbo/proto/matchers.h"
@@ -222,7 +222,7 @@ TEST(Foo, Wrapper) {
 
 ## Usage
 
-```.cc
+```c++
 #include <filesystem>
 #include <iostream>
 
@@ -294,7 +294,7 @@ The project is formatted with specific clang-format settings which require clang
 
 Checkout [Releases](https://github.com/helly25/proto/releases) or use head ref as follows:
 
-```
+```bzl
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
@@ -310,7 +310,7 @@ The [BCR](https://registry.bazel.build/modules/helly25_proto) version has its de
 
 Check [Releases](https://registry.bazel.build/modules/helly25_proto) for details. All that is needed is a `bazel_dep` instruction with the correct version.
 
-```
+```bzl
 bazel_dep(name = "helly25_proto", version = "0.0.0", repo_name = "com_helly25_proto")
 ```
 
@@ -322,7 +322,7 @@ The clone was made from Google's [CPP-proto-builder](https://github.com/google/c
 
 The following files were cloned:
 
-```
+```sh
 cp ../cpp-proto-builder/proto_builder/oss/parse_proto_text.* proto/mbo/proto
 cp ../cpp-proto-builder/proto_builder/oss/parse_proto_text_test.cc proto/mbo/proto
 cp ../cpp-proto-builder/proto_builder/oss/tests/simple_message.proto proto/mbo/proto
@@ -346,7 +346,7 @@ apply as for instance the regular expression library is different.
 
 The following files were cloned:
 
-```
+```sh
 cp ../cpp-proto-builder/proto_builder/oss/testing/proto_test_util.* proto/mbo/testing/proto
 patch <proto/mbo/testing/proto_test_util.diff
 ```
