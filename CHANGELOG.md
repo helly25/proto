@@ -1,3 +1,5 @@
+# 1.2.1
+
 # 1.2.0
 
 * Added std::optional variants for file reading.
