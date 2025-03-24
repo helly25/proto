@@ -1,4 +1,7 @@
-# 1.1.1
+# 1.2.0
+
+* Added std::optional variants for file reading.
+* Added `HasBinaryProtoExtension` and `HasTextProtoExtension`.
 
 # 1.1.0
 
