@@ -82,6 +82,16 @@ absl::Status ReadTextProtoFile(
 
 }  // namespace proto_internal
 
+bool HasBinaryProtoExtension(std::string_view filename) {
+  return filename.ends_with(".binpb") ||  // NL
+         filename.ends_with(".pb");
+}
+
+bool HasTextProtoExtension(std::string_view filename) {
+  return filename.ends_with(".txtpb") ||  // NL
+         filename.ends_with(".textproto");
+}
+
 absl::Status WriteBinaryProtoFile(
     const std::filesystem::path& filename,
     const ::google::protobuf::Message& proto,

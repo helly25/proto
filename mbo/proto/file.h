@@ -16,34 +16,71 @@
 #ifndef MBO_PROTO_FILE_H_
 #define MBO_PROTO_FILE_H_
 
+#include <concepts>
 #include <filesystem>
+#include <optional>
 #include <source_location>
 
 #include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "google/protobuf/message.h"
+#include "mbo/proto/file_impl.h"  // IWYU pragma: export
+
+// Functionality for reading and writing protos:
+// - functions        Has(Binary|Text)ProtoExtension
+// - concept          IsProtoType
+// - struct/function  Read(Binary|Text)ProtoFile(::(As|OrDie|OrNullopt))?
+// - struct/function  Write(Binary|Text)ProtoFile
 
 namespace mbo::proto {
 
+// Identifies binary proto filenames.
+// See https://protobuf.dev/programming-guides/techniques/
+// See https://en.wikipedia.org/wiki/Filename_extension (extension with dot)
+// Added [".pb"] which is also fairly common.
+bool HasBinaryProtoExtension(std::string_view filename);
+
+inline bool HasBinaryProtoExtension(const std::same_as<std::filesystem::path> auto& filename) {
+  return HasBinaryProtoExtension(filename.native());
+}
+
+// Identifies text proto filenames.
+// See https://protobuf.dev/programming-guides/techniques/
+// See https://en.wikipedia.org/wiki/Filename_extension (extension with dot)
+bool HasTextProtoExtension(std::string_view filename);
+
+inline bool HasTextProtoExtension(const std::same_as<std::filesystem::path> auto& filename) {
+  return HasTextProtoExtension(filename.native());
+}
+
+// Concept that identifies Proto types as opposed to the base proto `Message`.
 template<typename ProtoType>
 concept IsProtoType =
     std::derived_from<ProtoType, ::google::protobuf::Message> && !std::same_as<ProtoType, ::google::protobuf::Message>;
 
-namespace proto_internal {
-
-absl::Status ReadBinaryProtoFile(
-    const std::filesystem::path& filename,
-    ::google::protobuf::Message& result,
-    const std::source_location& src_loc);
-
-absl::Status ReadTextProtoFile(
-    const std::filesystem::path& filename,
-    ::google::protobuf::Message& result,
-    const std::source_location& src_loc);
-
-}  // namespace proto_internal
-
+// Type erasure proto reader for binary proto files.
+//
+// Example:
+//
+// ```c++
+// const MyProto proto = ReadBinaryProtoFile(proto_filename);
+// const absl::StatusOr<MyProto> proto_or_error = ReadBinaryProtoFile(proto_filename);
+// const std::optional<MyProto> proto_or_nullopt = ReadBinaryProtoFile(proto_filename);
+// ```
+//
+//
+// In the above the first call requires the file to be readable as a `MyProto`.
+// The program will abort with a check violation if the file cannot be read.
+//
+// The second call returns either the read protocol buffer or an error status.
+// In this version the return value forces the caller to handle any errors.
+//
+// The third call returns either the read protocol buffer ot std::nullopt.
+// In this verion the caller is responsible for error handling.
+//
+// The class also supports static direct typed access by functions whose
+// addresses can be taken.
 class ReadBinaryProtoFile {
  public:
   // Static read function - so it's address can be taken.
@@ -57,6 +94,17 @@ class ReadBinaryProtoFile {
       return status;
     }
     return result;
+  }
+
+  // Static read function - so it's address can be taken.
+  template<IsProtoType ProtoType>
+  static std::optional<ProtoType> OrNullopt(
+      const std::filesystem::path& filename,
+      const std::source_location& src_loc = std::source_location::current()) {
+    if (auto result = As<ProtoType>(filename, src_loc); result.ok()) {
+      return *std::move(result);
+    }
+    return std::nullopt;
   }
 
   // Static read function - so it's address can be taken.
@@ -93,6 +141,15 @@ class ReadBinaryProtoFile {
   }
 
   template<int&..., IsProtoType ProtoType>
+  operator std::optional<ProtoType>() const {  // NOLINT(*-explicit-*)
+    absl::StatusOr<ProtoType> proto = *this;
+    if (!proto.ok()) {
+      return std::nullopt;
+    }
+    return *proto;
+  }
+
+  template<int&..., IsProtoType ProtoType>
   operator ProtoType() const {  // NOLINT(*-explicit-*)
     absl::StatusOr<ProtoType> proto = *this;
     ABSL_LOG_IF(FATAL, !proto.ok()).AtLocation(src_loc_.file_name(), static_cast<int>(src_loc_.line()))
@@ -106,10 +163,33 @@ class ReadBinaryProtoFile {
   mutable bool converted_ = false;
 };
 
+// Writes a binary proto file.
 absl::Status WriteBinaryProtoFile(
     const std::filesystem::path& filename,
     const ::google::protobuf::Message& proto,
     const std::source_location& src_loc = std::source_location::current());
+
+// Type erasure proto reader for text proto files.
+//
+// Example:
+//
+// ```c++
+// const MyProto proto = ReadTextProtoFile(filename);
+// const absl::StatusOr<MyProto> proto_or_error = ReadTextProtoFile(filename);
+// const std::optional<MyProto> proto_or_nullopt = ReadTextProtoFile(filename);
+// ```
+//
+// In the above the first call requires the file to be readable as a `MyProto`.
+// The program will abort with a check violation if the file cannot be read.
+//
+// The second call returns either the read protocol buffer or an error status.
+// In this version the return value forces the caller to handle any errors.
+//
+// The third call returns either the read protocol buffer ot std::nullopt.
+// In this verion the caller is responsible for error handling.
+//
+// The class also supports static direct typed access by functions whose
+// addresses can be taken.
 
 class ReadTextProtoFile {
  public:
@@ -124,6 +204,17 @@ class ReadTextProtoFile {
       return status;
     }
     return result;
+  }
+
+  // Static read function - so it's address can be taken.
+  template<IsProtoType ProtoType>
+  static std::optional<ProtoType> OrNullopt(
+      const std::filesystem::path& filename,
+      const std::source_location& src_loc = std::source_location::current()) {
+    if (auto result = As<ProtoType>(filename, src_loc); result.ok()) {
+      return *std::move(result);
+    }
+    return std::nullopt;
   }
 
   // Static read function - so it's address can be taken.
@@ -160,6 +251,15 @@ class ReadTextProtoFile {
   }
 
   template<int&..., IsProtoType ProtoType>
+  operator std::optional<ProtoType>() const {  // NOLINT(*-explicit-*)
+    absl::StatusOr<ProtoType> proto = *this;
+    if (!proto.ok()) {
+      return std::nullopt;
+    }
+    return *proto;
+  }
+
+  template<int&..., IsProtoType ProtoType>
   operator ProtoType() const {  // NOLINT(*-explicit-*)
     absl::StatusOr<ProtoType> proto = *this;
     ABSL_LOG_IF(FATAL, !proto.ok()).AtLocation(src_loc_.file_name(), static_cast<int>(src_loc_.line()))
@@ -173,6 +273,7 @@ class ReadTextProtoFile {
   mutable bool converted_ = false;
 };
 
+// Writes a text proto file.
 absl::Status WriteTextProtoFile(
     const std::filesystem::path& filename,
     const ::google::protobuf::Message& proto,

@@ -220,6 +220,12 @@ TEST(Foo, Wrapper) {
   * `message` the protocol buffer to write.
   * Returns `absl::OkStatus()` or an error status.
 
+* function `HasBinaryProtoExtension`(`filesname`)
+  * Returns whether the filename ends with a well-known extension for binary proto files.
+
+* function `HasTextProtoExtension`(`filesname`)
+  * Returns whether the filename ends with a well-known extension for text proto files.
+
 ## Usage
 
 ```c++
