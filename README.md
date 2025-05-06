@@ -1,6 +1,11 @@
 This package contains a collection of utilities around Google's [Protocolbuffer](https://github.com/protocolbuffers/protobuf). The functions offered in this packages are widely used across Google's C++ code base and have saved tens of thousands of engineering hours. Some of these functons were originally implemented by the author and later re-implemented or cloned (see below).
 
-The project works with Google's proto library version 27, 28, 29 and 30. Packages are available at [Bazel Central Registry](https://registry.bazel.build/modules/helly25_proto) and [Github](https://github.com/helly25/proto/releases).
+The project works with:
+* Google's proto library version 27, 28, 29, 30
+* Operating system: MacOS, Ubuntu, Windows
+* Compiler: GCC [11, 14], Clang [17.0.4, 20.1.0]
+
+Packages are available at [Bazel Central Registry](https://registry.bazel.build/modules/helly25_proto) and [Github](https://github.com/helly25/proto/releases).
 
 [![Test](https://github.com/helly25/proto/actions/workflows/main.yml/badge.svg)](https://github.com/helly25/proto/actions/workflows/main.yml)
 
