@@ -73,7 +73,7 @@ jobs:
       - uses: egor-tensin/setup-mingw@v2
         if: ${{inputs.compiler == 'gcc' && inputs.gcc_version != '' && startsWith(inputs.os, 'windows')}}
         with:
-          version: ${{inputs.gcc_version}}
+          #version: ${{inputs.gcc_version}}
           platform: ${{runner.arch}}
       - uses: actions/cache/restore@v4
         id: cache_restore
