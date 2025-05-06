@@ -55,7 +55,7 @@ jobs:
       matrix:
         os: [windows-latest]
         bazel_mode: [bzlmod]
-        compiler: [gcc]
+        compiler: [native]
         gcc_version: ['']
         bazel_config: [opt]
         proto_version: ['30.0']
