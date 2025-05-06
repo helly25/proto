@@ -21,7 +21,7 @@ jobs:
         os: [ubuntu-latest, windows]
         bazel_mode: [bzlmod, workspace]
         compiler: [gcc]
-        gcc_version: [11, 12, 13, 14, 15]
+        gcc_version: [11, 12, 13, 14]
         bazel_config: [cpp23, opt]
         proto_version: ['30.0']
         exclude:
@@ -31,8 +31,6 @@ jobs:
             gcc_version: 13
           - bazel_mode: workspace
             gcc_version: 14
-          - bazel_mode: workspace
-            gcc_version: 15
           - bazel_config: cpp23
             gcc_version: 11
           - bazel_config: cpp23
