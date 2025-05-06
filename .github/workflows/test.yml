@@ -87,12 +87,7 @@ jobs:
 
 
       - name: Build and Test
-        if: ${{startsWith(inputs.os, 'windows')}}
-        run: |
-          bazel test //...
-
-      - name: Build and Test
-        if: ${{!startsWith(inputs.os, 'windows')}}
+        shell: bash
         run: |
           if [ "${{inputs.compiler}}:${{inputs.gcc_version}}" == "gcc:" ]; then
             echo "ERROR: When compiler=='gcc', then a valid 'compiler_version' must be given."
