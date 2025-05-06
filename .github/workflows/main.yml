@@ -56,7 +56,7 @@ jobs:
         os: [windows-latest]
         bazel_mode: [bzlmod]
         compiler: [gcc]
-        gcc_version: [11, 14]
+        gcc_version: ['', 11, 14]
         bazel_config: [opt]
         proto_version: ['30.0']
 
