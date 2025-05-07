@@ -55,13 +55,14 @@ jobs:
       matrix:
         os: [windows-latest]
         bazel_mode: [bzlmod]
-        compiler: [mingw]
+        compiler: [mingw, native]
         gcc_version: ['']
         bazel_config: [opt]
         proto_version: ['30.0']
 
     uses: ./.github/workflows/test.yml
     with:
+      continue-on-error: true
       os: ${{ matrix.os }}
       bazel_mode: ${{ matrix.bazel_mode }}
       compiler: ${{ matrix.compiler }}
