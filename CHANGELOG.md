@@ -1,5 +1,7 @@
 # 1.2.1
 
+* Added windows and new gcc versions to release checks.
+
 # 1.2.0
 
 * Added std::optional variants for file reading.

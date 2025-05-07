@@ -65,12 +65,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: bazelbuild/setup-bazelisk@v3
+      - uses: egor-tensin/setup-mingw@v2
+        if: ${{inputs.compiler == 'mingw' && startsWith(inputs.os, 'windows')}}
+        with:
+          platform: ${{runner.arch}}
       - uses: egor-tensin/setup-gcc@v1
-        if: ${{inputs.compiler == 'gcc' && inputs.gcc_version != ''}}
+        if: ${{inputs.compiler == 'gcc' && inputs.gcc_version != '' && !startsWith(inputs.os, 'windows')}}
         with:
           version: ${{inputs.gcc_version}}
           platform: ${{runner.arch}}
-
       - uses: actions/cache/restore@v4
         id: cache_restore
         with:
@@ -81,7 +84,9 @@ jobs:
               ${{env.CACHE_KEY_PREFIX}}-refs/heads/main
               ${{env.CACHE_KEY_PREFIX}}
 
+
       - name: Build and Test
+        shell: bash
         run: |
           if [ "${{inputs.compiler}}:${{inputs.gcc_version}}" == "gcc:" ]; then
             echo "ERROR: When compiler=='gcc', then a valid 'compiler_version' must be given."
@@ -114,7 +119,7 @@ jobs:
           elif [ "${{inputs.compiler}}" == "gcc" ]; then
             export CC=/usr/local/bin/gcc
             export CXX=/usr/local/bin/g++
-          elif [ "${{inputs.compiler}}" == "native" ]; then
+          elif [ "${{inputs.compiler}}" == "mingw" ] || [ "${{inputs.compiler}}" == "native" ]; then
             # Use whatever is found!
             [ -n "${CC}" ] && [ -x "${CC}" ] && echo "CC: $(${CC} --version)"
             [ -n "${CXX}" ] && [ -x "${CXX}" ] && echo "CXX: $(${CXX} --version)"
@@ -149,7 +154,7 @@ jobs:
             key: ${{env.CACHE_KEY_PREFIX}}-${{github.ref}}-${{github.sha}}
 
       - name: Cleanup old caches
-        if: ${{!startsWith(github.ref, 'refs/tags/') && steps.cache_restore.outputs.cache-hit}}
+        if: ${{!startsWith(github.ref, 'refs/tags/') && steps.cache_restore.outputs.cache-hit && !startsWith(inputs.os, 'windows')}}
         run: |
           set -euo pipefail
           PREFIX="${{env.CACHE_KEY_PREFIX}}-${{github.ref}}"

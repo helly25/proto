@@ -21,7 +21,7 @@ jobs:
         os: [ubuntu-latest]
         bazel_mode: [bzlmod, workspace]
         compiler: [gcc]
-        gcc_version: [11, 12, 13]
+        gcc_version: [11, 12, 13, 14]
         bazel_config: [cpp23, opt]
         proto_version: ['30.0']
         exclude:
@@ -29,13 +29,40 @@ jobs:
             gcc_version: 11
           - bazel_mode: workspace
             gcc_version: 13
+          - bazel_mode: workspace
+            gcc_version: 14
           - bazel_config: cpp23
             gcc_version: 11
           - bazel_config: cpp23
             gcc_version: 12
+          - bazel_config: cpp23
+            gcc_version: 13
 
     uses: ./.github/workflows/test.yml
     with:
+      os: ${{ matrix.os }}
+      bazel_mode: ${{ matrix.bazel_mode }}
+      compiler: ${{ matrix.compiler }}
+      gcc_version: ${{ matrix.gcc_version }}
+      bazel_config: ${{ matrix.bazel_config }}
+      module_version: "proto${{ matrix.proto_version }}"
+      module_default: proto30.0
+
+  test-windows:
+    needs: pre-commit
+    secrets: inherit
+    strategy:
+      matrix:
+        os: [windows-latest]
+        bazel_mode: [bzlmod]
+        compiler: [mingw, native]
+        gcc_version: ['']
+        bazel_config: [opt]
+        proto_version: ['30.0']
+
+    uses: ./.github/workflows/test.yml
+    with:
+      continue-on-error: true
       os: ${{ matrix.os }}
       bazel_mode: ${{ matrix.bazel_mode }}
       compiler: ${{ matrix.compiler }}
@@ -155,7 +182,7 @@ jobs:
       module_default: proto30.0
 
   done:
-    needs: [pre-commit, test-gcc, test-clang, test-bcr]
+    needs: [pre-commit, test-bcr, test-clang, test-gcc, test-windows]
     runs-on: ubuntu-latest
     steps:
       - name: Done
