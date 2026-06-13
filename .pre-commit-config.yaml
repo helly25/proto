@@ -115,9 +115,13 @@ repos:
   - id: clang-format
 
 - repo: https://github.com/lovesegfault/beautysh
-  rev: v6.2.1
+  rev: v6.4.3
   hooks:
   - id: beautysh
+    # setuptools is a runtime dep on Python 3.12+ where pkg_resources
+    # is no longer bundled; pre-commit's isolated env doesn't get it
+    # otherwise. Pattern copied from helly25/bzl.
+    additional_dependencies: [setuptools]
 
 - repo: https://github.com/koalaman/shellcheck-precommit
   rev: v0.10.0
