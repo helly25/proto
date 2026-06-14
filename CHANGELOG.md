@@ -1,5 +1,11 @@
 # 1.2.1
 
+* Require Bazel 8 or newer and bzlmod; dropped WORKSPACE support.
+* Switched to a hermetic LLVM/clang toolchain (`toolchains_llvm` 1.8.0, LLVM 20.1.8).
+* Updated dependencies: abseil-cpp 20250814.2, re2 2025-11-05.bcr.1, googletest 1.17.0.bcr.2, rules_cc 0.2.19, bazel_skylib 1.9.0, platforms 1.1.0.
+* Bumped the default protobuf to 34.1; CI now tests protobuf versions [32, 33, 34, 35].
+* Migrated `SilentErrorCollector` to protobuf's `RecordError`/`RecordWarning` API so it builds against protobuf 35 (which removed the deprecated `AddError`/`AddWarning`).
+
 # 1.2.0
 
 * Added std::optional variants for file reading.

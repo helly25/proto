@@ -1,42 +1,84 @@
 # To debug bazel options, uncomment next line.
 # common --announce_rc
 
-try-import %workspace%/.bazelrc.user
-
-common --consistent_labels
-common --enable_bzlmod
-common --noincompatible_enable_cc_toolchain_resolution
-common --incompatible_disallow_empty_glob
-common --nolegacy_external_runfiles
-common --features=layering_check
+# Allow platform specific control and add the missing 'CoreFoundation' lib.
+common --enable_platform_specific_config
 
 # Define the Apple OS
 common --apple_platform_type=macos
+common:macos --features=-macos_default_link_flags
+common:macos --features=-supports_dynamic_linker
+common:macos --linkopt=-framework --linkopt=CoreFoundation --host_linkopt=-framework --host_linkopt=CoreFoundation
+common:macos --linkopt=-Wl,-undefined,dynamic_lookup --host_linkopt=-Wl,-undefined,dynamic_lookup
+# Apple Silicon only: 11.0 is the earliest arm64 macOS and clears libc++'s
+# `std::filesystem` availability gate (the APIs are "introduced in macOS 10.15").
+common:macos --cxxopt=-mmacosx-version-min=11.0 --host_cxxopt=-mmacosx-version-min=11.0
+common:macos --linkopt=-mmacosx-version-min=11.0 --host_linkopt=-mmacosx-version-min=11.0
 
-# Allow platform specific control and add the missing 'CoreFoundation' lib.
-common --enable_platform_specific_config
-common:macos --features=-supports_dynamic_linker --linkopt=-framework --linkopt=CoreFoundation --host_linkopt=-framework --host_linkopt=CoreFoundation
+try-import %workspace%/.bazelrc.user
+
+common --consistent_labels
+common --enable_bzlmod --noenable_workspace
+common --incompatible_disallow_empty_glob
+common --nolegacy_external_runfiles
+common --features=layering_check,parse_headers
+
+# protobuf transitively pulls rules_android, which registers `@androidsdk//:all`.
+# Bazel evaluates every registered toolchain during C++ toolchain resolution, so
+# on a machine where ANDROID_HOME points at an SDK (e.g. GitHub's ubuntu runners)
+# that repo gets instantiated and rules_android's `attrs.bzl` fails to compile on
+# Bazel 9 (legacy `CcInfo` removed in rules_cc 0.2.x). We don't build anything for
+# Android, so blank ANDROID_HOME for repo rules to keep that repo dormant.
+common --repo_env=ANDROID_HOME=
 
 # Define absl=1 to tell googletest to use absl for backtrace.
 common --define absl=1
 
 common --cxxopt=-std=c++20 --host_cxxopt=-std=c++20 --cxxopt=-Werror
+
+# Don't let our global -Werror be tripped by third-party (external) code; newer
+# compilers keep adding warnings inside dependencies we don't control (e.g.
+# protobuf's `utf8_validity.cc`, deprecation warnings in the protobuf library).
+# Two complementary scopes keep -Werror strict for our own code:
+#  - external_include_paths: external repo *headers* become -isystem, so their
+#    warnings are ignored even when our first-party TUs include them.
+#  - per_file_copt on external/* sources: downgrades -Werror when *compiling* an
+#    external repo's own .cc / internal (src/) headers.
+common --features=external_include_paths
+common --per_file_copt=external/.*@-Wno-error
+
 test --test_output=errors
-
-# Disable: error: unused function 'CodepointSkipBackwards' [-Werror,-Wunused-function]
-common --per_file_copt=external/utf8_range/utf8_validity.cc@-Wno-unused-function
-
-# Disable deprecation warnings in the protobuf library itself.
-common --per_file_copt=src/google/protobuf/.*@-w
-common --host_per_file_copt=src/google/protobuf/.*@-w
 
 common --copt=-fdiagnostics-color=always
 
+# Register the hermetic LLVM/clang toolchain ONLY for `--config=clang`. Bazel 9
+# always resolves C++ toolchains, so registering it unconditionally (in
+# llvm.MODULE.bazel) would hijack the gcc/native builds that omit this config.
+# `--extra_toolchains` registers it at higher priority than the autodetected
+# local toolchain, so clang wins here and only here.
+common:clang --extra_toolchains=@llvm_toolchain_llvm//:all
+common:clang --cxxopt=-gmlt
+common:clang --host_cxxopt=-gmlt
+common:clang --linkopt=-fuse-ld=lld
+common:clang --host_linkopt=-fuse-ld=lld
+common:clang --define is_clang=true
+# Some newer Clang versions really do not like '-c':
+# https://github.com/llvm/llvm-project/issues/100909
+common:clang --cxxopt=-Wno-unused-command-line-argument
+
+common:symbolizer --strip=never
+common:symbolizer --run_under=//tools:run_under_symbolizer
+
 # Custom --config=asan mode:
-common:asan --copt -fsanitize=address,undefined
-common:asan --linkopt -fsanitize=address,undefined
+common:asan --config=symbolizer
+common:asan --copt -g
+common:asan --copt -fsanitize=address
 common:asan --copt -fno-sanitize=vptr
+common:asan --copt -fno-omit-frame-pointer
+common:asan --copt -DADDRESS_SANITIZER
+common:asan --linkopt -fsanitize=address
 common:asan --linkopt -fno-sanitize=vptr
+#common:asan --linkopt -fsanitize-link-c++-runtime
 common:asan --linkopt -ldl
 common:asan --define tcmalloc=disabled
 common:asan --define signal_trace=disabled
@@ -44,11 +86,11 @@ common:asan --build_tag_filters=-no_san  # skip san targets
 common:asan --test_tag_filters=-no_san  # skip san targets
 common:asan --define san=true  # skip san targets
 common:asan --features=asan  # https://github.com/bazelbuild/bazel/issues/6932
-
-common:clang --incompatible_enable_cc_toolchain_resolution
-common:clang --cxxopt=-gmlt
-common:clang --host_cxxopt=-gmlt
-common:clang --linkopt=-fuse-ld=lld
-common:clang --host_linkopt=-fuse-ld=lld
+common:asan --action_env=ASAN_OPTIONS=halt_on_error=1:print_stacktrace=1:symbolize=1:strip_path_prefix=/proc/self/cwd/:color=always
+common:asan --action_env=UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1:symbolize=1:strip_path_prefix=/proc/self/cwd/:color=always
+common:asan --test_env=ASAN_OPTIONS=halt_on_error=1:print_stacktrace=1:symbolize=1:strip_path_prefix=/proc/self/cwd/:color=always
+common:asan --test_env=UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1:symbolize=1:strip_path_prefix=/proc/self/cwd/:color=always
 
 common:cpp23 --cxxopt=-std=c++23 --host_cxxopt=-std=c++23
+
+try-import %workspace%/.bazelrc.user.end

@@ -54,7 +54,7 @@ TEST_F(ParseTextProtoTest, ParseTextProtoOrDiePass) {
 
 TEST_F(ParseTextProtoTest, ParseTextProtoOrDieFail) {
   EXPECT_DEATH(
-      const SimpleMessage msg = ParseTextProtoOrDie("!!!"),
+      [[maybe_unused]] const SimpleMessage msg = ParseTextProtoOrDie("!!!"),
       // Using [0-9] in lieu of \\d to be compatible in open source.
       ".*Check failed: "                                   // Prefix
       "INVALID_ARGUMENT: "                                 // StatusCode
@@ -75,7 +75,7 @@ TEST_F(ParseTextProtoTest, ParseText) {
   EXPECT_THAT(status.status().code(), absl::StatusCode::kInvalidArgument);
   EXPECT_THAT(status.status().message(), ContainsRegex(kExpected));
   EXPECT_DEATH(
-      auto msg = *ParseText<SimpleMessage>("!!!"),
+      [[maybe_unused]] auto msg = *ParseText<SimpleMessage>("!!!"),
       absl::StrCat(
           "RAW: Attempting to fetch value instead of handling error ",  // Prefix
           "INVALID_ARGUMENT: ",                                         // StatusCode

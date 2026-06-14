@@ -16,6 +16,6 @@
 package(default_visibility = [])
 
 exports_files([
-    "hedron.MODULE.bazel",
+    "dev.MODULE.bazel",
     "llvm.MODULE.bazel",
 ])

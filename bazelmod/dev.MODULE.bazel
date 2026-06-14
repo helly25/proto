@@ -16,8 +16,8 @@
 bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
 git_override(
     module_name = "hedron_compile_commands",
-    commit = "6dd21b47db481a70c61698742438230e2399b639",
-    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+    commit = "75ba4c31d3b74fa5fb57c7508220571d4e52f828",
+    remote = "https://github.com/helly25/bazel-compile-commands-extractor.git",
 )
 
-bazel_dep(name = "depend_on_what_you_use", version = "0.7.0", dev_dependency = True)
+bazel_dep(name = "depend_on_what_you_use", version = "0.16.0", dev_dependency = True)

@@ -288,7 +288,7 @@ int main() {
 
 # Installation and requirements
 
-This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed). The project's CI tests a combination of Clang and GCC compilers on Linux/Ubuntu and MacOS. The project can be used with Google's proto libraries in versions [27, 28, 29, 30].
+This repository requires a C++20 compiler (in case of MacOS XCode 15 is needed) and Bazel 8 or newer. The project's CI tests a combination of Clang and GCC compilers on Linux/Ubuntu and MacOS. The project can be used with Google's proto libraries in versions [32, 33, 34, 35].
 
 The reliance on a C++20 compiler is because it uses `std::source_location` since Google's Abseil `absl::SourceLocation` has not been open sourced.
 
@@ -296,23 +296,9 @@ The project only comes with a Bazel BUILD.bazel file and can be added to other B
 
 The project is formatted with specific clang-format settings which require clang 16+ (in case of MacOs LLVM 16+ can be installed using brew). For simplicity in dev mode the project pulls the appropriate clang tools and can be compiled with those tools using `bazel [build|test] --config=clang ...`.
 
-## WORKSPACE
-
-Checkout [Releases](https://github.com/helly25/proto/releases) or use head ref as follows:
-
-```bzl
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-  name = "com_helly25_proto",
-  url = "https://github.com/helly25/proto/releases/download/0.0.0/proto-0.0.0.tar.gz",
-  sha256 = "", # See https://github.com/helly25/proto/releases for releases versions and SHA codes.
-)
-```
-
 ## MODULES.bazel
 
-The [BCR](https://registry.bazel.build/modules/helly25_proto) version has its dependencies pushed down to the lowest supported versions but those can be bumped locally. For each supported proto version there is a separate `MODULE.proto<version>.bazel` file that contains the minimum requirements of the necessary support repos.
+The project is consumed via Bazel modules (bzlmod); WORKSPACE mode is no longer supported. The [BCR](https://registry.bazel.build/modules/helly25_proto) version declares the dependency versions this module is pinned to; those can be bumped locally. The protobuf version can be overridden in your own `MODULE.bazel` (e.g. via `single_version_override`) to any release the project supports.
 
 Check [Releases](https://registry.bazel.build/modules/helly25_proto) for details. All that is needed is a `bazel_dep` instruction with the correct version.
 
