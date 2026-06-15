@@ -23,7 +23,6 @@ set -euo pipefail
 # Custom args to update as needed.
 PACKAGE_NAME="proto"
 BAZELMOD_NAME="helly25_proto"
-WORKSPACE_NAME="com_helly25_proto"
 PATCHES=(
     ".github/workflows/bazelmod.patch"
 )
@@ -81,8 +80,6 @@ EXCLUDES=(
 # Build the archive
 git archive --format=tar.gz --prefix="${PREFIX}/" "${TAG}" -o "${ARCHIVE}" --add-virtual-file="${PREFIX}/VERSION:${TAG}" --worktree-attributes
 
-SHA256="$(shasum -a 256 "${ARCHIVE}" | awk '{print $1}')"
-
 # Print header
 echo "# Version ${TAG}"
 echo "## [Changelog](https://github.com/helly25/${PACKAGE_NAME}/blob/${TAG}/CHANGELOG.md)"
@@ -105,16 +102,11 @@ Copy [llvm.MODULE.bazel](https://github.com/helly25/${PACKAGE_NAME}/blob/main/ba
 include("//:llvm.MODULE.bazel")
 \`\`\`
 
-## For Bazel WORKSPACE
+### Using the provided development modules
+
+Copy [dev.MODULE.bazel](https://github.com/helly25/${PACKAGE_NAME}/blob/main/bazelmod/dev.MODULE.bazel) to your repository's root directory and add the following line to your MODULES.bazel file or paste the whole contents into it. It provides the dev-only Hedron compile-commands extractor (generates compile_commands.json for clangd) and depend_on_what_you_use.
 
 \`\`\`
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-  name = "${WORKSPACE_NAME}",
-  url = "https://github.com/helly25/${PACKAGE_NAME}/releases/download/${TAG}/${ARCHIVE}",
-  sha256 = "${SHA256}",
-  strip_prefix = "${PREFIX}",
-)
+include("//:dev.MODULE.bazel")
 \`\`\`
 EOF

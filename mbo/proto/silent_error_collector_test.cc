@@ -36,20 +36,12 @@ struct SilentErrorCollectorTest : ::testing::Test {
   // Simulate adding an error using an `ErrorCollector*`
   static void Error(int line, int column, const std::string& msg, ::google::protobuf::io::ErrorCollector* errors) {
     ASSERT_THAT(errors, NotNull());
-#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
     errors->RecordError(line, column, msg);
-#else
-    errors->AddError(line, column, message);
-#endif
   }
 
   // Simulate adding a warning using an `ErrorCollector&`
   static void Warning(int line, int column, const std::string& msg, ::google::protobuf::io::ErrorCollector& errors) {
-#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
     errors.RecordWarning(line, column, msg);
-#else
-    errors.AddWarning(line, column, message);
-#endif
   }
 };
 

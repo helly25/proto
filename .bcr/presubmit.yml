@@ -1,7 +1,9 @@
 matrix:
+  # Bazel 7.x is intentionally absent: the pinned protobuf (34.1) no longer
+  # analyzes on Bazel 7.x, so the module's floor is Bazel 8.
   bazel:
-  - 7.x
   - 8.x
+  - 9.x
   platform:
   - ubuntu2404
   - macos_arm64

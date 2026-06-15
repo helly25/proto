@@ -19,6 +19,14 @@ package(default_visibility = ["//visibility:private"])
 
 licenses(["notice"])
 
+# Set under `--config=clang` (see `.bazelrc`) so build rules can branch on whether
+# the hermetic LLVM/clang toolchain is in use (e.g. the asan symbolizer wiring in
+# `//tools`).
+config_setting(
+    name = "is_clang",
+    define_values = {"is_clang": "true"},
+)
+
 COM_GOOGLE_PROTOBUF = "bazel-out/../../../external/com_google_protobuf/src"
 
 refresh_compile_commands(

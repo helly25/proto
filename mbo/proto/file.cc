@@ -97,8 +97,7 @@ absl::Status WriteBinaryProtoFile(
     const ::google::protobuf::Message& proto,
     const std::source_location& src_loc) {
   std::ofstream output(filename, std::ios::binary);
-  if (output.good()) {
-    proto.SerializeToOstream(&output);
+  if (output.good() && proto.SerializeToOstream(&output)) {
     output.close();
     if (output.good()) {
       return absl::OkStatus();

@@ -90,19 +90,15 @@ class SilentErrorCollector {
 
     explicit Impl(SilentErrorCollector& collector) : collector_(collector) {}
 
-#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
+    // protobuf's `io::ErrorCollector` API: the pre-v26 `AddError`/`AddWarning`
+    // virtuals were deprecated in favour of `RecordError`/`RecordWarning` and
+    // removed entirely in protobuf v35. This repo only supports protobuf >= 32,
+    // so we override the modern methods unconditionally.
     void RecordError(int line, int column, std::string_view message) override {
-#else
-    void AddError(int line, int column, const std::string& message) override {
-#endif
       collector_.Record(line, column, message, absl::LogSeverity::kError);
     }
 
-#if GOOGLE_PROTOBUF_VERSION >= 5'026'000
     void RecordWarning(int line, int column, std::string_view message) override {
-#else
-    void AddWarning(int line, int column, const std::string& message) override {
-#endif
       collector_.Record(line, column, message, absl::LogSeverity::kWarning);
     }
 
