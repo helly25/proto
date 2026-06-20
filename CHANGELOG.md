@@ -1,3 +1,5 @@
+# 1.2.2
+
 # 1.2.1
 
 * Require Bazel 8 or newer and bzlmod; dropped WORKSPACE support.
