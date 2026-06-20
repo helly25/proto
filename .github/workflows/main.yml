@@ -1,5 +1,9 @@
 name: Test
-on: [push]
+# Branches only — release tags are handled by release.yml. Running this on tag
+# pushes fires the full matrix needlessly.
+on:
+  push:
+    branches: ["**"]
 
 permissions: read-all
 
